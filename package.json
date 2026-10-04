@@ -1,0 +1,25 @@
+{
+  "name": "fact-game-mvp",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "vk-miniapps-deploy"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.0.5",
+    "typescript": "~5.7.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@vkontakte/vk-bridge": "^3.0.2"
+  },
+  "devDependencies": {
+    "@vkontakte/vk-miniapps-deploy": "^1.0.2"
+  },
+  "homepage": "./"
+}
