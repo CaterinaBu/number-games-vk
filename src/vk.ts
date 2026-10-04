@@ -178,19 +178,13 @@ export async function inviteFriends(): Promise<boolean> {
   }
 }
 
-export async function joinCommunity(): Promise<boolean> {
-  if (!isVKEnvironment()) return false;
+export function openCommunity(): boolean {
+  if (typeof window === 'undefined') return false;
 
   const groupId = getCommunityId();
   if (!groupId) return false;
 
-  const ready = initialized || await initVK();
-  if (!ready) return false;
-
-  try {
-    await bridge.send('VKWebAppJoinGroup', { group_id: groupId });
-    return true;
-  } catch {
-    return false;
-  }
+  const url = `https://vk.ru/club${groupId}`;
+  window.open(url, '_blank', 'noopener,noreferrer');
+  return true;
 }
