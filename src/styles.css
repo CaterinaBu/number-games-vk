@@ -2365,3 +2365,42 @@ body {
     height: 92px;
   }
 }
+
+
+/* v22 — inline SVG penguin: no external image loading */
+.homeMascotWrap {
+  min-height: 210px;
+}
+
+.penguinSvg {
+  width: min(245px, 100%);
+  height: auto;
+  display: block;
+  overflow: visible;
+  transform: rotate(-2deg);
+  transition: transform .2s ease;
+}
+
+.penguinSvg:hover {
+  transform: rotate(0deg) translateY(-4px) scale(1.02);
+}
+
+.penguinSvgSmall {
+  width: 118px;
+  margin: -8px auto 6px;
+  transform: none;
+}
+
+@media (max-width: 760px) {
+  .homeMascotWrap {
+    min-height: 150px;
+  }
+
+  .penguinSvg {
+    width: 176px;
+  }
+
+  .penguinSvgSmall {
+    width: 94px;
+  }
+}
