@@ -20,6 +20,7 @@ import {
 } from './game';
 import { donateToCommunity, inviteFriends, isDonationConfigured, isVKEnvironment, openCommunity, registerCompletedRound, shareApp, showInterstitialIfAvailable } from './vk';
 import { trackEvent } from './analytics';
+import { penguin42 } from './penguin';
 
 type Side = 'left' | 'right';
 type GameTab = 'compare' | 'guess' | 'order' | 'near';
@@ -303,7 +304,7 @@ function ResultScreen({
   return (
     <section className="resultScreen">
       <div className="resultCard">
-        <div className="resultCelebration" aria-hidden="true">🏆</div>
+        <img src={penguin42} alt="" className="resultMascot" aria-hidden="true" />
         <div className="resultEyebrow">Партия завершена</div>
         <h2>{title}</h2>
 
@@ -937,10 +938,8 @@ function HomeScreen({
     <main className="home">
       <header className="homeHero">
         <div className="homeBrand">
-          <div className="brandBadge" aria-hidden="true">
-            <span className="brandStar starOne">✦</span>
-            <span className="brandStar starTwo">✦</span>
-            <span className="brand42"><span>4</span><span>2</span></span>
+          <div className="homeMascotWrap">
+            <img src={penguin42} alt="Пингвинчик с табличкой 42" className="homeMascot" />
           </div>
           <div className="homeHeroCopy">
             <div className="homeEyebrow">4 мини-игры · {new Intl.NumberFormat('ru-RU').format(getFactCount())} фактов</div>
