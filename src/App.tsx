@@ -40,7 +40,6 @@ type FinishResult = {
 };
 
 const ROUND_LENGTH = 10;
-const PENGUIN_42 = `${import.meta.env.BASE_URL}penguin-42.webp`;
 const STORAGE_KEY = 'number-games-records-v1';
 
 const emptyEntry = (): RecordEntry => ({
@@ -282,6 +281,69 @@ function SocialActions({
   );
 }
 
+function PenguinMascot({ small = false }: { small?: boolean }) {
+  return (
+    <svg
+      className={small ? 'penguinSvg penguinSvgSmall' : 'penguinSvg'}
+      viewBox="0 0 260 280"
+      role={small ? undefined : 'img'}
+      aria-label={small ? undefined : 'Пингвинчик с табличкой 42'}
+      aria-hidden={small ? true : undefined}
+    >
+      <defs>
+        <linearGradient id="penguinBody" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#20255f" />
+          <stop offset="55%" stopColor="#11173f" />
+          <stop offset="100%" stopColor="#080d28" />
+        </linearGradient>
+        <linearGradient id="penguinWhite" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="100%" stopColor="#eaf2ff" />
+        </linearGradient>
+        <linearGradient id="penguinBadge" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#ffd45f" />
+          <stop offset="100%" stopColor="#ff9f67" />
+        </linearGradient>
+        <filter id="penguinShadow" x="-30%" y="-30%" width="160%" height="180%">
+          <feDropShadow dx="0" dy="12" stdDeviation="10" floodColor="#252a7b" floodOpacity=".28"/>
+        </filter>
+      </defs>
+
+      <g filter="url(#penguinShadow)">
+        <ellipse cx="130" cy="258" rx="70" ry="14" fill="rgba(50,45,120,.16)" />
+        <path d="M67 176c-24 8-36 26-31 40 5 13 22 17 38 8l20-12-27-36Z" fill="#151b4b"/>
+        <path d="M193 176c24 8 36 26 31 40-5 13-22 17-38 8l-20-12 27-36Z" fill="#151b4b"/>
+        <ellipse cx="130" cy="155" rx="76" ry="94" fill="url(#penguinBody)"/>
+        <ellipse cx="130" cy="169" rx="53" ry="66" fill="url(#penguinWhite)"/>
+        <circle cx="130" cy="78" r="62" fill="url(#penguinBody)"/>
+        <ellipse cx="108" cy="78" rx="24" ry="28" fill="url(#penguinWhite)"/>
+        <ellipse cx="152" cy="78" rx="24" ry="28" fill="url(#penguinWhite)"/>
+        <circle cx="112" cy="79" r="7" fill="#11152f"/>
+        <circle cx="148" cy="79" r="7" fill="#11152f"/>
+        <circle cx="110" cy="76" r="2.4" fill="#fff"/>
+        <circle cx="146" cy="76" r="2.4" fill="#fff"/>
+        <path d="M130 90l-15 10h30l-15-10Z" fill="#ffb13d"/>
+        <ellipse cx="95" cy="119" rx="12" ry="6" fill="#ff9fc6" opacity=".55"/>
+        <ellipse cx="165" cy="119" rx="12" ry="6" fill="#ff9fc6" opacity=".55"/>
+        <path d="M91 234c-18 3-30 12-28 20 2 8 18 9 35 3l17-6-24-17Z" fill="#ffb13d"/>
+        <path d="M169 234c18 3 30 12 28 20-2 8-18 9-35 3l-17-6 24-17Z" fill="#ffb13d"/>
+
+        <g transform="rotate(-4 130 174)">
+          <rect x="76" y="137" width="108" height="76" rx="20" fill="url(#penguinBadge)" />
+          <rect x="82" y="143" width="96" height="64" rx="16" fill="rgba(255,255,255,.15)" />
+          <text x="130" y="190" textAnchor="middle" fontSize="48" fontWeight="900" fill="#352c86" fontFamily="Arial, sans-serif">42</text>
+        </g>
+
+        <path d="M89 153c-12 3-21 12-20 20 1 7 10 9 19 4l12-7-11-17Z" fill="#151b4b"/>
+        <path d="M171 153c12 3 21 12 20 20-1 7-10 9-19 4l-12-7 11-17Z" fill="#151b4b"/>
+
+        <path d="M69 46l7 14 15 3-11 10 3 15-14-7-14 7 3-15-11-10 15-3 7-14Z" fill="#ffe579" opacity=".95"/>
+        <path d="M198 92l4 8 9 2-7 6 2 9-8-4-8 4 2-9-7-6 9-2 4-8Z" fill="#aee8ff" opacity=".95"/>
+      </g>
+    </svg>
+  );
+}
+
 function ResultScreen({
   title,
   primary,
@@ -304,7 +366,7 @@ function ResultScreen({
   return (
     <section className="resultScreen">
       <div className="resultCard">
-        <img src={PENGUIN_42} alt="" className="resultMascot" aria-hidden="true" />
+        <PenguinMascot small />
         <div className="resultEyebrow">Партия завершена</div>
         <h2>{title}</h2>
 
@@ -939,7 +1001,7 @@ function HomeScreen({
       <header className="homeHero">
         <div className="homeBrand">
           <div className="homeMascotWrap">
-            <img src={PENGUIN_42} alt="Пингвинчик с табличкой 42" className="homeMascot" />
+            <PenguinMascot />
           </div>
           <div className="homeHeroCopy">
             <div className="homeEyebrow">4 мини-игры · {new Intl.NumberFormat('ru-RU').format(getFactCount())} фактов</div>
