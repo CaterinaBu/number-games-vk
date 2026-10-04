@@ -20,7 +20,6 @@ import {
 } from './game';
 import { donateToCommunity, inviteFriends, isDonationConfigured, isVKEnvironment, openCommunity, registerCompletedRound, shareApp, showInterstitialIfAvailable } from './vk';
 import { trackEvent } from './analytics';
-import { penguin42 } from './penguin';
 
 type Side = 'left' | 'right';
 type GameTab = 'compare' | 'guess' | 'order' | 'near';
@@ -41,6 +40,7 @@ type FinishResult = {
 };
 
 const ROUND_LENGTH = 10;
+const PENGUIN_42 = `${import.meta.env.BASE_URL}penguin-42.webp`;
 const STORAGE_KEY = 'number-games-records-v1';
 
 const emptyEntry = (): RecordEntry => ({
@@ -304,7 +304,7 @@ function ResultScreen({
   return (
     <section className="resultScreen">
       <div className="resultCard">
-        <img src={penguin42} alt="" className="resultMascot" aria-hidden="true" />
+        <img src={PENGUIN_42} alt="" className="resultMascot" aria-hidden="true" />
         <div className="resultEyebrow">Партия завершена</div>
         <h2>{title}</h2>
 
@@ -939,7 +939,7 @@ function HomeScreen({
       <header className="homeHero">
         <div className="homeBrand">
           <div className="homeMascotWrap">
-            <img src={penguin42} alt="Пингвинчик с табличкой 42" className="homeMascot" />
+            <img src={PENGUIN_42} alt="Пингвинчик с табличкой 42" className="homeMascot" />
           </div>
           <div className="homeHeroCopy">
             <div className="homeEyebrow">4 мини-игры · {new Intl.NumberFormat('ru-RU').format(getFactCount())} фактов</div>
