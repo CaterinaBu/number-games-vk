@@ -2317,3 +2317,51 @@ body {
     font-size: 34px;
   }
 }
+
+
+/* v21 — penguin mascot */
+.homeMascotWrap {
+  position: relative;
+  z-index: 2;
+  min-height: 210px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.homeMascot {
+  width: min(245px, 100%);
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 20px 28px rgba(20, 24, 90, .30));
+  transform: rotate(-3deg);
+  transition: transform .2s ease;
+}
+
+.homeMascot:hover {
+  transform: rotate(-1deg) translateY(-4px) scale(1.02);
+}
+
+.resultMascot {
+  width: 112px;
+  height: 112px;
+  object-fit: contain;
+  display: block;
+  margin: -4px auto 8px;
+  filter: drop-shadow(0 12px 18px rgba(75, 65, 170, .20));
+}
+
+@media (max-width: 760px) {
+  .homeMascotWrap {
+    min-height: 150px;
+  }
+
+  .homeMascot {
+    width: 170px;
+  }
+
+  .resultMascot {
+    width: 92px;
+    height: 92px;
+  }
+}
