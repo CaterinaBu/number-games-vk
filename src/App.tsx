@@ -18,7 +18,7 @@ import {
   type NearQuestion,
   type Question
 } from './game';
-import { donateToCommunity, inviteFriends, isDonationConfigured, isVKEnvironment, joinCommunity, registerCompletedRound, shareApp, showInterstitialIfAvailable } from './vk';
+import { donateToCommunity, inviteFriends, isDonationConfigured, isVKEnvironment, openCommunity, registerCompletedRound, shareApp, showInterstitialIfAvailable } from './vk';
 import { trackEvent } from './analytics';
 
 type Side = 'left' | 'right';
@@ -251,28 +251,31 @@ function SocialActions({
   const [message, setMessage] = useState('');
 
   async function handleShare() {
+    setMessage('');
     trackEvent('share_result');
     const ok = await shareApp(window.location.href);
-    setMessage(ok ? 'Окно публикации открыто' : 'Доступно при запуске внутри VK');
+    if (!ok) setMessage('Доступно при запуске внутри VK');
   }
 
   async function handleInvite() {
+    setMessage('');
     trackEvent('invite_friends');
     const ok = await inviteFriends();
-    setMessage(ok ? 'Можно выбрать друзей' : 'Доступно при запуске внутри VK');
+    if (!ok) setMessage('Доступно при запуске внутри VK');
   }
 
-  async function handleCommunity() {
-    trackEvent('join_community');
-    const ok = await joinCommunity();
-    setMessage(ok ? 'Готово' : 'Сообщество пока не настроено или приложение открыто не в VK');
+  function handleCommunity() {
+    setMessage('');
+    trackEvent('community_open');
+    const ok = openCommunity();
+    if (!ok) setMessage('Сообщество пока не настроено');
   }
 
   return (
     <div className={`socialActions ${compact ? 'compact' : ''}`}>
       <button onClick={() => { void handleShare(); }}>Поделиться</button>
       <button onClick={() => { void handleInvite(); }}>Пригласить друзей</button>
-      <button onClick={() => { void handleCommunity(); }}>Сообщество игры</button>
+      <button onClick={handleCommunity}>Сообщество игры</button>
       {message && <div className="socialMessage">{message}</div>}
     </div>
   );
