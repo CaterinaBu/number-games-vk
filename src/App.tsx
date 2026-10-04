@@ -303,6 +303,7 @@ function ResultScreen({
   return (
     <section className="resultScreen">
       <div className="resultCard">
+        <div className="resultCelebration" aria-hidden="true">🏆</div>
         <div className="resultEyebrow">Партия завершена</div>
         <h2>{title}</h2>
 
@@ -882,30 +883,35 @@ const homeGames: Array<{
   title: string;
   description: string;
   number: string;
+  icon: string;
 }> = [
   {
     id: 'compare',
     title: 'Что больше?',
     description: 'Сравни два любых факта и выбери большее число.',
-    number: '01'
+    number: '01',
+    icon: '↗'
   },
   {
     id: 'guess',
     title: 'Ближе к правде',
     description: 'Оцени значение и постарайся попасть как можно точнее.',
-    number: '02'
+    number: '02',
+    icon: '?'
   },
   {
     id: 'order',
     title: 'По порядку',
     description: 'Расставь четыре объекта от меньшего значения к большему.',
-    number: '03'
+    number: '03',
+    icon: '123'
   },
   {
     id: 'near',
     title: 'Что ближе?',
     description: 'Выбери значение, которое ближе к заданному ориентиру.',
-    number: '04'
+    number: '04',
+    icon: '◎'
   }
 ];
 
@@ -930,14 +936,24 @@ function HomeScreen({
   return (
     <main className="home">
       <header className="homeHero">
-        <div className="homeEyebrow">4 мини-игры · {new Intl.NumberFormat('ru-RU').format(getFactCount())} фактов</div>
-        <h1>Игры с числами</h1>
-        <p>Выбери режим. Одна партия — 10 заданий.</p>
+        <div className="homeBrand">
+          <div className="brandBadge" aria-hidden="true">
+            <span className="brandStar starOne">✦</span>
+            <span className="brandStar starTwo">✦</span>
+            <span className="brand42"><span>4</span><span>2</span></span>
+          </div>
+          <div className="homeHeroCopy">
+            <div className="homeEyebrow">4 мини-игры · {new Intl.NumberFormat('ru-RU').format(getFactCount())} фактов</div>
+            <h1>Игры с числами</h1>
+            <p>Сравнивай, угадывай и расставляй факты. Одна партия — 10 заданий.</p>
+          </div>
+        </div>
       </header>
 
       <section className="homeGrid">
         {homeGames.map((game) => (
-          <button className="homeGameCard" key={game.id} onClick={() => onStart(game.id)}>
+          <button className={`homeGameCard homeGameCard-${game.id}`} key={game.id} onClick={() => onStart(game.id)}>
+            <span className="homeGameIcon">{game.icon}</span>
             <span className="homeGameNumber">{game.number}</span>
             <span className="homeGameTitle">{game.title}</span>
             <span className="homeGameDescription">{game.description}</span>
