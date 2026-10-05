@@ -70,15 +70,21 @@ export function registerCompletedRound(): boolean {
 
 export type AdShowResult = 'interstitial' | 'banner' | null;
 
-function isDesktopVK(): boolean {
+async function isDesktopVK(): Promise<boolean> {
   if (typeof window === 'undefined') return false;
 
-  const platform = new URLSearchParams(window.location.search).get('vk_platform') ?? '';
-  return platform === 'desktop_web' || platform === 'desktop_web_messenger' || platform === 'desktop_app_messenger';
+  try {
+    const launchParams = await bridge.send('VKWebAppGetLaunchParams');
+    const platform = launchParams.vk_platform ?? '';
+    return platform === 'desktop_web' || platform === 'desktop_web_messenger' || platform === 'desktop_app_messenger';
+  } catch {
+    const platform = new URLSearchParams(window.location.search).get('vk_platform') ?? '';
+    return platform === 'desktop_web' || platform === 'desktop_web_messenger' || platform === 'desktop_app_messenger';
+  }
 }
 
 async function showDesktopBannerIfAvailable(): Promise<boolean> {
-  if (!isDesktopVK()) return false;
+  if (!(await isDesktopVK())) return false;
 
   try {
     const availability = await bridge.send('VKWebAppCheckBannerAd');
