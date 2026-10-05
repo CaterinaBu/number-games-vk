@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import homePenguinPart1 from './assets/homePenguinPart1';
 import homePenguinPart2 from './assets/homePenguinPart2';
 import homePenguinPart3 from './assets/homePenguinPart3';
@@ -476,6 +476,7 @@ function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
   const [totalCloseness, setTotalCloseness] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [savedRecord, setSavedRecord] = useState<RecordEntry | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const answered = submittedGuess !== null;
   const closeness = answered ? calculateCloseness(submittedGuess, fact.value) : null;
@@ -486,6 +487,10 @@ function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
 
     const guess = parseGuess(input);
     if (guess === null) return;
+
+    // In mobile WebViews a focused/disabled input can swallow the next tap
+    // while the keyboard is closing. Blur it before showing the answer state.
+    inputRef.current?.blur();
 
     onAttempt();
     const value = calculateCloseness(guess, fact.value);
@@ -553,6 +558,7 @@ function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
 
           <div className="guessInputRow">
             <input
+              ref={inputRef}
               inputMode="decimal"
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -573,11 +579,11 @@ function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
           <div className="guessAction">
             {answered
               ? (
-                <button className="next" onClick={next}>
+                <button type="button" className="next" onClick={next}>
                   {rounds >= ROUND_LENGTH ? 'Результаты' : 'Следующий'} <span>→</span>
                 </button>
               )
-              : <button className="next" onClick={submit} disabled={parseGuess(input) === null}>Проверить</button>}
+              : <button type="button" className="next" onClick={submit} disabled={parseGuess(input) === null}>Проверить</button>}
           </div>
         </div>
       </section>
