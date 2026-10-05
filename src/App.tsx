@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import homePenguinPart1 from './assets/homePenguinPart1';
 import homePenguinPart2 from './assets/homePenguinPart2';
 import homePenguinPart3 from './assets/homePenguinPart3';
@@ -477,10 +477,42 @@ function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
   const [showResult, setShowResult] = useState(false);
   const [savedRecord, setSavedRecord] = useState<RecordEntry | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const nextButtonRef = useRef<HTMLButtonElement>(null);
+  const lastTouchAdvanceRef = useRef(0);
 
   const answered = submittedGuess !== null;
   const closeness = answered ? calculateCloseness(submittedGuess, fact.value) : null;
   const averageScore = rounds > 0 ? Math.round(totalCloseness / rounds) : 0;
+
+  useEffect(() => {
+    if (!answered) return;
+
+    // Some mobile WebViews keep stale viewport / hit-test coordinates after
+    // the virtual keyboard closes. Force a layout pass after the keyboard
+    // transition and keep the action button in the active viewport.
+    const stabilize = () => {
+      requestAnimationFrame(() => {
+        void document.documentElement.offsetHeight;
+        nextButtonRef.current?.scrollIntoView({
+          block: 'nearest',
+          inline: 'nearest',
+          behavior: 'auto'
+        });
+      });
+    };
+
+    const visualViewport = window.visualViewport;
+    visualViewport?.addEventListener('resize', stabilize);
+
+    const shortTimer = window.setTimeout(stabilize, 80);
+    const settleTimer = window.setTimeout(stabilize, 360);
+
+    return () => {
+      visualViewport?.removeEventListener('resize', stabilize);
+      window.clearTimeout(shortTimer);
+      window.clearTimeout(settleTimer);
+    };
+  }, [answered]);
 
   function submit() {
     if (answered || rounds >= ROUND_LENGTH) return;
@@ -564,7 +596,8 @@ function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter' && !answered) submit(); }}
               placeholder="Ваш ответ"
-              disabled={answered}
+              readOnly={answered}
+              aria-readonly={answered}
             />
             <span className="unitBadge">{fact.unit || 'число'}</span>
           </div>
@@ -579,7 +612,20 @@ function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
           <div className="guessAction">
             {answered
               ? (
-                <button type="button" className="next" onClick={next}>
+                <button
+                  ref={nextButtonRef}
+                  type="button"
+                  className="next"
+                  onTouchEnd={(event) => {
+                    event.preventDefault();
+                    lastTouchAdvanceRef.current = Date.now();
+                    next();
+                  }}
+                  onClick={() => {
+                    if (Date.now() - lastTouchAdvanceRef.current < 700) return;
+                    next();
+                  }}
+                >
                   {rounds >= ROUND_LENGTH ? 'Результаты' : 'Следующий'} <span>→</span>
                 </button>
               )
