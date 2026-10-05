@@ -71,17 +71,31 @@ export function registerCompletedRound(): boolean {
 
 export type AdShowResult = 'interstitial' | 'banner' | null;
 
+function isDesktopPlatform(platform: string): boolean {
+  return platform === 'desktop_web' ||
+    platform === 'desktop_web_messenger' ||
+    platform === 'desktop_app_messenger';
+}
+
 async function isDesktopVK(): Promise<boolean> {
   if (typeof window === 'undefined') return false;
 
   try {
     const launchParams = await bridge.send('VKWebAppGetLaunchParams');
-    const platform = launchParams.vk_platform ?? '';
-    return platform === 'desktop_web' || platform === 'desktop_web_messenger' || platform === 'desktop_app_messenger';
+    return isDesktopPlatform(launchParams.vk_platform ?? '');
   } catch {
     const platform = new URLSearchParams(window.location.search).get('vk_platform') ?? '';
-    return platform === 'desktop_web' || platform === 'desktop_web_messenger' || platform === 'desktop_app_messenger';
+    return isDesktopPlatform(platform);
   }
+}
+
+export async function supportsFriendInvite(): Promise<boolean> {
+  if (!isVKEnvironment()) return false;
+
+  const ready = initialized || await initVK();
+  if (!ready) return false;
+
+  return !(await isDesktopVK());
 }
 
 async function showDesktopBannerIfAvailable(): Promise<boolean> {
