@@ -1,6 +1,10 @@
 import { useState } from 'react';
-import penguinMascot from './assets/penguin42-cute.webp';
+import homePenguinPart1 from './assets/homePenguinPart1';
+import homePenguinPart2 from './assets/homePenguinPart2';
+import homePenguinPart3 from './assets/homePenguinPart3';
 import resultPenguin from './assets/penguin-result.webp';
+
+const penguinMascot = 'data:image/webp;base64,' + homePenguinPart1 + homePenguinPart2 + homePenguinPart3;
 import {
   calculateCloseness,
   createGuessFact,
