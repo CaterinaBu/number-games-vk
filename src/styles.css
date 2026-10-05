@@ -3367,3 +3367,10 @@ body {
     font-size: 13px;
   }
 }
+
+
+/* v28 — make primary action taps reliable in mobile WebViews */
+.next {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
