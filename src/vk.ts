@@ -68,30 +68,66 @@ export function registerCompletedRound(): boolean {
   return next % 3 === 0;
 }
 
-export async function showInterstitialIfAvailable(): Promise<boolean> {
-  if (!isVKEnvironment()) return false;
+export type AdShowResult = 'interstitial' | 'banner' | null;
+
+function isDesktopVK(): boolean {
+  if (typeof window === 'undefined') return false;
+
+  const platform = new URLSearchParams(window.location.search).get('vk_platform') ?? '';
+  return platform === 'desktop_web' || platform === 'desktop_web_messenger' || platform === 'desktop_app_messenger';
+}
+
+async function showDesktopBannerIfAvailable(): Promise<boolean> {
+  if (!isDesktopVK()) return false;
+
+  try {
+    const availability = await bridge.send('VKWebAppCheckBannerAd');
+    if (!availability.result) return false;
+
+    const result = await bridge.send('VKWebAppShowBannerAd', {
+      banner_location: 'bottom',
+      banner_align: 'center',
+      layout_type: 'resize',
+      height_type: 'compact',
+      orientation: 'horizontal',
+      can_close: true
+    });
+
+    return result.result === true;
+  } catch {
+    return false;
+  }
+}
+
+export async function showAdIfAvailable(): Promise<AdShowResult> {
+  if (!isVKEnvironment()) return null;
 
   const ready = initialized || await initVK();
-  if (!ready) return false;
+  if (!ready) return null;
 
   try {
     const availability = await bridge.send('VKWebAppCheckNativeAds', {
       ad_format: 'interstitial'
     });
 
-    if (!availability.result) {
-      return false;
+    if (availability.result) {
+      const result = await bridge.send('VKWebAppShowNativeAds', {
+        ad_format: 'interstitial'
+      });
+
+      if (result.result === true) {
+        return 'interstitial';
+      }
     }
-
-    const result = await bridge.send('VKWebAppShowNativeAds', {
-      ad_format: 'interstitial'
-    });
-
-    return result.result === true;
   } catch {
-    // Ad errors should never block navigation or the next game.
-    return false;
+    // Fall through to the desktop banner fallback below.
   }
+
+  if (await showDesktopBannerIfAvailable()) {
+    return 'banner';
+  }
+
+  return null;
 }
 
 
