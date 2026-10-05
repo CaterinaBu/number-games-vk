@@ -3374,3 +3374,28 @@ body {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
+
+
+/* v29 — keep guess action on a stable touch layer in mobile WebViews */
+.guessAction {
+  position: relative;
+  z-index: 6;
+  pointer-events: auto;
+}
+
+.guessAction .next {
+  position: relative;
+  z-index: 7;
+  pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+@media (max-width: 760px) {
+  .guessInputRow input[readonly] {
+    opacity: 1;
+    color: #17233a;
+    -webkit-text-fill-color: #17233a;
+  }
+}
