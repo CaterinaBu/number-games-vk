@@ -22,13 +22,17 @@ export function initAnalytics(): boolean {
     return false;
   }
 
-  window.ym = window.ym || function (...args: unknown[]) {
-    const fn = window.ym as unknown as { a?: unknown[][]; l?: number };
-    fn.a = fn.a || [];
-    fn.a.push(args);
-  };
+  // Keep this queue compatible with Yandex's official async snippet:
+  // each queued call is stored as the function's Arguments object.
+  if (!window.ym) {
+    window.ym = function (..._args: unknown[]) {
+      const fn = window.ym as unknown as { a?: IArguments[]; l?: number };
+      fn.a = fn.a || [];
+      fn.a.push(arguments);
+    };
+  }
 
-  const ymFn = window.ym as unknown as { a?: unknown[][]; l?: number };
+  const ymFn = window.ym as unknown as { a?: IArguments[]; l?: number };
   ymFn.l = Date.now();
 
   if (!document.querySelector('script[data-number-games-metrika]')) {
@@ -42,7 +46,8 @@ export function initAnalytics(): boolean {
   window.ym(counterId, 'init', {
     clickmap: true,
     trackLinks: true,
-    accurateTrackBounce: true
+    accurateTrackBounce: true,
+    trackHash: true
   });
 
   initialized = true;
