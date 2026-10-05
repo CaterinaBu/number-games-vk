@@ -928,7 +928,7 @@ const titles: Record<GameTab, { title: string; subtitle: string }> = {
     subtitle: 'Попробуйте угадать значение как можно точнее'
   },
   order: {
-    title: 'Расставь по порядку',
+    title: 'Расставьте по порядку',
     subtitle: 'Расположите четыре объекта от меньшего значения к большему'
   },
   near: {
