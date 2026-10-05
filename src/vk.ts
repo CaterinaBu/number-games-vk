@@ -89,17 +89,6 @@ async function isDesktopVK(): Promise<boolean> {
   }
 }
 
-export async function supportsFriendInvite(): Promise<boolean> {
-  if (!isVKEnvironment()) return false;
-
-  const ready = initialized || await initVK();
-  if (!ready) return false;
-
-  // VK Bridge can tell us whether this method is actually available
-  // on the current device/client. Platform alone is not enough.
-  return !(await isDesktopVK()) && bridge.supports('VKWebAppShowInviteBox');
-}
-
 async function showDesktopBannerIfAvailable(): Promise<boolean> {
   if (!(await isDesktopVK())) return false;
 
@@ -258,21 +247,6 @@ export async function shareApp(link?: string): Promise<boolean> {
     const shareLink = link || await getPublicVKAppLink();
     await bridge.send('VKWebAppShare', { link: shareLink });
     return true;
-  } catch {
-    return false;
-  }
-}
-
-export async function inviteFriends(): Promise<boolean> {
-  if (!isVKEnvironment()) return false;
-
-  const ready = initialized || await initVK();
-  if (!ready) return false;
-  if (!bridge.supports('VKWebAppShowInviteBox')) return false;
-
-  try {
-    const result = await bridge.send('VKWebAppShowInviteBox');
-    return result.success === true;
   } catch {
     return false;
   }
