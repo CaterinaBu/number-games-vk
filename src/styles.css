@@ -3256,3 +3256,37 @@ body {
     order: 1;
   }
 }
+
+
+/* v26 — one consistent correct/wrong highlight across games */
+.choice.correct,
+.nearChoice.correct,
+.orderItem.positionCorrect,
+.orderItem.correctOrder {
+  border-color: rgba(34, 197, 94, 0.58);
+  background: #f1fcf4;
+}
+
+.choice.wrong,
+.nearChoice.wrong,
+.orderItem.positionWrong {
+  border-color: rgba(239, 68, 68, 0.54);
+  background: #fff2f2;
+}
+
+/* "Что больше?" should match "Что ближе?": no extra colored side stripe */
+.choice.correct::after,
+.choice.wrong::after {
+  background: transparent;
+}
+
+/* Keep the submitted-order marks readable, but use the same soft palette */
+.positionCorrect .orderPositionMark {
+  background: rgba(34, 197, 94, .10);
+  color: #168d48;
+}
+
+.positionWrong .orderPositionMark {
+  background: rgba(239, 68, 68, .09);
+  color: #c64350;
+}
