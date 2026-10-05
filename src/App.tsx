@@ -341,7 +341,7 @@ type GameProps = {
   onHome: () => void;
   onBeforeLeave: (action: () => void) => Promise<void>;
   onAttempt: () => void;
-  onRestartRound: (game: GameTab) => boolean;
+  onRestartRound: (game: GameTab, action: () => void) => void;
 };
 
 function CompareGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound }: GameProps) {
@@ -405,8 +405,7 @@ function CompareGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRoun
 
   function changeDifficulty(next: Difficulty) {
     if (next === difficulty) return;
-    if (!onRestartRound('compare')) return;
-    resetRound(next);
+    onRestartRound('compare', () => resetRound(next));
   }
 
   if (showResult && savedRecord) {
@@ -420,7 +419,7 @@ function CompareGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRoun
           `Лучшая серия ${maxStreak}`
         ]}
         record={`Рекорд: ${savedRecord.bestScore} из ${ROUND_LENGTH} · лучшая серия ${savedRecord.bestStreak}`}
-        onAgain={() => { if (onRestartRound('compare')) resetRound(); }}
+        onAgain={() => onRestartRound('compare', () => resetRound())}
         onHome={onHome}
         onBeforeLeave={onBeforeLeave}
       />
@@ -530,7 +529,7 @@ function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
         primaryLabel="средняя близость"
         secondary={[`10 оценок за партию`]}
         record={`Рекорд: ${savedRecord.bestAverage}% средней близости`}
-        onAgain={() => { if (onRestartRound('guess')) resetRound(); }}
+        onAgain={() => onRestartRound('guess', resetRound)}
         onHome={onHome}
         onBeforeLeave={onBeforeLeave}
       />
@@ -677,7 +676,7 @@ function OrderGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
           `Лучшая серия ${maxStreak}`
         ]}
         record={`Рекорд: ${savedRecord.bestScore} из ${ROUND_LENGTH} · лучшая серия ${savedRecord.bestStreak}`}
-        onAgain={() => { if (onRestartRound('order')) resetRound(); }}
+        onAgain={() => onRestartRound('order', resetRound)}
         onHome={onHome}
         onBeforeLeave={onBeforeLeave}
       />
@@ -859,7 +858,7 @@ function NearGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound }
           `Лучшая серия ${maxStreak}`
         ]}
         record={`Рекорд: ${savedRecord.bestScore} из ${ROUND_LENGTH} · лучшая серия ${savedRecord.bestStreak}`}
-        onAgain={() => { if (onRestartRound('near')) resetRound(); }}
+        onAgain={() => onRestartRound('near', resetRound)}
         onHome={onHome}
         onBeforeLeave={onBeforeLeave}
       />
@@ -1035,6 +1034,9 @@ export default function App() {
   const [records, setRecords] = useState<Records>(() => loadRecords());
   const [adPending, setAdPending] = useState(false);
   const [hasAttemptedAnswer, setHasAttemptedAnswer] = useState(false);
+  const [leaveConfirm, setLeaveConfirm] = useState<{
+    action: () => void;
+  } | null>(null);
 
   function startGame(game: GameTab) {
     setHasAttemptedAnswer(false);
@@ -1048,46 +1050,61 @@ export default function App() {
     setHasAttemptedAnswer(true);
   }
 
-  function confirmAbandonCurrentRound(): boolean {
-    if (!hasAttemptedAnswer) return true;
-    return window.confirm('Текущая партия будет потеряна. Продолжить?');
+  function requestRoundExit(action: () => void) {
+    if (!hasAttemptedAnswer) {
+      action();
+      return;
+    }
+
+    setLeaveConfirm({ action });
+  }
+
+  function closeLeaveConfirm() {
+    setLeaveConfirm(null);
+  }
+
+  function confirmRoundExit() {
+    const action = leaveConfirm?.action;
+    setLeaveConfirm(null);
+    action?.();
   }
 
   function goHome() {
-    if (!confirmAbandonCurrentRound()) return;
+    requestRoundExit(() => {
+      if (hasAttemptedAnswer) {
+        trackEvent('round_abandoned', { game: tab, destination: 'home' });
+      }
 
-    if (hasAttemptedAnswer) {
-      trackEvent('round_abandoned', { game: tab, destination: 'home' });
-    }
-
-    setHasAttemptedAnswer(false);
-    setScreen('home');
+      setHasAttemptedAnswer(false);
+      setScreen('home');
+    });
   }
 
   function switchGame(game: GameTab) {
     if (game === tab) return;
-    if (!confirmAbandonCurrentRound()) return;
 
-    if (hasAttemptedAnswer) {
-      trackEvent('round_abandoned', { game: tab, destination: 'another_game' });
-    }
+    requestRoundExit(() => {
+      if (hasAttemptedAnswer) {
+        trackEvent('round_abandoned', { game: tab, destination: 'another_game' });
+      }
 
-    setHasAttemptedAnswer(false);
-    trackEvent('game_selected', { game, source: 'top_tabs' });
-    trackEvent('round_started', { game, source: 'top_tabs' });
-    setTab(game);
+      setHasAttemptedAnswer(false);
+      trackEvent('game_selected', { game, source: 'top_tabs' });
+      trackEvent('round_started', { game, source: 'top_tabs' });
+      setTab(game);
+    });
   }
 
-  function restartRound(game: GameTab): boolean {
-    if (!confirmAbandonCurrentRound()) return false;
+  function restartRound(game: GameTab, action: () => void) {
+    requestRoundExit(() => {
+      if (hasAttemptedAnswer) {
+        trackEvent('round_abandoned', { game, destination: 'restart' });
+      }
 
-    if (hasAttemptedAnswer) {
-      trackEvent('round_abandoned', { game, destination: 'restart' });
-    }
-
-    setHasAttemptedAnswer(false);
-    trackEvent('round_started', { game, source: 'restart' });
-    return true;
+      setHasAttemptedAnswer(false);
+      trackEvent('round_started', { game, source: 'restart' });
+      action();
+    });
   }
 
   function saveResult(game: GameTab, result: FinishResult): RecordEntry {
@@ -1164,6 +1181,27 @@ export default function App() {
       {tab === 'guess' && <GuessGame onFinish={saveResult} onHome={goHome} onBeforeLeave={runPostRoundAction} onAttempt={markAttempted} onRestartRound={restartRound} />}
       {tab === 'order' && <OrderGame onFinish={saveResult} onHome={goHome} onBeforeLeave={runPostRoundAction} onAttempt={markAttempted} onRestartRound={restartRound} />}
       {tab === 'near' && <NearGame onFinish={saveResult} onHome={goHome} onBeforeLeave={runPostRoundAction} onAttempt={markAttempted} onRestartRound={restartRound} />}
+
+      {leaveConfirm && (
+        <div className="gameConfirmBackdrop" role="presentation" onMouseDown={closeLeaveConfirm}>
+          <section
+            className="gameConfirmModal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="game-confirm-title"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <div className="gameConfirmSparkle">✦</div>
+            <div className="gameConfirmIcon" aria-hidden="true">?</div>
+            <h2 id="game-confirm-title">Выйти из текущей партии?</h2>
+            <p>Прогресс этой партии не сохранится.</p>
+            <div className="gameConfirmActions">
+              <button className="secondaryButton" onClick={closeLeaveConfirm}>Остаться</button>
+              <button className="next gameConfirmLeave" onClick={confirmRoundExit}>Выйти</button>
+            </div>
+          </section>
+        </div>
+      )}
 
       <footer>{new Intl.NumberFormat('ru-RU').format(getFactCount())} фактов в базе</footer>
     </main>
