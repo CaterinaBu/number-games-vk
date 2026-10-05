@@ -2961,3 +2961,168 @@ body {
     font-size: 44px;
   }
 }
+
+
+/* v24 — neutral answer cards + compare submitted order */
+.choice:first-child,
+.choice:last-child {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,.96), transparent 36%),
+    linear-gradient(145deg, rgba(255,255,255,.98), rgba(248,249,255,.96));
+}
+
+.choice:first-child::before,
+.choice:last-child::before {
+  content: '✦';
+  right: 20px;
+  top: 16px;
+  color: rgba(255, 194, 61, .58);
+  font-size: 30px;
+  font-weight: 900;
+}
+
+.choice:first-child::after,
+.choice:last-child::after {
+  background: rgba(108, 99, 255, 0);
+}
+
+.choice:not(:disabled):hover::after {
+  background: rgba(108, 99, 255, .34);
+}
+
+.nearChoice:first-child,
+.nearChoice:last-child {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,.96), transparent 36%),
+    linear-gradient(145deg, rgba(255,255,255,.98), rgba(248,249,255,.96));
+}
+
+.nearChoice:first-child::after,
+.nearChoice:last-child::after {
+  content: '✦';
+  right: 14px;
+  bottom: 8px;
+  color: rgba(255, 194, 61, .42);
+  font-size: 26px;
+  font-weight: 900;
+}
+
+.nearChoice.correct {
+  border-color: rgba(34, 197, 94, .58);
+  background: linear-gradient(145deg, #f7fff9, #effcf3);
+}
+
+.nearChoice.wrong {
+  border-color: rgba(239, 68, 68, .50);
+  background: linear-gradient(145deg, #fffafa, #fff3f4);
+}
+
+/* Order: show the player's arrangement and the correct arrangement */
+.orderComparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.orderColumn {
+  min-width: 0;
+  padding: 12px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.58);
+  box-shadow: inset 0 0 0 1px rgba(105, 91, 225, .08);
+}
+
+.orderColumnTitle {
+  margin: 0 0 9px;
+  color: #7c5a66;
+  font-size: 12px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.orderColumnTitle.correctTitle {
+  color: #4d7a63;
+}
+
+.orderList.compact {
+  gap: 7px;
+}
+
+.orderList.compact .orderItem {
+  min-height: 56px;
+  grid-template-columns: 32px minmax(0, 1fr) 24px;
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: 12px;
+}
+
+.orderList.compact .correctOrder {
+  grid-template-columns: 32px minmax(0, 1fr);
+}
+
+.orderList.compact .orderPosition {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+}
+
+.orderList.compact .orderName {
+  gap: 2px;
+  font-size: 13px;
+}
+
+.orderList.compact .orderName small {
+  font-size: 11px;
+}
+
+.orderItem.positionCorrect {
+  border-color: rgba(34, 197, 94, .25);
+  background: rgba(244,255,248,.82);
+}
+
+.orderItem.positionWrong {
+  border-color: rgba(239, 68, 68, .23);
+  background: rgba(255,247,248,.84);
+}
+
+.orderItem.correctOrder {
+  border-color: rgba(34, 197, 94, .18);
+  background: rgba(247,255,250,.82);
+}
+
+.orderPositionMark {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.positionCorrect .orderPositionMark {
+  background: rgba(34, 197, 94, .10);
+  color: #168d48;
+}
+
+.positionWrong .orderPositionMark {
+  background: rgba(239, 68, 68, .09);
+  color: #c64350;
+}
+
+@media (max-width: 760px) {
+  .orderComparison {
+    grid-template-columns: 1fr;
+    gap: 9px;
+  }
+
+  .orderColumn {
+    padding: 9px;
+  }
+
+  .orderList.compact .orderItem {
+    min-height: 50px;
+  }
+}
