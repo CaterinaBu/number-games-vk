@@ -134,7 +134,28 @@ export async function donateToCommunity(amount: number): Promise<boolean> {
       }
     });
 
-    return Boolean(response);
+    // VK returns TransactionResult for VKWebAppOpenPayForm.
+    // A non-empty response by itself does not mean the payment succeeded:
+    // status must be true, and a successful transaction has an id.
+    const payload =
+      response &&
+      typeof response === 'object' &&
+      'result' in response
+        ? (response as { result?: unknown }).result
+        : response;
+
+    if (!payload || typeof payload !== 'object') return false;
+
+    const transaction = payload as {
+      status?: unknown;
+      transaction_id?: unknown;
+    };
+
+    return (
+      transaction.status === true &&
+      typeof transaction.transaction_id === 'string' &&
+      transaction.transaction_id.trim().length > 0
+    );
   } catch {
     return false;
   }
