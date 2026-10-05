@@ -169,12 +169,31 @@ function formatPlainNumber(value: number): string {
   return new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 3 }).format(value);
 }
 
+function formatYearDurationUnit(value: number): 'год' | 'года' | 'лет' {
+  const absolute = Math.abs(value);
+
+  // With fractional values Russian normally uses the genitive singular:
+  // 1,5 года; 2,5 года; 0,5 года.
+  if (!Number.isInteger(absolute)) return 'года';
+
+  const mod10 = absolute % 10;
+  const mod100 = absolute % 100;
+
+  if (mod10 === 1 && mod100 !== 11) return 'год';
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return 'года';
+  return 'лет';
+}
+
 export function formatValue(fact: Fact): string {
   const { value, unit, metric } = fact;
 
   if (isYearMetric(metric) && unit === 'год') {
     if (value < 0) return `${formatPlainNumber(Math.abs(value))} до н. э.`;
     return `${formatPlainNumber(value)} г.`;
+  }
+
+  if (unit === 'лет') {
+    return `${formatPlainNumber(value)} ${formatYearDurationUnit(value)}`;
   }
 
   return `${formatPlainNumber(value)}${unit ? ` ${unit}` : ''}`;
