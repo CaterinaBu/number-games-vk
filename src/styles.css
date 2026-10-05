@@ -3521,3 +3521,18 @@ body {
   color: #486fb8;
   box-shadow: inset 0 0 0 1px rgba(72, 111, 184, .08);
 }
+
+
+/* v33 — keep order rows neutral before and after sorting */
+.orderCard > .orderList > .orderItem,
+.orderCard > .orderList > .orderItem:nth-child(odd),
+.orderCard > .orderList > .orderItem:nth-child(even) {
+  border-color: rgba(103, 87, 255, .10);
+  background: rgba(255,255,255,.82);
+}
+
+.orderCard > .orderList > .orderItem .orderPosition {
+  background: #edf1f7;
+  color: #67758a;
+  box-shadow: none;
+}
