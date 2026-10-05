@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import homePenguinPart1 from './assets/homePenguinPart1';
 import homePenguinPart2 from './assets/homePenguinPart2';
 import homePenguinPart3 from './assets/homePenguinPart3';
@@ -477,42 +477,31 @@ function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
   const [showResult, setShowResult] = useState(false);
   const [savedRecord, setSavedRecord] = useState<RecordEntry | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const nextButtonRef = useRef<HTMLButtonElement>(null);
-  const lastTouchAdvanceRef = useRef(0);
+  const [useMobileKeypad] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 760px)').matches
+  );
 
   const answered = submittedGuess !== null;
   const closeness = answered ? calculateCloseness(submittedGuess, fact.value) : null;
   const averageScore = rounds > 0 ? Math.round(totalCloseness / rounds) : 0;
 
-  useEffect(() => {
-    if (!answered) return;
+  function addKey(token: string) {
+    if (answered) return;
 
-    // Some mobile WebViews keep stale viewport / hit-test coordinates after
-    // the virtual keyboard closes. Force a layout pass after the keyboard
-    // transition and keep the action button in the active viewport.
-    const stabilize = () => {
-      requestAnimationFrame(() => {
-        void document.documentElement.offsetHeight;
-        nextButtonRef.current?.scrollIntoView({
-          block: 'nearest',
-          inline: 'nearest',
-          behavior: 'auto'
-        });
-      });
-    };
+    setInput((current) => {
+      if (token === 'backspace') return current.slice(0, -1);
+      if (token === 'clear') return '';
+      if (token === 'minus') return current.startsWith('-') ? current.slice(1) : `-${current}`;
 
-    const visualViewport = window.visualViewport;
-    visualViewport?.addEventListener('resize', stabilize);
+      if (token === ',') {
+        if (current.includes(',') || current.includes('.')) return current;
+        if (current === '') return '0,';
+        if (current === '-') return '-0,';
+      }
 
-    const shortTimer = window.setTimeout(stabilize, 80);
-    const settleTimer = window.setTimeout(stabilize, 360);
-
-    return () => {
-      visualViewport?.removeEventListener('resize', stabilize);
-      window.clearTimeout(shortTimer);
-      window.clearTimeout(settleTimer);
-    };
-  }, [answered]);
+      return current + token;
+    });
+  }
 
   function submit() {
     if (answered || rounds >= ROUND_LENGTH) return;
@@ -520,8 +509,6 @@ function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
     const guess = parseGuess(input);
     if (guess === null) return;
 
-    // In mobile WebViews a focused/disabled input can swallow the next tap
-    // while the keyboard is closing. Blur it before showing the answer state.
     inputRef.current?.blur();
 
     onAttempt();
@@ -591,16 +578,44 @@ function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
           <div className="guessInputRow">
             <input
               ref={inputRef}
-              inputMode="decimal"
+              inputMode={useMobileKeypad ? 'none' : 'decimal'}
               value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter' && !answered) submit(); }}
+              onChange={(e) => {
+                if (!useMobileKeypad) setInput(e.target.value);
+              }}
+              onFocus={(e) => {
+                if (useMobileKeypad) e.currentTarget.blur();
+              }}
+              onKeyDown={(e) => {
+                if (!useMobileKeypad && e.key === 'Enter' && !answered) submit();
+              }}
               placeholder="Ваш ответ"
-              readOnly={answered}
-              aria-readonly={answered}
+              readOnly={answered || useMobileKeypad}
+              aria-readonly={answered || useMobileKeypad}
             />
             <span className="unitBadge">{fact.unit || 'число'}</span>
           </div>
+
+          {useMobileKeypad && !answered && (
+            <div className="mobileGuessPad" aria-label="Цифровая клавиатура">
+              {['1','2','3','backspace','4','5','6','clear','7','8','9','minus',',','0','00'].map((key) => (
+                <button
+                  type="button"
+                  key={key}
+                  className={`mobileGuessKey ${key === 'backspace' || key === 'clear' || key === 'minus' ? 'utility' : ''}`}
+                  onClick={() => addKey(key)}
+                  aria-label={
+                    key === 'backspace' ? 'Удалить символ' :
+                    key === 'clear' ? 'Очистить' :
+                    key === 'minus' ? 'Изменить знак' :
+                    key
+                  }
+                >
+                  {key === 'backspace' ? '⌫' : key === 'clear' ? 'C' : key === 'minus' ? '−' : key}
+                </button>
+              ))}
+            </div>
+          )}
 
           {answered && (
             <div className="guessResult">
@@ -612,20 +627,7 @@ function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
           <div className="guessAction">
             {answered
               ? (
-                <button
-                  ref={nextButtonRef}
-                  type="button"
-                  className="next"
-                  onTouchEnd={(event) => {
-                    event.preventDefault();
-                    lastTouchAdvanceRef.current = Date.now();
-                    next();
-                  }}
-                  onClick={() => {
-                    if (Date.now() - lastTouchAdvanceRef.current < 700) return;
-                    next();
-                  }}
-                >
+                <button type="button" className="next" onClick={next}>
                   {rounds >= ROUND_LENGTH ? 'Результаты' : 'Следующий'} <span>→</span>
                 </button>
               )
