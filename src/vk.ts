@@ -1,6 +1,7 @@
 import bridge from '@vkontakte/vk-bridge';
 
 const AD_ROUND_KEY = 'number-games-ad-rounds-v1';
+const DEFAULT_VK_APP_ID = 54804062;
 
 let initialized = false;
 let initializationAttempted = false;
@@ -212,6 +213,25 @@ export function getCommunityId(): number {
   return getDonationGroupId();
 }
 
+async function getPublicVKAppLink(): Promise<string> {
+  let appId = getVKAppId();
+
+  if (!appId) {
+    try {
+      const launchParams = await bridge.send('VKWebAppGetLaunchParams');
+      appId = Number(launchParams.vk_app_id ?? 0);
+    } catch {
+      // Fall back to the production app id below.
+    }
+  }
+
+  if (!Number.isFinite(appId) || appId <= 0) {
+    appId = DEFAULT_VK_APP_ID;
+  }
+
+  return `https://vk.ru/app${appId}`;
+}
+
 export async function shareApp(link?: string): Promise<boolean> {
   if (!isVKEnvironment()) return false;
 
@@ -219,7 +239,7 @@ export async function shareApp(link?: string): Promise<boolean> {
   if (!ready) return false;
 
   try {
-    const shareLink = link || window.location.href;
+    const shareLink = link || await getPublicVKAppLink();
     await bridge.send('VKWebAppShare', { link: shareLink });
     return true;
   } catch {
@@ -234,11 +254,14 @@ export async function inviteFriends(): Promise<boolean> {
   if (!ready) return false;
 
   try {
-    await bridge.send('VKWebAppShowInviteBox');
-    return true;
+    const result = await bridge.send('VKWebAppShowInviteBox');
+    if (result.success === true) return true;
   } catch {
-    return false;
+    // VKWebAppShowInviteBox is unavailable on some clients (notably Web).
   }
+
+  // Fallback for unsupported clients: share the VK app link instead.
+  return shareApp();
 }
 
 export function openCommunity(): boolean {
