@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import penguinMascot from './assets/penguin42-cute.webp';
+import resultPenguin from './assets/penguin-result.webp';
 import {
   calculateCloseness,
   createGuessFact,
@@ -304,7 +305,7 @@ function ResultScreen({
   return (
     <section className="resultScreen">
       <div className="resultCard">
-        <img className="resultMascot" src={penguinMascot} alt="" aria-hidden="true" />
+        <img className="resultMascot" src={resultPenguin} alt="" aria-hidden="true" />
         <div className="resultEyebrow">Партия завершена</div>
         <h2>{title}</h2>
 
