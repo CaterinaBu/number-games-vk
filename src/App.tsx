@@ -259,15 +259,15 @@ function SocialActions({
   async function handleShare() {
     setMessage('');
     trackEvent('share_result');
-    const ok = await shareApp(window.location.href);
-    if (!ok) setMessage('Доступно при запуске внутри VK');
+    const ok = await shareApp();
+    if (!ok) setMessage('Не удалось открыть отправку ссылки');
   }
 
   async function handleInvite() {
     setMessage('');
     trackEvent('invite_friends');
     const ok = await inviteFriends();
-    if (!ok) setMessage('Доступно при запуске внутри VK');
+    if (!ok) setMessage('Не удалось открыть приглашение');
   }
 
   function handleCommunity() {
