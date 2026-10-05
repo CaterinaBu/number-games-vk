@@ -340,9 +340,11 @@ type GameProps = {
   onFinish: (game: GameTab, result: FinishResult) => RecordEntry;
   onHome: () => void;
   onBeforeLeave: (action: () => void) => Promise<void>;
+  onAttempt: () => void;
+  onRestartRound: (game: GameTab) => boolean;
 };
 
-function CompareGame({ onFinish, onHome, onBeforeLeave }: GameProps) {
+function CompareGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound }: GameProps) {
   const [difficulty, setDifficulty] = useState<Difficulty>('easy');
   const [question, setQuestion] = useState<Question>(() => createQuestion('easy'));
   const [selected, setSelected] = useState<Side | null>(null);
@@ -359,6 +361,7 @@ function CompareGame({ onFinish, onHome, onBeforeLeave }: GameProps) {
   function choose(side: Side) {
     if (isAnswered || answered >= ROUND_LENGTH) return;
 
+    onAttempt();
     setSelected(side);
     setAnswered((x) => x + 1);
 
@@ -402,6 +405,7 @@ function CompareGame({ onFinish, onHome, onBeforeLeave }: GameProps) {
 
   function changeDifficulty(next: Difficulty) {
     if (next === difficulty) return;
+    if (!onRestartRound('compare')) return;
     resetRound(next);
   }
 
@@ -416,7 +420,7 @@ function CompareGame({ onFinish, onHome, onBeforeLeave }: GameProps) {
           `Лучшая серия ${maxStreak}`
         ]}
         record={`Рекорд: ${savedRecord.bestScore} из ${ROUND_LENGTH} · лучшая серия ${savedRecord.bestStreak}`}
-        onAgain={() => resetRound()}
+        onAgain={() => { if (onRestartRound('compare')) resetRound(); }}
         onHome={onHome}
         onBeforeLeave={onBeforeLeave}
       />
@@ -465,7 +469,7 @@ function CompareGame({ onFinish, onHome, onBeforeLeave }: GameProps) {
   );
 }
 
-function GuessGame({ onFinish, onHome, onBeforeLeave }: GameProps) {
+function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound }: GameProps) {
   const [fact, setFact] = useState<Fact>(() => createGuessFact());
   const [input, setInput] = useState('');
   const [submittedGuess, setSubmittedGuess] = useState<number | null>(null);
@@ -484,6 +488,7 @@ function GuessGame({ onFinish, onHome, onBeforeLeave }: GameProps) {
     const guess = parseGuess(input);
     if (guess === null) return;
 
+    onAttempt();
     const value = calculateCloseness(guess, fact.value);
     setSubmittedGuess(guess);
     setRounds((x) => x + 1);
@@ -525,7 +530,7 @@ function GuessGame({ onFinish, onHome, onBeforeLeave }: GameProps) {
         primaryLabel="средняя близость"
         secondary={[`10 оценок за партию`]}
         record={`Рекорд: ${savedRecord.bestAverage}% средней близости`}
-        onAgain={resetRound}
+        onAgain={() => { if (onRestartRound('guess')) resetRound(); }}
         onHome={onHome}
         onBeforeLeave={onBeforeLeave}
       />
@@ -581,7 +586,7 @@ function GuessGame({ onFinish, onHome, onBeforeLeave }: GameProps) {
   );
 }
 
-function OrderGame({ onFinish, onHome, onBeforeLeave }: GameProps) {
+function OrderGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound }: GameProps) {
   const [question, setQuestion] = useState(() => createOrderQuestion());
   const [items, setItems] = useState<Fact[]>(question.items);
   const [answered, setAnswered] = useState(false);
@@ -608,6 +613,7 @@ function OrderGame({ onFinish, onHome, onBeforeLeave }: GameProps) {
   function check() {
     if (answered || rounds >= ROUND_LENGTH) return;
 
+    onAttempt();
     const correct = isOrderCorrect(items);
     setSubmittedItems([...items]);
     setAnswered(true);
@@ -671,7 +677,7 @@ function OrderGame({ onFinish, onHome, onBeforeLeave }: GameProps) {
           `Лучшая серия ${maxStreak}`
         ]}
         record={`Рекорд: ${savedRecord.bestScore} из ${ROUND_LENGTH} · лучшая серия ${savedRecord.bestStreak}`}
-        onAgain={resetRound}
+        onAgain={() => { if (onRestartRound('order')) resetRound(); }}
         onHome={onHome}
         onBeforeLeave={onBeforeLeave}
       />
@@ -778,7 +784,7 @@ function OrderGame({ onFinish, onHome, onBeforeLeave }: GameProps) {
   );
 }
 
-function NearGame({ onFinish, onHome, onBeforeLeave }: GameProps) {
+function NearGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound }: GameProps) {
   const [question, setQuestion] = useState<NearQuestion>(() => createNearQuestion());
   const [selected, setSelected] = useState<Side | null>(null);
   const [score, setScore] = useState(0);
@@ -794,6 +800,7 @@ function NearGame({ onFinish, onHome, onBeforeLeave }: GameProps) {
   function choose(side: Side) {
     if (answered || rounds >= ROUND_LENGTH) return;
 
+    onAttempt();
     setSelected(side);
     setRounds((x) => x + 1);
 
@@ -852,7 +859,7 @@ function NearGame({ onFinish, onHome, onBeforeLeave }: GameProps) {
           `Лучшая серия ${maxStreak}`
         ]}
         record={`Рекорд: ${savedRecord.bestScore} из ${ROUND_LENGTH} · лучшая серия ${savedRecord.bestStreak}`}
-        onAgain={resetRound}
+        onAgain={() => { if (onRestartRound('near')) resetRound(); }}
         onHome={onHome}
         onBeforeLeave={onBeforeLeave}
       />
@@ -1027,19 +1034,64 @@ export default function App() {
   const [tab, setTab] = useState<GameTab>('compare');
   const [records, setRecords] = useState<Records>(() => loadRecords());
   const [adPending, setAdPending] = useState(false);
+  const [hasAttemptedAnswer, setHasAttemptedAnswer] = useState(false);
 
   function startGame(game: GameTab) {
-    trackEvent('game_selected', { game });
-    trackEvent('round_started', { game });
+    setHasAttemptedAnswer(false);
+    trackEvent('game_selected', { game, source: 'home' });
+    trackEvent('round_started', { game, source: 'home' });
     setTab(game);
     setScreen('game');
   }
 
+  function markAttempted() {
+    setHasAttemptedAnswer(true);
+  }
+
+  function confirmAbandonCurrentRound(): boolean {
+    if (!hasAttemptedAnswer) return true;
+    return window.confirm('Текущая партия будет потеряна. Продолжить?');
+  }
+
   function goHome() {
+    if (!confirmAbandonCurrentRound()) return;
+
+    if (hasAttemptedAnswer) {
+      trackEvent('round_abandoned', { game: tab, destination: 'home' });
+    }
+
+    setHasAttemptedAnswer(false);
     setScreen('home');
   }
 
+  function switchGame(game: GameTab) {
+    if (game === tab) return;
+    if (!confirmAbandonCurrentRound()) return;
+
+    if (hasAttemptedAnswer) {
+      trackEvent('round_abandoned', { game: tab, destination: 'another_game' });
+    }
+
+    setHasAttemptedAnswer(false);
+    trackEvent('game_selected', { game, source: 'top_tabs' });
+    trackEvent('round_started', { game, source: 'top_tabs' });
+    setTab(game);
+  }
+
+  function restartRound(game: GameTab): boolean {
+    if (!confirmAbandonCurrentRound()) return false;
+
+    if (hasAttemptedAnswer) {
+      trackEvent('round_abandoned', { game, destination: 'restart' });
+    }
+
+    setHasAttemptedAnswer(false);
+    trackEvent('round_started', { game, source: 'restart' });
+    return true;
+  }
+
   function saveResult(game: GameTab, result: FinishResult): RecordEntry {
+    setHasAttemptedAnswer(false);
     trackEvent('round_completed', {
       game,
       score: result.score,
@@ -1097,10 +1149,10 @@ export default function App() {
       <button className="backHome" onClick={goHome}>← Все игры</button>
 
       <nav className="gameTabs topTabs">
-        <button className={tab === 'compare' ? 'active' : ''} onClick={() => setTab('compare')}>Что больше?</button>
-        <button className={tab === 'guess' ? 'active' : ''} onClick={() => setTab('guess')}>Ближе к правде</button>
-        <button className={tab === 'order' ? 'active' : ''} onClick={() => setTab('order')}>По порядку</button>
-        <button className={tab === 'near' ? 'active' : ''} onClick={() => setTab('near')}>Что ближе?</button>
+        <button className={tab === 'compare' ? 'active' : ''} onClick={() => switchGame('compare')}>Что больше?</button>
+        <button className={tab === 'guess' ? 'active' : ''} onClick={() => switchGame('guess')}>Ближе к правде</button>
+        <button className={tab === 'order' ? 'active' : ''} onClick={() => switchGame('order')}>По порядку</button>
+        <button className={tab === 'near' ? 'active' : ''} onClick={() => switchGame('near')}>Что ближе?</button>
       </nav>
 
       <header className="hero">
@@ -1108,10 +1160,10 @@ export default function App() {
         <p className="subtitle">{copy.subtitle}</p>
       </header>
 
-      {tab === 'compare' && <CompareGame onFinish={saveResult} onHome={goHome} onBeforeLeave={runPostRoundAction} />}
-      {tab === 'guess' && <GuessGame onFinish={saveResult} onHome={goHome} onBeforeLeave={runPostRoundAction} />}
-      {tab === 'order' && <OrderGame onFinish={saveResult} onHome={goHome} onBeforeLeave={runPostRoundAction} />}
-      {tab === 'near' && <NearGame onFinish={saveResult} onHome={goHome} onBeforeLeave={runPostRoundAction} />}
+      {tab === 'compare' && <CompareGame onFinish={saveResult} onHome={goHome} onBeforeLeave={runPostRoundAction} onAttempt={markAttempted} onRestartRound={restartRound} />}
+      {tab === 'guess' && <GuessGame onFinish={saveResult} onHome={goHome} onBeforeLeave={runPostRoundAction} onAttempt={markAttempted} onRestartRound={restartRound} />}
+      {tab === 'order' && <OrderGame onFinish={saveResult} onHome={goHome} onBeforeLeave={runPostRoundAction} onAttempt={markAttempted} onRestartRound={restartRound} />}
+      {tab === 'near' && <NearGame onFinish={saveResult} onHome={goHome} onBeforeLeave={runPostRoundAction} onAttempt={markAttempted} onRestartRound={restartRound} />}
 
       <footer>{new Intl.NumberFormat('ru-RU').format(getFactCount())} фактов в базе</footer>
     </main>
