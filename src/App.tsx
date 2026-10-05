@@ -24,7 +24,7 @@ import {
   type NearQuestion,
   type Question
 } from './game';
-import { donateToCommunity, inviteFriends, isDonationConfigured, isVKEnvironment, openCommunity, registerCompletedRound, shareApp, showInterstitialIfAvailable } from './vk';
+import { donateToCommunity, inviteFriends, isDonationConfigured, isVKEnvironment, openCommunity, registerCompletedRound, shareApp, showAdIfAvailable } from './vk';
 import { trackEvent } from './analytics';
 
 type Side = 'left' | 'right';
@@ -1218,8 +1218,12 @@ export default function App() {
     if (adPending) {
       setAdPending(false);
       trackEvent('ad_requested');
-      const shown = await showInterstitialIfAvailable();
-      trackEvent(shown ? 'ad_shown' : 'ad_unavailable');
+      const adFormat = await showAdIfAvailable();
+      if (adFormat) {
+        trackEvent('ad_shown', { format: adFormat });
+      } else {
+        trackEvent('ad_unavailable');
+      }
     }
 
     action();
