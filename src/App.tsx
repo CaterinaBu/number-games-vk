@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import homePenguinPart1 from './assets/homePenguinPart1';
 import homePenguinPart2 from './assets/homePenguinPart2';
 import homePenguinPart3 from './assets/homePenguinPart3';
@@ -24,7 +24,7 @@ import {
   type NearQuestion,
   type Question
 } from './game';
-import { donateToCommunity, inviteFriends, isDonationConfigured, isVKEnvironment, openCommunity, registerCompletedRound, shareApp, showAdIfAvailable, supportsFriendInvite } from './vk';
+import { donateToCommunity, isDonationConfigured, isVKEnvironment, openCommunity, registerCompletedRound, shareApp, showAdIfAvailable } from './vk';
 import { trackEvent } from './analytics';
 
 type Side = 'left' | 'right';
@@ -255,32 +255,12 @@ function SocialActions({
   compact?: boolean;
 }) {
   const [message, setMessage] = useState('');
-  const [showInvite, setShowInvite] = useState(false);
-
-  useEffect(() => {
-    let active = true;
-
-    void supportsFriendInvite().then((supported) => {
-      if (active) setShowInvite(supported);
-    });
-
-    return () => {
-      active = false;
-    };
-  }, []);
 
   async function handleShare() {
     setMessage('');
     trackEvent('share_result');
     const ok = await shareApp();
     if (!ok) setMessage('Не удалось открыть отправку ссылки');
-  }
-
-  async function handleInvite() {
-    setMessage('');
-    trackEvent('invite_friends');
-    const ok = await inviteFriends();
-    if (!ok) setMessage('Не удалось открыть приглашение');
   }
 
   function handleCommunity() {
@@ -293,7 +273,6 @@ function SocialActions({
   return (
     <div className={`socialActions ${compact ? 'compact' : ''}`}>
       <button onClick={() => { void handleShare(); }}>Поделиться</button>
-      {showInvite && <button onClick={() => { void handleInvite(); }}>Пригласить друзей</button>}
       <button onClick={handleCommunity}>Сообщество игры</button>
       {message && <div className="socialMessage">{message}</div>}
     </div>
