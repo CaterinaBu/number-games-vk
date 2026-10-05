@@ -460,7 +460,7 @@ function CompareGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRoun
               </button>
             </>
           ) : (
-            <div className="hint">Нажми на карточку</div>
+            <div className="hint">Нажмите на карточку</div>
           )}
         </section>
       </section>
@@ -557,7 +557,7 @@ function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter' && !answered) submit(); }}
-              placeholder="Твой ответ"
+              placeholder="Ваш ответ"
               disabled={answered}
             />
             <span className="unitBadge">{fact.unit || 'число'}</span>
@@ -698,7 +698,7 @@ function OrderGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
               <span className="orderEyebrow">От меньшего к большему</span>
               <strong>{question.metric}{question.unit ? ` · ${question.unit}` : ''}</strong>
             </div>
-            <span className="orderHint">Меняй строки местами стрелками</span>
+            <span className="orderHint">Меняйте строки местами стрелками</span>
           </div>
 
           {answered && (
@@ -710,7 +710,7 @@ function OrderGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
           {answered && !wasCorrect && submittedItems ? (
             <div className="orderComparison">
               <div className="orderColumn">
-                <div className="orderColumnTitle">Твой ответ</div>
+                <div className="orderColumnTitle">Ваш ответ</div>
                 <div className="orderList compact">
                   {submittedItems.map((fact, index) => {
                     const correctAtPosition = items[index]?.object === fact.object && items[index]?.value === fact.value;
@@ -910,7 +910,7 @@ function NearGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound }
               </button>
             </>
           ) : (
-            <div className="hint">Выбери один из двух вариантов</div>
+            <div className="hint">Выберите один из двух вариантов</div>
           )}
         </div>
       </section>
@@ -921,19 +921,19 @@ function NearGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound }
 const titles: Record<GameTab, { title: string; subtitle: string }> = {
   compare: {
     title: 'Какое число больше?',
-    subtitle: 'Сравни два факта и выбери большее значение'
+    subtitle: 'Сравните два факта и выберите большее значение'
   },
   guess: {
     title: 'Ближе к правде',
-    subtitle: 'Попробуй угадать значение как можно точнее'
+    subtitle: 'Попробуйте угадать значение как можно точнее'
   },
   order: {
     title: 'Расставь по порядку',
-    subtitle: 'Расположи четыре объекта от меньшего значения к большему'
+    subtitle: 'Расположите четыре объекта от меньшего значения к большему'
   },
   near: {
     title: 'Что ближе?',
-    subtitle: 'Найди значение, которое ближе к заданному ориентиру'
+    subtitle: 'Найдите значение, которое ближе к заданному ориентиру'
   }
 };
 
@@ -947,28 +947,28 @@ const homeGames: Array<{
   {
     id: 'compare',
     title: 'Что больше?',
-    description: 'Сравни два любых факта и выбери большее число.',
+    description: 'Сравните два любых факта и выберите большее число.',
     number: '01',
     icon: '↗'
   },
   {
     id: 'guess',
     title: 'Ближе к правде',
-    description: 'Оцени значение и постарайся попасть как можно точнее.',
+    description: 'Оцените значение и постарайтесь попасть как можно точнее.',
     number: '02',
     icon: '?'
   },
   {
     id: 'order',
     title: 'По порядку',
-    description: 'Расставь четыре объекта от меньшего значения к большему.',
+    description: 'Расставьте четыре объекта от меньшего значения к большему.',
     number: '03',
     icon: '123'
   },
   {
     id: 'near',
     title: 'Что ближе?',
-    description: 'Выбери значение, которое ближе к заданному ориентиру.',
+    description: 'Выберите значение, которое ближе к заданному ориентиру.',
     number: '04',
     icon: '◎'
   }
@@ -1002,7 +1002,7 @@ function HomeScreen({
           <div className="homeHeroCopy">
             <div className="homeEyebrow">4 мини-игры · {new Intl.NumberFormat('ru-RU').format(getFactCount())} фактов</div>
             <h1>Игры с числами</h1>
-            <p>Сравнивай, угадывай и расставляй факты. Одна партия — 10 заданий.</p>
+            <p>Сравнивайте, угадывайте и расставляйте факты. Одна партия — 10 заданий.</p>
           </div>
         </div>
       </header>
