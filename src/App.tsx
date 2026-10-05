@@ -592,6 +592,7 @@ function OrderGame({ onFinish, onHome, onBeforeLeave }: GameProps) {
   const [rounds, setRounds] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [savedRecord, setSavedRecord] = useState<RecordEntry | null>(null);
+  const [submittedItems, setSubmittedItems] = useState<Fact[] | null>(null);
 
   function move(index: number, direction: -1 | 1) {
     if (answered) return;
@@ -608,6 +609,7 @@ function OrderGame({ onFinish, onHome, onBeforeLeave }: GameProps) {
     if (answered || rounds >= ROUND_LENGTH) return;
 
     const correct = isOrderCorrect(items);
+    setSubmittedItems([...items]);
     setAnswered(true);
     setWasCorrect(correct);
     setRounds((x) => x + 1);
@@ -640,6 +642,7 @@ function OrderGame({ onFinish, onHome, onBeforeLeave }: GameProps) {
     setItems(nextQuestion.items);
     setAnswered(false);
     setWasCorrect(false);
+    setSubmittedItems(null);
   }
 
   function resetRound() {
@@ -648,6 +651,7 @@ function OrderGame({ onFinish, onHome, onBeforeLeave }: GameProps) {
     setItems(nextQuestion.items);
     setAnswered(false);
     setWasCorrect(false);
+    setSubmittedItems(null);
     setScore(0);
     setStreak(0);
     setMaxStreak(0);
@@ -694,27 +698,70 @@ function OrderGame({ onFinish, onHome, onBeforeLeave }: GameProps) {
 
           {answered && (
             <div className={`orderAnswerBanner ${wasCorrect ? 'success' : 'fail'}`}>
-              {wasCorrect ? 'Верно' : 'Правильный порядок:'}
+              {wasCorrect ? 'Верно' : 'Есть ошибка в порядке'}
             </div>
           )}
 
-          <div className="orderList">
-            {items.map((fact, index) => (
-              <div className={`orderItem ${answered ? 'revealed' : ''}`} key={`${fact.object}-${fact.value}`}>
-                <div className="orderPosition">{index + 1}</div>
-                <div className="orderName">
-                  <span>{fact.object}</span>
-                  {answered && <small>{formatValue(fact)}</small>}
+          {answered && !wasCorrect && submittedItems ? (
+            <div className="orderComparison">
+              <div className="orderColumn">
+                <div className="orderColumnTitle">Твой ответ</div>
+                <div className="orderList compact">
+                  {submittedItems.map((fact, index) => {
+                    const correctAtPosition = items[index]?.object === fact.object && items[index]?.value === fact.value;
+                    return (
+                      <div
+                        className={`orderItem revealed submitted ${correctAtPosition ? 'positionCorrect' : 'positionWrong'}`}
+                        key={`submitted-${fact.object}-${fact.value}-${index}`}
+                      >
+                        <div className="orderPosition">{index + 1}</div>
+                        <div className="orderName">
+                          <span>{fact.object}</span>
+                          <small>{formatValue(fact)}</small>
+                        </div>
+                        <div className="orderPositionMark" aria-label={correctAtPosition ? 'Верная позиция' : 'Неверная позиция'}>
+                          {correctAtPosition ? '✓' : '×'}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-                {!answered && (
-                  <div className="orderControls">
-                    <button onClick={() => move(index, -1)} disabled={index === 0} aria-label="Поднять">↑</button>
-                    <button onClick={() => move(index, 1)} disabled={index === items.length - 1} aria-label="Опустить">↓</button>
-                  </div>
-                )}
               </div>
-            ))}
-          </div>
+
+              <div className="orderColumn">
+                <div className="orderColumnTitle correctTitle">Правильный порядок</div>
+                <div className="orderList compact">
+                  {items.map((fact, index) => (
+                    <div className="orderItem revealed correctOrder" key={`correct-${fact.object}-${fact.value}-${index}`}>
+                      <div className="orderPosition">{index + 1}</div>
+                      <div className="orderName">
+                        <span>{fact.object}</span>
+                        <small>{formatValue(fact)}</small>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="orderList">
+              {items.map((fact, index) => (
+                <div className={`orderItem ${answered ? 'revealed' : ''}`} key={`${fact.object}-${fact.value}`}>
+                  <div className="orderPosition">{index + 1}</div>
+                  <div className="orderName">
+                    <span>{fact.object}</span>
+                    {answered && <small>{formatValue(fact)}</small>}
+                  </div>
+                  {!answered && (
+                    <div className="orderControls">
+                      <button onClick={() => move(index, -1)} disabled={index === 0} aria-label="Поднять">↑</button>
+                      <button onClick={() => move(index, 1)} disabled={index === items.length - 1} aria-label="Опустить">↓</button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
 
           <div className="guessAction">
             {answered
