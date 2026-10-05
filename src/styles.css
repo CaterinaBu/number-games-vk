@@ -2404,3 +2404,560 @@ body {
     width: 94px;
   }
 }
+
+
+/* v23 — playful in-game redesign */
+.gameArea,
+.guessArea,
+.orderArea,
+.nearArea {
+  position: relative;
+  padding: 18px;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 8% 10%, rgba(255, 211, 90, .13), transparent 22%),
+    radial-gradient(circle at 92% 12%, rgba(255, 110, 199, .10), transparent 22%),
+    linear-gradient(145deg, rgba(255,255,255,.46), rgba(244,247,255,.72));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.62);
+}
+
+.gameArea::before,
+.guessArea::before,
+.orderArea::before,
+.nearArea::before {
+  content: '✦';
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  color: rgba(255, 190, 66, .82);
+  font-size: 17px;
+  pointer-events: none;
+}
+
+.gameArea::after,
+.guessArea::after,
+.orderArea::after,
+.nearArea::after {
+  content: '✦';
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  color: rgba(119, 95, 255, .42);
+  font-size: 13px;
+  pointer-events: none;
+}
+
+.toolbar {
+  margin-top: 10px;
+  margin-bottom: 12px;
+}
+
+.modeSwitch {
+  background: rgba(255,255,255,.62);
+  border: 1px solid rgba(111, 96, 235, .10);
+  box-shadow: 0 10px 24px rgba(77, 71, 146, .07);
+  backdrop-filter: blur(10px);
+}
+
+.modeSwitch button.active {
+  background: linear-gradient(135deg, #6657ff, #8d6dff);
+  color: #fff;
+  box-shadow: 0 7px 16px rgba(103, 87, 255, .24);
+}
+
+.stats span {
+  border: 1px solid rgba(106, 92, 225, .10);
+  background: rgba(255,255,255,.78);
+  color: #69748d;
+  box-shadow: 0 8px 18px rgba(62, 69, 130, .06);
+}
+
+.stats b {
+  color: #4e42c8;
+}
+
+.roundProgress {
+  margin-bottom: 14px;
+}
+
+.roundProgressText {
+  color: #7f8aa1;
+  font-weight: 700;
+}
+
+.roundProgressTrack {
+  box-shadow: inset 0 1px 3px rgba(70, 65, 140, .06);
+}
+
+/* What is bigger */
+.choice {
+  min-height: 290px;
+  isolation: isolate;
+  border: 1px solid rgba(255,255,255,.92);
+  box-shadow:
+    0 22px 46px rgba(63, 67, 136, .12),
+    inset 0 0 0 1px rgba(115, 119, 179, .07);
+}
+
+.choice:first-child {
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255, 211, 90, .30), transparent 27%),
+    radial-gradient(circle at 88% 88%, rgba(255, 161, 126, .16), transparent 30%),
+    linear-gradient(145deg, #fffefa, #fff9f5 58%, #fff7f1);
+}
+
+.choice:last-child {
+  background:
+    radial-gradient(circle at 82% 13%, rgba(141, 109, 255, .23), transparent 28%),
+    radial-gradient(circle at 10% 88%, rgba(86, 201, 255, .16), transparent 30%),
+    linear-gradient(145deg, #fdfcff, #f8f6ff 58%, #f3faff);
+}
+
+.choice::before {
+  position: absolute;
+  right: 18px;
+  top: 11px;
+  z-index: -1;
+  color: rgba(93, 75, 218, .07);
+  font-size: 92px;
+  line-height: 1;
+  font-weight: 950;
+  pointer-events: none;
+}
+
+.choice:first-child::before { content: '1'; }
+.choice:last-child::before { content: '2'; }
+
+.choice .metric {
+  display: inline-flex;
+  align-items: center;
+  min-height: 31px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.72);
+  color: #7169a4;
+  box-shadow: 0 7px 18px rgba(70, 70, 130, .06);
+  font-size: 14px;
+}
+
+.choice .object {
+  color: var(--ink);
+  text-shadow: 0 1px 0 rgba(255,255,255,.65);
+}
+
+.choice .value.show {
+  min-height: auto;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.68);
+  color: #5948d7;
+  box-shadow: 0 7px 16px rgba(79, 67, 190, .08);
+}
+
+.choice:not(:disabled):hover {
+  transform: translateY(-5px) scale(1.01);
+  box-shadow:
+    0 27px 54px rgba(63, 67, 136, .16),
+    inset 0 0 0 1px rgba(115, 119, 179, .07);
+}
+
+.versus {
+  align-self: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #fff, #f0edff);
+  color: #6b5de5;
+  box-shadow:
+    0 10px 22px rgba(81, 73, 175, .12),
+    inset 0 0 0 1px rgba(112, 95, 227, .10);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.feedback {
+  min-height: 68px;
+  margin-top: 10px;
+}
+
+.feedback .hint {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.58);
+  color: #8994aa;
+}
+
+.resultText {
+  padding: 7px 12px;
+  border-radius: 999px;
+}
+
+.resultText.success,
+.inlineResult.success {
+  background: rgba(55, 195, 110, .10);
+  color: #16904a;
+}
+
+.resultText.fail,
+.inlineResult.fail {
+  background: rgba(235, 75, 93, .09);
+  color: #cc4252;
+}
+
+/* Closer to truth */
+.guessCard {
+  min-height: 350px;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 15% 12%, rgba(255, 211, 90, .22), transparent 24%),
+    radial-gradient(circle at 88% 15%, rgba(144, 108, 255, .21), transparent 28%),
+    linear-gradient(145deg, rgba(255,255,255,.98), rgba(247,247,255,.96));
+}
+
+.guessCard::before {
+  content: '?';
+  position: absolute;
+  right: 24px;
+  top: 12px;
+  color: rgba(104, 82, 225, .08);
+  font-size: 112px;
+  line-height: 1;
+  font-weight: 950;
+  pointer-events: none;
+}
+
+.guessCard .metric {
+  display: inline-flex;
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.7);
+  color: #7168a6;
+}
+
+.guessCard .object {
+  max-width: 560px;
+  color: var(--ink);
+}
+
+.guessInputRow {
+  padding: 7px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.70);
+  box-shadow: 0 12px 28px rgba(70, 68, 140, .09);
+}
+
+.guessInputRow input {
+  height: 54px;
+  border: 0;
+  border-radius: 13px;
+  background: rgba(249,250,255,.92);
+  font-size: 20px;
+  font-weight: 750;
+}
+
+.guessInputRow input:focus {
+  border: 0;
+  box-shadow: 0 0 0 3px rgba(108, 99, 255, .12);
+}
+
+.unitBadge {
+  min-width: 82px;
+  border-radius: 13px;
+  background: linear-gradient(145deg, #eeeaff, #e9f7ff);
+  color: #6154d7;
+}
+
+.guessResult {
+  min-width: 210px;
+  padding: 12px 18px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.68);
+  box-shadow: 0 10px 24px rgba(76, 69, 150, .07);
+}
+
+.actualValue {
+  color: #5141d8;
+  font-size: 29px;
+}
+
+/* Put in order */
+.orderCard {
+  position: relative;
+  overflow: hidden;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(85, 199, 255, .16), transparent 28%),
+    linear-gradient(145deg, rgba(255,255,255,.98), rgba(247,251,255,.96));
+}
+
+.orderCard::after {
+  content: '1  2  3  4';
+  position: absolute;
+  right: 18px;
+  top: 13px;
+  color: rgba(85, 91, 193, .07);
+  font-size: 28px;
+  font-weight: 950;
+  letter-spacing: .12em;
+  pointer-events: none;
+}
+
+.orderPrompt {
+  position: relative;
+  z-index: 1;
+}
+
+.orderEyebrow {
+  color: #7166d8;
+}
+
+.orderPrompt strong {
+  color: var(--ink);
+  font-size: 18px;
+}
+
+.orderList {
+  gap: 10px;
+}
+
+.orderItem {
+  min-height: 70px;
+  border: 1px solid rgba(105, 91, 225, .09);
+  background: rgba(255,255,255,.76);
+  box-shadow: 0 8px 20px rgba(68, 75, 135, .055);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.orderItem:nth-child(odd) {
+  background: linear-gradient(145deg, rgba(255,255,255,.82), rgba(247,244,255,.80));
+}
+
+.orderItem:nth-child(even) {
+  background: linear-gradient(145deg, rgba(255,255,255,.82), rgba(241,249,255,.82));
+}
+
+.orderPosition {
+  background: linear-gradient(145deg, #eeeaff, #e5f4ff);
+  color: #5f51d8;
+  box-shadow: inset 0 0 0 1px rgba(101, 85, 220, .08);
+}
+
+.orderControls button {
+  background: linear-gradient(145deg, #f0edff, #e8f6ff);
+  color: #5a4dd2;
+  box-shadow: inset 0 0 0 1px rgba(103, 88, 225, .08);
+  transition: transform .12s ease, background .12s ease;
+}
+
+.orderControls button:not(:disabled):hover {
+  transform: translateY(-1px);
+  background: linear-gradient(145deg, #e7e1ff, #dcf2ff);
+}
+
+/* What is closer */
+.referenceCard {
+  position: relative;
+  overflow: hidden;
+  padding: 24px 28px;
+  border: 1px solid rgba(255,255,255,.92);
+  background:
+    radial-gradient(circle at 50% -20%, rgba(255, 210, 86, .34), transparent 42%),
+    linear-gradient(145deg, #fffefa, #fff9ee);
+  box-shadow: 0 18px 38px rgba(89, 79, 143, .10);
+}
+
+.referenceCard::before {
+  content: '★';
+  position: absolute;
+  right: 20px;
+  top: 12px;
+  color: rgba(255, 188, 48, .23);
+  font-size: 44px;
+}
+
+.referenceLabel {
+  color: #9b7c34;
+}
+
+.referenceValue {
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.72);
+  color: #5548cf;
+  box-shadow: 0 7px 16px rgba(86, 73, 181, .07);
+}
+
+.nearPrompt {
+  margin: 16px 0 11px;
+  color: #68738c;
+  font-weight: 800;
+}
+
+.nearChoice {
+  min-height: 145px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.90);
+  box-shadow: 0 15px 32px rgba(62, 69, 136, .09);
+  transition: transform .16s ease, box-shadow .16s ease;
+}
+
+.nearChoice:first-child {
+  background:
+    radial-gradient(circle at 12% 14%, rgba(255, 197, 90, .22), transparent 27%),
+    linear-gradient(145deg, #fffdf8, #fff8f2);
+}
+
+.nearChoice:last-child {
+  background:
+    radial-gradient(circle at 88% 14%, rgba(137, 104, 255, .21), transparent 28%),
+    linear-gradient(145deg, #fefcff, #f6f4ff);
+}
+
+.nearChoice::after {
+  position: absolute;
+  right: 13px;
+  bottom: 4px;
+  color: rgba(90, 74, 207, .07);
+  font-size: 62px;
+  line-height: 1;
+  font-weight: 950;
+}
+
+.nearChoice:first-child::after { content: 'A'; }
+.nearChoice:last-child::after { content: 'B'; }
+
+.nearChoice:not(:disabled):hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 20px 40px rgba(62, 69, 136, .13);
+}
+
+.next {
+  min-height: 44px;
+  padding-left: 19px;
+  padding-right: 17px;
+}
+
+/* Mobile — keep the game on one screen as much as possible */
+@media (max-width: 760px) {
+  .gameArea,
+  .guessArea,
+  .orderArea,
+  .nearArea {
+    padding: 10px;
+    border-radius: 22px;
+  }
+
+  .gameArea::before,
+  .guessArea::before,
+  .orderArea::before,
+  .nearArea::before,
+  .gameArea::after,
+  .guessArea::after,
+  .orderArea::after,
+  .nearArea::after {
+    display: none;
+  }
+
+  .choices {
+    gap: 7px;
+    grid-template-columns: minmax(0, 1fr) 32px minmax(0, 1fr);
+  }
+
+  .choice {
+    min-height: 220px;
+    padding: 18px 12px;
+    gap: 10px;
+  }
+
+  .choice::before {
+    right: 8px;
+    top: 9px;
+    font-size: 62px;
+  }
+
+  .choice .metric {
+    min-height: 27px;
+    padding: 5px 8px;
+    font-size: 12px;
+  }
+
+  .choice .object {
+    font-size: clamp(21px, 7vw, 29px);
+  }
+
+  .versus {
+    width: 32px;
+    height: 32px;
+    font-size: 9px;
+  }
+
+  .feedback {
+    min-height: 56px;
+    margin-top: 6px;
+  }
+
+  .guessCard {
+    min-height: 285px;
+    padding: 24px 15px;
+  }
+
+  .guessCard::before {
+    right: 8px;
+    font-size: 78px;
+  }
+
+  .guessInputRow {
+    width: 100%;
+    padding: 5px;
+  }
+
+  .guessInputRow input {
+    height: 48px;
+    font-size: 18px;
+  }
+
+  .unitBadge {
+    min-width: 66px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .orderCard {
+    padding: 15px 12px;
+  }
+
+  .orderCard::after {
+    display: none;
+  }
+
+  .orderItem {
+    min-height: 58px;
+    gap: 7px;
+  }
+
+  .referenceCard {
+    padding: 16px;
+  }
+
+  .referenceCard::before {
+    right: 9px;
+    top: 8px;
+    font-size: 32px;
+  }
+
+  .nearChoices {
+    gap: 8px;
+  }
+
+  .nearChoice {
+    min-height: 92px;
+    padding: 12px;
+  }
+
+  .nearChoice::after {
+    font-size: 44px;
+  }
+}
