@@ -1229,6 +1229,14 @@ export default function App() {
     action();
   }
 
+  function goHomeFromTopBar() {
+    void runPostRoundAction(goHome);
+  }
+
+  function switchGameFromTopBar(game: GameTab) {
+    void runPostRoundAction(() => switchGame(game));
+  }
+
   if (screen === 'home') {
     return <HomeScreen records={records} onStart={startGame} />;
   }
@@ -1237,13 +1245,13 @@ export default function App() {
 
   return (
     <main className="app appWithBack">
-      <button className="backHome" onClick={goHome}>← Все игры</button>
+      <button className="backHome" onClick={goHomeFromTopBar}>← Все игры</button>
 
       <nav className="gameTabs topTabs">
-        <button className={tab === 'compare' ? 'active' : ''} onClick={() => switchGame('compare')}>Что больше?</button>
-        <button className={tab === 'guess' ? 'active' : ''} onClick={() => switchGame('guess')}>Ближе к правде</button>
-        <button className={tab === 'order' ? 'active' : ''} onClick={() => switchGame('order')}>По порядку</button>
-        <button className={tab === 'near' ? 'active' : ''} onClick={() => switchGame('near')}>Что ближе?</button>
+        <button className={tab === 'compare' ? 'active' : ''} onClick={() => switchGameFromTopBar('compare')}>Что больше?</button>
+        <button className={tab === 'guess' ? 'active' : ''} onClick={() => switchGameFromTopBar('guess')}>Ближе к правде</button>
+        <button className={tab === 'order' ? 'active' : ''} onClick={() => switchGameFromTopBar('order')}>По порядку</button>
+        <button className={tab === 'near' ? 'active' : ''} onClick={() => switchGameFromTopBar('near')}>Что ближе?</button>
       </nav>
 
       <header className="hero">
