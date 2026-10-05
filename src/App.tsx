@@ -598,22 +598,38 @@ function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
 
           {useMobileKeypad && !answered && (
             <div className="mobileGuessPad" aria-label="Цифровая клавиатура">
-              {['1','2','3','backspace','4','5','6','clear','7','8','9','minus',',','0','00'].map((key) => (
+              <div className="mobileGuessPadTools">
                 <button
                   type="button"
-                  key={key}
-                  className={`mobileGuessKey ${key === 'backspace' || key === 'clear' || key === 'minus' ? 'utility' : ''}`}
-                  onClick={() => addKey(key)}
-                  aria-label={
-                    key === 'backspace' ? 'Удалить символ' :
-                    key === 'clear' ? 'Очистить' :
-                    key === 'minus' ? 'Изменить знак' :
-                    key
-                  }
+                  className="mobileGuessKey utility"
+                  onClick={() => addKey('clear')}
+                  aria-label="Очистить"
                 >
-                  {key === 'backspace' ? '⌫' : key === 'clear' ? 'C' : key === 'minus' ? '−' : key}
+                  C
                 </button>
-              ))}
+                <button
+                  type="button"
+                  className="mobileGuessKey utility"
+                  onClick={() => addKey('backspace')}
+                  aria-label="Удалить символ"
+                >
+                  ⌫
+                </button>
+              </div>
+
+              <div className="mobileGuessPadDigits">
+                {['7','8','9','4','5','6','1','2','3','minus','0',','].map((key) => (
+                  <button
+                    type="button"
+                    key={key}
+                    className={`mobileGuessKey ${key === 'minus' ? 'utility' : ''}`}
+                    onClick={() => addKey(key)}
+                    aria-label={key === 'minus' ? 'Изменить знак' : key}
+                  >
+                    {key === 'minus' ? '−' : key}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
