@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import homePenguinPart1 from './assets/homePenguinPart1';
 import homePenguinPart2 from './assets/homePenguinPart2';
 import homePenguinPart3 from './assets/homePenguinPart3';
@@ -24,7 +24,7 @@ import {
   type NearQuestion,
   type Question
 } from './game';
-import { donateToCommunity, isDonationConfigured, isVKEnvironment, openCommunity, registerCompletedRound, shareApp, showAdIfAvailable } from './vk';
+import { donateToCommunity, isDonationConfigured, isVKEnvironment, openCommunity, registerCompletedRound, resizeDesktopWindowToContent, shareApp, showAdIfAvailable } from './vk';
 import { trackEvent } from './analytics';
 
 type Side = 'left' | 'right';
@@ -1099,6 +1099,39 @@ export default function App() {
   const [leaveConfirm, setLeaveConfirm] = useState<{
     action: () => void;
   } | null>(null);
+
+
+  useEffect(() => {
+    let frame = 0;
+    let stopped = false;
+
+    const syncWindowSize = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        if (!stopped) void resizeDesktopWindowToContent();
+      });
+    };
+
+    syncWindowSize();
+
+    const main = document.querySelector('main');
+    const observer = typeof ResizeObserver !== 'undefined'
+      ? new ResizeObserver(syncWindowSize)
+      : null;
+
+    if (main && observer) observer.observe(main);
+    window.addEventListener('resize', syncWindowSize);
+
+    const delayedSync = window.setTimeout(syncWindowSize, 160);
+
+    return () => {
+      stopped = true;
+      cancelAnimationFrame(frame);
+      window.clearTimeout(delayedSync);
+      observer?.disconnect();
+      window.removeEventListener('resize', syncWindowSize);
+    };
+  }, [screen, tab]);
 
   function startGame(game: GameTab) {
     setHasAttemptedAnswer(false);
