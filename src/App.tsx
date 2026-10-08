@@ -567,6 +567,12 @@ function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
           <span className="metric">{formatMetric(fact)}</span>
           <span className="object">{fact.object}</span>
 
+          {useMobileKeypad && !answered && (
+            <div className="mobileGuessInstruction">
+              Нажимай на числа ниже — они сами появятся в поле в выбранном порядке.
+            </div>
+          )}
+
           <div className="guessInputRow">
             <input
               ref={inputRef}
@@ -581,7 +587,7 @@ function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
               onKeyDown={(e) => {
                 if (!useMobileKeypad && e.key === 'Enter' && !answered) submit();
               }}
-              placeholder="Ваш ответ"
+              placeholder={useMobileKeypad ? 'Выбирай числа кнопками ниже' : 'Ваш ответ'}
               readOnly={answered || useMobileKeypad}
               aria-readonly={answered || useMobileKeypad}
             />
