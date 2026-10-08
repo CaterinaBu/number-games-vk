@@ -3402,11 +3402,31 @@ body {
 
 
 /* v30 — mobile guessing uses an in-game keypad, not the OS keyboard */
+.mobileGuessInstruction {
+  display: none;
+}
+
 .mobileGuessPad {
   display: none;
 }
 
 @media (max-width: 760px) {
+  .mobileGuessInstruction {
+    display: block;
+    width: min(100%, 360px);
+    margin: 0 auto 1px;
+    color: #66758a;
+    font-size: 13px;
+    line-height: 1.35;
+    font-weight: 650;
+    text-align: center;
+  }
+
+  .guessInputRow input::placeholder {
+    color: #9aa6b7;
+    opacity: 1;
+    font-size: 14px;
+  }
   .guessInputRow input[readonly] {
     cursor: default;
     caret-color: transparent;
