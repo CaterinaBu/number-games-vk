@@ -4064,3 +4064,58 @@ body {
   }
 }
 /* Retry Pages deployment after a transient artifact lookup failure. */
+
+
+/* v35 — keep desktop cards compact instead of stretching to fill the viewport */
+@media (min-width: 761px) {
+  /* Home cards: fixed visual rhythm, no giant empty cards. */
+  .homeGrid {
+    flex: 0 0 auto;
+    grid-template-rows: repeat(2, clamp(140px, 19dvh, 165px));
+  }
+
+  .homeGameCard {
+    height: 100%;
+    min-height: 0;
+  }
+
+  /* "Что больше?": keep the answer cards compact and center the group vertically. */
+  .gameArea {
+    justify-content: center;
+  }
+
+  .choices {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  .choice {
+    height: clamp(210px, 34dvh, 270px);
+    min-height: 0;
+  }
+
+  /* "Ближе к правде": same idea — compact card, centered in the available space. */
+  .guessArea {
+    justify-content: center;
+  }
+
+  .guessCard {
+    flex: 0 0 auto;
+    height: clamp(285px, 47dvh, 360px);
+    min-height: 0;
+  }
+}
+
+@media (min-width: 761px) and (max-height: 650px) {
+  .homeGrid {
+    grid-template-rows: repeat(2, 128px);
+  }
+
+  .choice {
+    height: 205px;
+  }
+
+  .guessCard {
+    height: 270px;
+  }
+}
