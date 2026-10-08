@@ -1,7 +1,7 @@
 import bridge from '@vkontakte/vk-bridge';
 
 const AD_ROUND_KEY = 'number-games-ad-rounds-v1';
-const DEFAULT_VK_APP_ID = 54804062;
+const DEFAULT_VK_APP_ID = 54812018;
 
 let initialized = false;
 let initializationAttempted = false;
