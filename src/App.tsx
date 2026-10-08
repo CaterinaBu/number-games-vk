@@ -569,7 +569,7 @@ function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
 
           {useMobileKeypad && !answered && (
             <div className="mobileGuessInstruction">
-              Нажимай на числа ниже — они сами появятся в поле в выбранном порядке.
+              Для ввода используйте кнопки ниже — выбранные цифры появятся в поле автоматически.
             </div>
           )}
 
@@ -587,7 +587,7 @@ function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
               onKeyDown={(e) => {
                 if (!useMobileKeypad && e.key === 'Enter' && !answered) submit();
               }}
-              placeholder={useMobileKeypad ? 'Нажимай кнопки ниже' : 'Ваш ответ'}
+              placeholder={useMobileKeypad ? 'Ввод — кнопками ниже' : 'Ваш ответ'}
               readOnly={answered || useMobileKeypad}
               aria-readonly={answered || useMobileKeypad}
             />
