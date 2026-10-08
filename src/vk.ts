@@ -89,6 +89,26 @@ async function isDesktopVK(): Promise<boolean> {
   }
 }
 
+
+export async function resizeDesktopWindowToContent(): Promise<void> {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+  if (!isVKEnvironment()) return;
+  if (!(await isDesktopVK())) return;
+
+  const main = document.querySelector('main');
+  if (!main) return;
+
+  const contentHeight = Math.ceil(main.getBoundingClientRect().height);
+  const height = Math.max(520, Math.min(900, contentHeight + 18));
+  const width = Math.max(320, Math.round(window.innerWidth));
+
+  try {
+    await bridge.send('VKWebAppResizeWindow', { width, height });
+  } catch {
+    // Some VK surfaces do not allow iframe resizing. The app still works there.
+  }
+}
+
 async function showDesktopBannerIfAvailable(): Promise<boolean> {
   if (!(await isDesktopVK())) return false;
 
