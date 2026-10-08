@@ -587,7 +587,7 @@ function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
               onKeyDown={(e) => {
                 if (!useMobileKeypad && e.key === 'Enter' && !answered) submit();
               }}
-              placeholder={useMobileKeypad ? 'Выбирай числа кнопками ниже' : 'Ваш ответ'}
+              placeholder={useMobileKeypad ? 'Нажимай кнопки ниже' : 'Ваш ответ'}
               readOnly={answered || useMobileKeypad}
               aria-readonly={answered || useMobileKeypad}
             />
