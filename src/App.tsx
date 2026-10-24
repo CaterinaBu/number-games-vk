@@ -1018,6 +1018,42 @@ const homeGameArt: Record<GameTab, string> = {
   near: homeGameNear
 };
 
+const HOME_ASSET_BASE = `${import.meta.env.BASE_URL}assets/home/`;
+
+const hqHomeGameArt: Record<GameTab, string> = {
+  compare: `${HOME_ASSET_BASE}game-compare.avif`,
+  guess: `${HOME_ASSET_BASE}game-guess.avif`,
+  order: `${HOME_ASSET_BASE}game-order.avif`,
+  near: `${HOME_ASSET_BASE}game-near.avif`
+};
+
+const hqHomeLibrary = `${HOME_ASSET_BASE}library.avif`;
+
+function HomeAssetImage({
+  preferred,
+  fallback
+}: {
+  preferred: string;
+  fallback: string;
+}) {
+  const [src, setSrc] = useState(preferred);
+
+  useEffect(() => {
+    setSrc(preferred);
+  }, [preferred]);
+
+  return (
+    <img
+      src={src}
+      alt=""
+      aria-hidden="true"
+      onError={() => {
+        if (src !== fallback) setSrc(fallback);
+      }}
+    />
+  );
+}
+
 const homeGames: Array<{
   id: GameTab;
   title: string;
@@ -1161,7 +1197,10 @@ function HomeScreen({
             onClick={() => onStart(featuredGame.id)}
           >
             <span className="dashboardFeaturedImage" aria-hidden="true">
-              <img src={homeGameArt[featuredGame.id]} alt="" />
+              <HomeAssetImage
+                preferred={hqHomeGameArt[featuredGame.id]}
+                fallback={homeGameArt[featuredGame.id]}
+              />
             </span>
             <span className="dashboardFeaturedShade" aria-hidden="true" />
             <span className="dashboardFeaturedCopy">
@@ -1185,7 +1224,10 @@ function HomeScreen({
                 onClick={() => onStart(game.id)}
               >
                 <span className="dashboardMiniImage" aria-hidden="true">
-                  <img src={homeGameArt[game.id]} alt="" />
+                  <HomeAssetImage
+                    preferred={hqHomeGameArt[game.id]}
+                    fallback={homeGameArt[game.id]}
+                  />
                   {statusCopy(game.id) && (
                     <span className={`gameStatusBadge ${progress.status[game.id]}`}>
                       {statusCopy(game.id)}
@@ -1223,7 +1265,10 @@ function HomeScreen({
 
           <section className="libraryPreview">
             <div className="libraryPreviewImage">
-              <img src={homeLibrary} alt="" aria-hidden="true" />
+              <HomeAssetImage
+                preferred={hqHomeLibrary}
+                fallback={homeLibrary}
+              />
             </div>
             <div className="libraryPreviewCopy">
               <span className="sideEyebrow">Ваш прогресс</span>
