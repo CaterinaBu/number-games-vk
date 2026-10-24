@@ -6838,3 +6838,45 @@ body {
       );
   }
 }
+
+
+/* v53 — reliable completion artwork as proportional background */
+@media (min-width: 761px) {
+  .tutorialHeroComplete {
+    background-color: #eaf1ff;
+    background-repeat: no-repeat;
+    background-size: auto 100%;
+    background-position: right center;
+  }
+
+  .tutorialHeroComplete > img {
+    display: none !important;
+  }
+
+  .tutorialHeroComplete .tutorialHeroShade {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(248,250,255,.99) 0%,
+        rgba(248,250,255,.97) 30%,
+        rgba(248,250,255,.84) 43%,
+        rgba(248,250,255,.55) 54%,
+        rgba(248,250,255,.22) 65%,
+        rgba(248,250,255,.05) 74%,
+        rgba(248,250,255,0) 84%
+      );
+  }
+}
+
+@media (max-width: 760px) {
+  .tutorialHeroComplete {
+    background-color: #eaf1ff;
+    background-repeat: no-repeat;
+    background-size: auto 100%;
+    background-position: 82% center;
+  }
+
+  .tutorialHeroComplete > img {
+    display: none !important;
+  }
+}
