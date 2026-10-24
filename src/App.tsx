@@ -1167,10 +1167,10 @@ export default function App() {
     const stored = loadProgress();
     const migrated: PlayerProgress = {
       mastered: {
-        compare: stored.mastered.compare || loadRecords().compare.plays > 0,
-        guess: stored.mastered.guess || loadRecords().guess.plays > 0,
-        order: stored.mastered.order || loadRecords().order.plays > 0,
-        near: stored.mastered.near || loadRecords().near.plays > 0
+        compare: stored.mastered.compare || records.compare.plays > 0,
+        guess: stored.mastered.guess || records.guess.plays > 0,
+        order: stored.mastered.order || records.order.plays > 0,
+        near: stored.mastered.near || records.near.plays > 0
       }
     };
     saveProgress(migrated);
