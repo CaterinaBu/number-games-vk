@@ -3,7 +3,7 @@ import homePenguinPart1 from './assets/homePenguinPart1';
 import homePenguinPart2 from './assets/homePenguinPart2';
 import homePenguinPart3 from './assets/homePenguinPart3';
 import resultPenguin from './assets/penguin-result.webp';
-import homeGameGuess from './assets/homeGameGuess';
+import homeGameGuess from './assets/home/game-guess.webp';
 import homeGameCompare from './assets/home/game-compare.webp';
 import homeGameOrder from './assets/home/game-order.webp';
 import homeGameNear from './assets/home/game-near.webp';
@@ -1064,8 +1064,8 @@ function HomeScreen({
   progress: PlayerProgress;
   onStart: (game: GameTab) => void;
 }) {
-  const masteredCount = homeGames.filter((game) => progress.mastered[game.id]).length;
-  const unmastered = homeGames.filter((game) => !progress.mastered[game.id]);
+  const masteredCount = homeGames.filter((game) => progress.status[game.id] === 'mastered').length;
+  const unmastered = homeGames.filter((game) => progress.status[game.id] !== 'mastered');
 
   const featuredGame = unmastered.length > 0
     ? unmastered[0]
@@ -1085,7 +1085,9 @@ function HomeScreen({
   }
 
   function statusCopy(game: GameTab) {
-    return progress.mastered[game] ? 'Освоено' : 'NEW';
+    if (progress.status[game] === 'new') return 'NEW';
+    if (progress.status[game] === 'tutorial') return 'Обучение';
+    return null;
   }
 
   return (
@@ -1106,13 +1108,13 @@ function HomeScreen({
             <small>скоро</small>
           </span>
           <span className="dashboardTopLink">
-            <b>📚</b>
-            <span>Библиотека</span>
-          </span>
-          <span className="dashboardTopLink">
             <b>🛍</b>
             <span>Магазин</span>
             <small>скоро</small>
+          </span>
+          <span className="dashboardTopLink">
+            <b>📚</b>
+            <span>Библиотека</span>
           </span>
         </div>
       </header>
@@ -1124,7 +1126,7 @@ function HomeScreen({
             <strong>Освоено {masteredCount} из 4 игр</strong>
             <div className="masterySteps" aria-hidden="true">
               {homeGames.map((game) => (
-                <span key={game.id} className={progress.mastered[game.id] ? 'done' : ''} />
+                <span key={game.id} className={progress.status[game.id] === 'mastered' ? 'done' : ''} />
               ))}
             </div>
           </div>
@@ -1146,24 +1148,31 @@ function HomeScreen({
       <section className="dashboardMainGrid">
         <div className="dashboardGames">
           <div className="featuredLabel">
-            {progress.mastered[featuredGame.id] ? 'Сегодня рекомендуем' : 'Начните отсюда'}
+            {progress.status[featuredGame.id] === 'mastered'
+              ? 'Сегодня рекомендуем'
+              : progress.status[featuredGame.id] === 'tutorial'
+                ? 'Продолжить обучение'
+                : 'Начните отсюда'}
           </div>
 
           <button
             className={`dashboardFeatured dashboardFeatured-${featuredGame.id}`}
             onClick={() => onStart(featuredGame.id)}
           >
+            <span className="dashboardFeaturedImage" aria-hidden="true">
+              <img src={homeGameArt[featuredGame.id]} alt="" />
+            </span>
+            <span className="dashboardFeaturedShade" aria-hidden="true" />
             <span className="dashboardFeaturedCopy">
-              <span className={`gameStatusBadge ${progress.mastered[featuredGame.id] ? 'mastered' : 'new'}`}>
-                {statusCopy(featuredGame.id)}
-              </span>
+              {statusCopy(featuredGame.id) && (
+                <span className={`gameStatusBadge ${progress.status[featuredGame.id]}`}>
+                  {statusCopy(featuredGame.id)}
+                </span>
+              )}
               <span className="dashboardFeaturedTitle">{featuredGame.title}</span>
               <span className="dashboardFeaturedDescription">{featuredGame.description}</span>
               <span className="dashboardFeaturedRecord">{recordCopy(featuredGame.id)}</span>
               <span className="dashboardFeaturedCta">Играть <b>→</b></span>
-            </span>
-            <span className="dashboardFeaturedImage" aria-hidden="true">
-              <img src={homeGameArt[featuredGame.id]} alt="" />
             </span>
           </button>
 
@@ -1176,9 +1185,11 @@ function HomeScreen({
               >
                 <span className="dashboardMiniImage" aria-hidden="true">
                   <img src={homeGameArt[game.id]} alt="" />
-                  <span className={`gameStatusBadge ${progress.mastered[game.id] ? 'mastered' : 'new'}`}>
-                    {statusCopy(game.id)}
-                  </span>
+                  {statusCopy(game.id) && (
+                    <span className={`gameStatusBadge ${progress.status[game.id]}`}>
+                      {statusCopy(game.id)}
+                    </span>
+                  )}
                 </span>
                 <span className="dashboardMiniCopy">
                   <span className="dashboardMiniTitle">{game.title}</span>
@@ -1191,16 +1202,13 @@ function HomeScreen({
         </div>
 
         <aside className="dashboardSide">
-          <section className="libraryPreview">
-            <div className="libraryPreviewImage">
-              <img src={homeLibrary} alt="" aria-hidden="true" />
+          <section className="sideQuickCard ratingQuickCard">
+            <div className="sideQuickIcon">🏆</div>
+            <div>
+              <strong>Рейтинг</strong>
+              <span>Сравнивайте результаты с другими игроками</span>
             </div>
-            <div className="libraryPreviewCopy">
-              <span className="sideEyebrow">Ваш прогресс</span>
-              <h2>Библиотека пингвина</h2>
-              <p>Собирайте факты, открывайте достижения и развивайте историю своего исследователя.</p>
-              <span className="sideSoon">Раздел появится следующим этапом</span>
-            </div>
+            <small>Скоро</small>
           </section>
 
           <section className="sideQuickCard shopQuickCard">
@@ -1212,13 +1220,16 @@ function HomeScreen({
             <small>Скоро</small>
           </section>
 
-          <section className="sideQuickCard ratingQuickCard">
-            <div className="sideQuickIcon">🏆</div>
-            <div>
-              <strong>Рейтинг</strong>
-              <span>Сравнивайте результаты с другими игроками</span>
+          <section className="libraryPreview">
+            <div className="libraryPreviewImage">
+              <img src={homeLibrary} alt="" aria-hidden="true" />
             </div>
-            <small>Скоро</small>
+            <div className="libraryPreviewCopy">
+              <span className="sideEyebrow">Ваш прогресс</span>
+              <h2>Библиотека пингвина</h2>
+              <p>Собирайте факты, открывайте достижения и развивайте историю своего исследователя.</p>
+              <span className="sideSoon">Раздел появится следующим этапом</span>
+            </div>
           </section>
         </aside>
       </section>
@@ -1380,12 +1391,12 @@ export default function App() {
 
     setRecords(nextRecords);
 
-    if (!progress.mastered[game]) {
+    if (progress.status[game] !== 'mastered') {
       const nextProgress: PlayerProgress = {
         ...progress,
-        mastered: {
-          ...progress.mastered,
-          [game]: true
+        status: {
+          ...progress.status,
+          [game]: 'mastered'
         }
       };
       setProgress(nextProgress);
