@@ -5846,3 +5846,64 @@ body {
     margin-top: 12px;
   }
 }
+
+
+/* v44 — featured artwork is a true full-bleed background, like the approved reference */
+@media (min-width: 761px) {
+  .dashboardFeatured {
+    height: 248px;
+    min-height: 248px;
+    background: #dcecff;
+  }
+
+  .dashboardFeaturedImage {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: #dcecff;
+  }
+
+  .dashboardFeaturedImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 58% 50%;
+  }
+
+  .dashboardFeaturedShade {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(248,250,255,.96) 0%,
+        rgba(248,250,255,.91) 22%,
+        rgba(248,250,255,.70) 35%,
+        rgba(248,250,255,.38) 47%,
+        rgba(248,250,255,.12) 58%,
+        rgba(248,250,255,0) 68%
+      );
+  }
+
+  .dashboardFeaturedCopy {
+    width: min(47%, 500px);
+    padding: 25px 25px 21px;
+  }
+
+  .dashboardFeaturedTitle {
+    font-size: clamp(29px, 2.6vw, 39px);
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboardFeaturedImage {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .dashboardFeaturedImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 62% 50%;
+  }
+}
