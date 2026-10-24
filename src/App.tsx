@@ -748,24 +748,30 @@ function GuessGame({
       {tutorialIntroOpen && (
         <div className="tutorialOverlay" role="presentation" onMouseDown={() => setTutorialIntroOpen(false)}>
           <section
-            className="tutorialModal"
+            className="tutorialModal tutorialIntroModal"
             role="dialog"
             aria-modal="true"
             aria-labelledby="guess-tutorial-title"
             onMouseDown={(event) => event.stopPropagation()}
           >
             <button className="tutorialClose" onClick={() => setTutorialIntroOpen(false)} aria-label="Закрыть">×</button>
-            <div className="tutorialHero" aria-hidden="true">
-              <img src={guessTutorialIntroArt} alt="" />
+
+            <div className="tutorialHero tutorialHeroIntro">
+              <img src={guessTutorialIntroArt} alt="" aria-hidden="true" />
+              <div className="tutorialHeroShade" aria-hidden="true" />
+              <div className="tutorialHeroCopy">
+                <div className="tutorialEyebrow">Ближе к правде</div>
+                <h2 id="guess-tutorial-title">Давайте попробуем!</h2>
+                <p>Сначала будет 3 тренировочных задания, чтобы спокойно разобраться с механикой.</p>
+              </div>
             </div>
-            <div className="tutorialEyebrow">Ближе к правде</div>
-            <h2 id="guess-tutorial-title">Давайте попробуем!</h2>
-            <p>Сначала будет 3 тренировочных задания, чтобы спокойно разобраться с механикой.</p>
-            <div className="tutorialRules">
+
+            <div className="tutorialRules tutorialRulesCompact">
               <div><b>🎯</b><span>Оцените значение факта</span></div>
               <div><b>#</b><span>Точное число знать не обязательно</span></div>
               <div><b>⭐</b><span>Чем ближе ответ, тем выше результат</span></div>
             </div>
+
             <button
               className="next tutorialPrimary"
               onClick={() => {
@@ -787,30 +793,38 @@ function GuessGame({
             aria-modal="true"
             aria-labelledby="guess-tutorial-complete-title"
           >
-            <div className="tutorialHero tutorialHeroComplete" aria-hidden="true">
-              <img src={guessTutorialCompleteArt} alt="" />
+            <div className="tutorialHero tutorialHeroComplete">
+              <img src={guessTutorialCompleteArt} alt="" aria-hidden="true" />
+              <div className="tutorialHeroShade" aria-hidden="true" />
+              <div className="tutorialHeroCopy">
+                <div className="tutorialEyebrow">Обучение завершено</div>
+                <h2 id="guess-tutorial-complete-title">Игра освоена!</h2>
+                <p>Теперь доступны обычные партии из 10 заданий.<br />Результат считается по средней близости ответов.</p>
+              </div>
             </div>
-            <div className="tutorialEyebrow">Обучение завершено</div>
-            <h2 id="guess-tutorial-complete-title">Игра освоена!</h2>
-            <p>Теперь доступны обычные партии из 10 заданий.<br />Результат считается по средней близости ответов.</p>
-            <div className="tutorialCompleteStat">
-              <strong>{averageScore}%</strong>
-              <span>средняя близость в обучении</span>
+
+            <div className="tutorialCompleteBottom">
+              <div className="tutorialCompleteStat">
+                <strong>{averageScore}%</strong>
+                <span>средняя близость в обучении</span>
+              </div>
+              <div className="tutorialCompleteActions">
+                <button className="next tutorialPrimary" onClick={startFullRoundAfterTutorial}>
+                  Сыграть полную партию
+                </button>
+                <button
+                  className="secondaryButton tutorialSecondary"
+                  onClick={() => {
+                    setTutorialCompleteOpen(false);
+                    setReplayTutorial(false);
+                    resetRound();
+                    onHome();
+                  }}
+                >
+                  Вернуться на главную
+                </button>
+              </div>
             </div>
-            <button className="next tutorialPrimary" onClick={startFullRoundAfterTutorial}>
-              Сыграть полную партию
-            </button>
-            <button
-              className="secondaryButton tutorialSecondary"
-              onClick={() => {
-                setTutorialCompleteOpen(false);
-                setReplayTutorial(false);
-                resetRound();
-                onHome();
-              }}
-            >
-              Вернуться на главную
-            </button>
           </section>
         </div>
       )}
