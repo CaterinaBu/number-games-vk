@@ -6712,3 +6712,61 @@ body {
     max-width: 390px;
   }
 }
+
+
+/* v50 — exact tutorial wraps, blended completion hero, completed tutorial exits cleanly */
+@media (min-width: 761px) {
+  .tutorialHeroComplete {
+    position: relative;
+    overflow: hidden;
+    background:
+      linear-gradient(135deg, #eef5ff 0%, #edf2ff 44%, #eee9ff 100%);
+  }
+
+  .tutorialHeroComplete img {
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: 62%;
+    height: 100%;
+    object-fit: contain;
+    object-position: right center;
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(0,0,0,.18) 9%,
+      rgba(0,0,0,.72) 23%,
+      #000 38%,
+      #000 100%
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(0,0,0,.18) 9%,
+      rgba(0,0,0,.72) 23%,
+      #000 38%,
+      #000 100%
+    );
+  }
+
+  .tutorialHeroComplete .tutorialHeroShade {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(248,250,255,.98) 0%,
+        rgba(248,250,255,.93) 28%,
+        rgba(248,250,255,.67) 43%,
+        rgba(248,250,255,.28) 56%,
+        rgba(248,250,255,.05) 69%,
+        rgba(248,250,255,0) 80%
+      );
+  }
+
+  .tutorialHeroComplete .tutorialHeroCopy {
+    width: min(54%, 420px);
+    z-index: 2;
+  }
+
+  .tutorialRulesCompact span br {
+    display: block;
+  }
+}
