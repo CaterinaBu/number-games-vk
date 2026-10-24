@@ -6898,3 +6898,42 @@ body {
     background-position: 68% center;
   }
 }
+
+
+/* v55 — final completion hero: one valid rebuilt WebP, rendered exactly like intro */
+.tutorialHeroComplete {
+  background: #eaf2ff !important;
+}
+
+.tutorialHeroComplete > img {
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center 48% !important;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+  transform: none !important;
+}
+
+.tutorialHeroComplete .tutorialHeroShade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(248,250,255,.98) 0%,
+      rgba(248,250,255,.94) 25%,
+      rgba(248,250,255,.76) 40%,
+      rgba(248,250,255,.38) 55%,
+      rgba(248,250,255,.08) 69%,
+      rgba(248,250,255,0) 80%
+    ) !important;
+}
+
+.tutorialHeroComplete .tutorialHeroCopy {
+  position: relative;
+  z-index: 2;
+}
