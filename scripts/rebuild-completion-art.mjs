@@ -5,11 +5,17 @@ import crypto from 'node:crypto';
 const root = path.resolve('assets-src/tutorial/complete');
 const output = path.resolve('public/assets/tutorial/guess-tutorial-complete-v4.webp');
 
+const partNames = [
+  'part-00.b64',
+  'part-01.b64',
+  'part-02a.b64',
+  'part-02b.b64',
+  'part-02c.b64',
+  'part-03.b64',
+];
+
 const parts = await Promise.all(
-  [0, 1, 2, 3].map(async (index) => {
-    const name = `part-${String(index).padStart(2, '0')}.b64`;
-    return (await fs.readFile(path.join(root, name), 'utf8')).trim();
-  })
+  partNames.map(async (name) => (await fs.readFile(path.join(root, name), 'utf8')).trim())
 );
 
 const bytes = Buffer.from(parts.join(''), 'base64');
