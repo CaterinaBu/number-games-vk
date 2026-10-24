@@ -6937,3 +6937,30 @@ body {
   position: relative;
   z-index: 2;
 }
+
+
+/* v56 — genuine wide completion artwork, generated for this hero */
+.tutorialHeroComplete > img {
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  transform: none !important;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+}
+
+.tutorialHeroComplete .tutorialHeroShade {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(248,250,255,.94) 0%,
+      rgba(248,250,255,.86) 23%,
+      rgba(248,250,255,.56) 38%,
+      rgba(248,250,255,.18) 51%,
+      rgba(248,250,255,0) 63%
+    ) !important;
+}
