@@ -6172,3 +6172,207 @@ body {
     font-size: 25px;
   }
 }
+
+
+/* v46 — polish “Ближе к правде” tutorial and keep its desktop screen content-sized */
+.tutorialHero {
+  width: 152px;
+  height: 152px;
+  margin: 0 auto 12px;
+  overflow: hidden;
+  border-radius: 28px;
+  background: #edf3ff;
+  box-shadow:
+    0 12px 30px rgba(73, 75, 151, .12),
+    inset 0 0 0 1px rgba(108, 95, 230, .08);
+}
+
+.tutorialHero img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.tutorialHeroComplete {
+  width: 164px;
+  height: 164px;
+}
+
+.tutorialModal {
+  width: min(540px, 100%);
+  padding: 28px 30px 30px;
+}
+
+.tutorialEyebrow {
+  font-size: 12px;
+}
+
+.tutorialModal h2 {
+  margin: 7px 0 10px;
+  font-size: 34px;
+}
+
+.tutorialModal > p {
+  max-width: 440px;
+  font-size: 16px;
+  line-height: 1.48;
+}
+
+.tutorialRules {
+  margin: 22px 0;
+  gap: 10px;
+}
+
+.tutorialRules > div {
+  min-height: 58px;
+  padding: 12px 15px;
+  gap: 13px;
+}
+
+.tutorialRules b {
+  width: 32px;
+  flex-basis: 32px;
+  font-size: 20px;
+}
+
+.tutorialRules span {
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+.tutorialPrimary,
+.tutorialSecondary {
+  min-height: 48px;
+  font-size: 17px;
+}
+
+.tutorialHintBar {
+  padding: 13px 17px;
+  gap: 12px;
+}
+
+.tutorialHintBar > span {
+  font-size: 22px;
+}
+
+.tutorialHintBar strong {
+  font-size: 15px;
+}
+
+.tutorialHintBar p {
+  margin-top: 4px;
+  font-size: 15px;
+  line-height: 1.42;
+}
+
+.tutorialAnswerNote {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.tutorialCompleteStat {
+  margin: 19px 0;
+  padding: 17px;
+}
+
+.tutorialCompleteStat strong {
+  font-size: 42px;
+}
+
+.tutorialCompleteStat span {
+  margin-top: 7px;
+  font-size: 15px;
+}
+
+@media (min-width: 761px) {
+  .app-guess {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    padding-bottom: 8px;
+  }
+
+  .app-guess footer {
+    margin-top: 8px;
+    padding-top: 0;
+  }
+
+  .app-guess .hero h1 {
+    margin-top: 3px;
+    font-size: clamp(30px, 3vw, 38px);
+  }
+
+  .app-guess .subtitle {
+    font-size: 14px;
+  }
+
+  .app-guess .guessToolbar {
+    margin: 5px auto 6px;
+  }
+
+  .app-guess .roundProgress {
+    margin-bottom: 8px;
+  }
+
+  .app-guess .tutorialHintBar {
+    margin: 8px 0 9px;
+  }
+
+  .app-guess .guessArea {
+    flex: 0 0 auto;
+    min-height: 0;
+    padding: 9px;
+    overflow: visible;
+  }
+
+  .app-guess .guessCard {
+    flex: 0 0 auto;
+    width: min(720px, 100%);
+    height: auto;
+    min-height: 250px;
+    padding: 18px 26px 16px;
+    gap: 9px;
+  }
+
+  .app-guess .guessResult {
+    padding: 9px 14px;
+  }
+}
+
+@media (max-width: 760px) {
+  .tutorialHero {
+    width: 126px;
+    height: 126px;
+    border-radius: 24px;
+  }
+
+  .tutorialHeroComplete {
+    width: 138px;
+    height: 138px;
+  }
+
+  .tutorialModal {
+    padding: 22px 18px 20px;
+  }
+
+  .tutorialModal h2 {
+    font-size: 28px;
+  }
+
+  .tutorialModal > p {
+    font-size: 15px;
+  }
+
+  .tutorialRules span {
+    font-size: 15px;
+  }
+
+  .tutorialHintBar strong {
+    font-size: 14px;
+  }
+
+  .tutorialHintBar p {
+    font-size: 14px;
+  }
+}
