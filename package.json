@@ -5,11 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run generate:tutorial-art && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "vk-miniapps-deploy",
-    "generate:tutorial-art": "node scripts/generate-tutorial-art.mjs"
+    "deploy": "vk-miniapps-deploy"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.3.4",
@@ -20,8 +19,7 @@
     "@vkontakte/vk-bridge": "^3.0.2"
   },
   "devDependencies": {
-    "@vkontakte/vk-miniapps-deploy": "^1.0.2",
-    "sharp": "^0.34.3"
+    "@vkontakte/vk-miniapps-deploy": "^1.0.2"
   },
   "homepage": "./"
 }
