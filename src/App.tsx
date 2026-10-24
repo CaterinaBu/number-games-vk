@@ -762,14 +762,14 @@ function GuessGame({
               <div className="tutorialHeroCopy">
                 <div className="tutorialEyebrow">Ближе к правде</div>
                 <h2 id="guess-tutorial-title">Давайте попробуем!</h2>
-                <p>Сначала — 3 тренировочных задания, чтобы разобраться с механикой.</p>
+                <p>Сначала — 3 тренировочных задания,<br />чтобы разобраться с механикой.</p>
               </div>
             </div>
 
             <div className="tutorialRules tutorialRulesCompact">
               <div><b>🎯</b><span>Оцените значение факта</span></div>
-              <div><b>#</b><span>Точное число знать не обязательно</span></div>
-              <div><b>⭐</b><span>Чем ближе ответ, тем выше результат</span></div>
+              <div><b>#</b><span>Точное число знать<br />не обязательно</span></div>
+              <div><b>⭐</b><span>Чем ближе ответ,<br />тем выше результат</span></div>
             </div>
 
             <button
@@ -1604,19 +1604,21 @@ export default function App() {
   }
 
   function completeTutorial(game: GameTab) {
-    if (progress.status[game] === 'mastered') return;
-
-    const nextProgress: PlayerProgress = {
-      ...progress,
-      status: {
-        ...progress.status,
-        [game]: 'mastered'
-      }
-    };
-
-    setProgress(nextProgress);
-    saveProgress(nextProgress);
     setHasAttemptedAnswer(false);
+
+    if (progress.status[game] !== 'mastered') {
+      const nextProgress: PlayerProgress = {
+        ...progress,
+        status: {
+          ...progress.status,
+          [game]: 'mastered'
+        }
+      };
+
+      setProgress(nextProgress);
+      saveProgress(nextProgress);
+    }
+
     trackEvent('tutorial_completed', { game });
   }
 
