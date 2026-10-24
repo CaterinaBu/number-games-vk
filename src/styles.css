@@ -6376,3 +6376,75 @@ body {
     font-size: 14px;
   }
 }
+
+
+/* v47 — larger tutorial artwork and true VK iframe shrinking */
+.tutorialHero,
+.tutorialHeroComplete {
+  width: min(330px, 74%);
+  height: auto;
+  aspect-ratio: 16 / 9;
+  margin: 0 auto 12px;
+  border-radius: 24px;
+}
+
+.tutorialHero img,
+.tutorialHeroComplete img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.tutorialModal {
+  padding-top: 24px;
+  padding-bottom: 25px;
+}
+
+.tutorialCompleteModal > p {
+  max-width: 470px;
+}
+
+@media (min-width: 761px) {
+  .app-guess {
+    padding-top: 5px;
+    padding-bottom: 4px;
+  }
+
+  .app-guess .topTabs {
+    margin-bottom: 5px;
+  }
+
+  .app-guess .hero h1 {
+    margin: 2px 0 1px;
+  }
+
+  .app-guess .guessToolbar {
+    margin: 4px auto 5px;
+  }
+
+  .app-guess .roundProgress {
+    margin-bottom: 6px;
+  }
+
+  .app-guess .tutorialHintBar {
+    margin: 7px 0 8px;
+  }
+
+  .app-guess .guessArea {
+    padding: 7px;
+  }
+
+  .app-guess .guessCard {
+    min-height: 225px;
+    padding: 15px 24px 14px;
+  }
+}
+
+@media (max-width: 760px) {
+  .tutorialHero,
+  .tutorialHeroComplete {
+    width: min(260px, 78%);
+    border-radius: 20px;
+  }
+}
