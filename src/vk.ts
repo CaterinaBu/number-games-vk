@@ -99,7 +99,9 @@ export async function resizeDesktopWindowToContent(): Promise<void> {
   if (!main) return;
 
   const contentHeight = Math.ceil(main.getBoundingClientRect().height);
-  const height = Math.max(720, window.innerHeight, contentHeight + 18);
+  // Do not use window.innerHeight here: after VK enlarges the iframe once,
+  // that value becomes the enlarged height and prevents the frame from shrinking.
+  const height = Math.max(520, contentHeight + 12);
   const width = Math.max(1000, Math.round(window.innerWidth));
 
   try {
