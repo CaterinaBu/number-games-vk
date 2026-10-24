@@ -6666,3 +6666,49 @@ body {
     min-height: 96px;
   }
 }
+
+
+/* v49 — cleaner tutorial copy and natural-scale completion artwork */
+@media (min-width: 761px) {
+  .tutorialHeroIntro .tutorialHeroCopy {
+    width: min(52%, 390px);
+  }
+
+  .tutorialHeroIntro .tutorialHeroCopy p {
+    max-width: 360px;
+  }
+
+  .tutorialHeroComplete {
+    background:
+      linear-gradient(135deg, #eef5ff 0%, #edf0ff 48%, #eee8ff 100%);
+  }
+
+  .tutorialHeroComplete img {
+    inset: 0 0 0 auto;
+    width: 58%;
+    height: 100%;
+    object-fit: contain;
+    object-position: right center;
+  }
+
+  .tutorialHeroComplete .tutorialHeroShade {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(248,250,255,.99) 0%,
+        rgba(248,250,255,.96) 31%,
+        rgba(248,250,255,.78) 45%,
+        rgba(248,250,255,.34) 58%,
+        rgba(248,250,255,.06) 72%,
+        rgba(248,250,255,0) 84%
+      );
+  }
+
+  .tutorialHeroComplete .tutorialHeroCopy {
+    width: min(52%, 400px);
+  }
+
+  .tutorialHeroComplete .tutorialHeroCopy p {
+    max-width: 390px;
+  }
+}
