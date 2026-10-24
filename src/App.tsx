@@ -1091,6 +1091,13 @@ function HomeScreen({
         </div>
       </header>
 
+      <nav className="homeSectionNav" aria-label="Разделы игры">
+        <span className="homeSectionNavItem active">Главная</span>
+        <span className="homeSectionNavItem">Рейтинг <small>скоро</small></span>
+        <span className="homeSectionNavItem">Библиотека <small>скоро</small></span>
+        <span className="homeSectionNavItem">Магазин <small>скоро</small></span>
+      </nav>
+
       <section className="homeProgress" aria-label="Прогресс знакомства с играми">
         <div className="homeProgressCopy">
           <strong>Освоено {masteredCount} из 4 игр</strong>
@@ -1119,7 +1126,10 @@ function HomeScreen({
           <span className={`gameStatusBadge ${progress.mastered[featuredGame.id] ? 'mastered' : 'new'}`}>
             {statusCopy(featuredGame.id)}
           </span>
-          <span className="featuredGameIcon">{featuredGame.icon}</span>
+          <span className="featuredGameArt" aria-hidden="true">
+            <img src={penguinMascot} alt="" />
+            <span className="featuredGameToken">{featuredGame.icon}</span>
+          </span>
           <span className="featuredGameCopy">
             <span className="featuredGameTitle">{featuredGame.title}</span>
             <span className="featuredGameDescription">{featuredGame.description}</span>
@@ -1141,7 +1151,10 @@ function HomeScreen({
               <span className={`gameStatusBadge ${progress.mastered[game.id] ? 'mastered' : 'new'}`}>
                 {statusCopy(game.id)}
               </span>
-              <span className="otherGameIcon">{game.icon}</span>
+              <span className="otherGameVisual" aria-hidden="true">
+                <img src={penguinMascot} alt="" />
+                <span className="otherGameToken">{game.icon}</span>
+              </span>
               <span className="otherGameTitle">{game.title}</span>
               <span className="otherGameDescription">{game.description}</span>
               <span className="otherGameRecord">{recordCopy(game.id)}</span>
