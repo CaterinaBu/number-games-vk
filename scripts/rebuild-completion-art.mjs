@@ -3,7 +3,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 
 const root = path.resolve('assets-src/tutorial/complete');
-const output = path.resolve('public/assets/tutorial/guess-tutorial-complete-built.webp');
+const output = path.resolve('public/assets/tutorial/guess-tutorial-complete-v4.webp');
 
 const parts = await Promise.all(
   [0, 1, 2, 3].map(async (index) => {
@@ -15,11 +15,11 @@ const parts = await Promise.all(
 const bytes = Buffer.from(parts.join(''), 'base64');
 const hash = crypto.createHash('sha256').update(bytes).digest('hex');
 
-if (bytes.length !== 19592) {
+if (bytes.length !== 58786) {
   throw new Error(`Unexpected completion artwork size: ${bytes.length}`);
 }
 
-if (hash !== '6148539c6684027858f1cea8ddcbf1f4e7bf72d7b49457f8ad8b4ce2137def8a') {
+if (hash !== '6be463dd59b1ad58e3e4845c55400f4d715df00b20d2a88fbd9750b2c6a9bc07') {
   throw new Error(`Completion artwork hash mismatch: ${hash}`);
 }
 
