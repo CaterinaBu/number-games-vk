@@ -3,7 +3,7 @@ import homePenguinPart1 from './assets/homePenguinPart1';
 import homePenguinPart2 from './assets/homePenguinPart2';
 import homePenguinPart3 from './assets/homePenguinPart3';
 import resultPenguin from './assets/penguin-result.webp';
-import homeGameGuess from './assets/home/game-guess.webp';
+import homeGameGuess from './assets/homeGameGuess';
 import homeGameCompare from './assets/home/game-compare.webp';
 import homeGameOrder from './assets/home/game-order.webp';
 import homeGameNear from './assets/home/game-near.webp';
@@ -1065,11 +1065,12 @@ function HomeScreen({
   onStart: (game: GameTab) => void;
 }) {
   const masteredCount = homeGames.filter((game) => progress.status[game.id] === 'mastered').length;
-  const unmastered = homeGames.filter((game) => progress.status[game.id] !== 'mastered');
+  const newGame = homeGames.find((game) => progress.status[game.id] === 'new');
+  const tutorialGame = homeGames.find((game) => progress.status[game.id] === 'tutorial');
 
-  const featuredGame = unmastered.length > 0
-    ? unmastered[0]
-    : homeGames[Math.floor(Date.now() / 86_400_000) % homeGames.length];
+  const featuredGame = newGame
+    ?? tutorialGame
+    ?? homeGames[Math.floor(Date.now() / 86_400_000) % homeGames.length];
 
   const otherGames = homeGames.filter((game) => game.id !== featuredGame.id);
 
@@ -1300,6 +1301,19 @@ export default function App() {
 
   function startGame(game: GameTab) {
     setHasAttemptedAnswer(false);
+
+    if (progress.status[game] === 'new') {
+      const nextProgress: PlayerProgress = {
+        ...progress,
+        status: {
+          ...progress.status,
+          [game]: 'tutorial'
+        }
+      };
+      setProgress(nextProgress);
+      saveProgress(nextProgress);
+    }
+
     trackEvent('game_selected', { game, source: 'home' });
     trackEvent('round_started', { game, source: 'home' });
     setTab(game);
