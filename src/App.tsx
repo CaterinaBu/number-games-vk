@@ -762,7 +762,7 @@ function GuessGame({
               <div className="tutorialHeroCopy">
                 <div className="tutorialEyebrow">Ближе к правде</div>
                 <h2 id="guess-tutorial-title">Давайте попробуем!</h2>
-                <p>Сначала будет 3 тренировочных задания, чтобы спокойно разобраться с механикой.</p>
+                <p>Сначала — 3 тренировочных задания, чтобы разобраться с механикой.</p>
               </div>
             </div>
 
@@ -799,7 +799,7 @@ function GuessGame({
               <div className="tutorialHeroCopy">
                 <div className="tutorialEyebrow">Обучение завершено</div>
                 <h2 id="guess-tutorial-complete-title">Игра освоена!</h2>
-                <p>Теперь доступны обычные партии из 10 заданий.<br />Результат считается по средней близости ответов.</p>
+                <p>Теперь доступны партии из 10 заданий.<br />Итог — средняя близость всех ответов.</p>
               </div>
             </div>
 
