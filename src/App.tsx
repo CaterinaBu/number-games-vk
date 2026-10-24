@@ -793,8 +793,10 @@ function GuessGame({
             aria-modal="true"
             aria-labelledby="guess-tutorial-complete-title"
           >
-            <div className="tutorialHero tutorialHeroComplete">
-              <img src={guessTutorialCompleteArt} alt="" aria-hidden="true" />
+            <div
+              className="tutorialHero tutorialHeroComplete"
+              style={{ backgroundImage: `url(${guessTutorialCompleteArt})` }}
+            >
               <div className="tutorialHeroShade" aria-hidden="true" />
               <div className="tutorialHeroCopy">
                 <div className="tutorialEyebrow">Обучение завершено</div>
@@ -1195,7 +1197,7 @@ const HOME_ASSET_BASE = `${import.meta.env.BASE_URL}assets/home/`;
 
 const TUTORIAL_ASSET_BASE = `${import.meta.env.BASE_URL}assets/tutorial/`;
 const guessTutorialIntroArt = `${HOME_ASSET_BASE}game-guess.avif`;
-const guessTutorialCompleteArt = `${TUTORIAL_ASSET_BASE}guess-tutorial-complete-wide.avif`;
+const guessTutorialCompleteArt = `${TUTORIAL_ASSET_BASE}guess-tutorial-complete.avif`;
 
 const hqHomeGameArt: Record<GameTab, string> = {
   compare: `${HOME_ASSET_BASE}game-compare.avif`,
