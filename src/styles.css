@@ -5907,3 +5907,268 @@ body {
     object-position: 62% 50%;
   }
 }
+
+
+/* v45 — guided tutorial flow for “Ближе к правде” */
+.guessQuickRules {
+  margin: 0 0 10px;
+  padding: 11px 14px;
+  border: 1px solid rgba(117,128,174,.10);
+  border-radius: 16px;
+  background: rgba(255,255,255,.86);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.guessQuickRules > div {
+  min-width: 0;
+}
+
+.guessQuickRules strong {
+  display: block;
+  color: #24314d;
+  font-size: 12px;
+}
+
+.guessQuickRules span {
+  display: block;
+  margin-top: 3px;
+  color: #768399;
+  font-size: 10.5px;
+  line-height: 1.35;
+}
+
+.guessQuickRules button {
+  flex: 0 0 auto;
+  border: 0;
+  background: transparent;
+  color: #6555ea;
+  font-size: 10px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.tutorialModeLabel {
+  color: #6555ea;
+  font-weight: 850;
+}
+
+.tutorialHintBar {
+  margin: 10px 0;
+  padding: 11px 13px;
+  border: 1px solid rgba(117,128,174,.10);
+  border-radius: 16px;
+  background: linear-gradient(135deg, #fff9e9, #fffdf7);
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  box-shadow: 0 8px 20px rgba(70,74,120,.04);
+}
+
+.tutorialHintBar > span {
+  font-size: 19px;
+  line-height: 1;
+}
+
+.tutorialHintBar strong {
+  display: block;
+  color: #31405a;
+  font-size: 11px;
+}
+
+.tutorialHintBar p {
+  margin: 3px 0 0;
+  color: #6e7b8f;
+  font-size: 10.5px;
+  line-height: 1.35;
+}
+
+.guessAreaTutorial .guessCard {
+  border-color: rgba(101,85,234,.13);
+  box-shadow: 0 16px 38px rgba(79,71,155,.08);
+}
+
+.tutorialAnswerNote {
+  margin-top: 8px;
+  color: #758197;
+  font-size: 10.5px;
+  line-height: 1.35;
+}
+
+.tutorialOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  padding: 20px;
+  background: rgba(23,32,52,.56);
+  backdrop-filter: blur(7px);
+  display: grid;
+  place-items: center;
+}
+
+.tutorialModal {
+  position: relative;
+  width: min(440px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow: auto;
+  padding: 25px 27px 27px;
+  border: 1px solid rgba(117,128,174,.11);
+  border-radius: 25px;
+  background: #fff;
+  box-shadow: 0 28px 85px rgba(25,32,68,.24);
+  text-align: center;
+}
+
+.tutorialClose {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 999px;
+  background: #f2f4fa;
+  color: #7c8699;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.tutorialMascot {
+  width: 86px;
+  height: 86px;
+  margin: 0 auto 8px;
+  border-radius: 24px;
+  background: linear-gradient(145deg, #eaf1ff, #f5efff);
+  display: grid;
+  place-items: center;
+  font-size: 48px;
+  box-shadow: inset 0 0 0 1px rgba(108,95,230,.06);
+}
+
+.tutorialMascot.celebration {
+  width: 96px;
+  font-size: 42px;
+}
+
+.tutorialEyebrow {
+  color: #7467e9;
+  font-size: 9.5px;
+  font-weight: 900;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.tutorialModal h2 {
+  margin: 5px 0 7px;
+  color: #1c2942;
+  font-size: 28px;
+  line-height: 1.04;
+  letter-spacing: -.035em;
+}
+
+.tutorialModal > p {
+  max-width: 350px;
+  margin: 0 auto;
+  color: #6f7b90;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.tutorialRules {
+  margin: 18px 0;
+  display: grid;
+  gap: 8px;
+  text-align: left;
+}
+
+.tutorialRules > div {
+  min-height: 48px;
+  padding: 9px 11px;
+  border-radius: 14px;
+  background: #f7f8fc;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.tutorialRules b {
+  width: 29px;
+  flex: 0 0 29px;
+  color: #6555ea;
+  text-align: center;
+  font-size: 17px;
+}
+
+.tutorialRules span {
+  color: #35425b;
+  font-size: 11.5px;
+  font-weight: 750;
+}
+
+.tutorialPrimary {
+  width: 100%;
+  min-height: 45px;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.tutorialCompleteStat {
+  margin: 17px 0;
+  padding: 14px;
+  border-radius: 17px;
+  background: linear-gradient(145deg, #f0edff, #edf6ff);
+}
+
+.tutorialCompleteStat strong {
+  display: block;
+  color: #594ee3;
+  font-size: 31px;
+  line-height: 1;
+}
+
+.tutorialCompleteStat span {
+  display: block;
+  margin-top: 5px;
+  color: #758197;
+  font-size: 10.5px;
+}
+
+.tutorialSecondary {
+  width: 100%;
+  margin-top: 8px;
+}
+
+@media (max-width: 760px) {
+  .guessQuickRules {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .guessQuickRules button {
+    padding: 0;
+  }
+
+  .tutorialOverlay {
+    padding: 12px;
+    align-items: center;
+  }
+
+  .tutorialModal {
+    width: min(100%, 430px);
+    padding: 22px 18px 20px;
+    border-radius: 22px;
+  }
+
+  .tutorialMascot {
+    width: 76px;
+    height: 76px;
+    font-size: 42px;
+  }
+
+  .tutorialModal h2 {
+    font-size: 25px;
+  }
+}
