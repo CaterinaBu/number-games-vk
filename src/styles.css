@@ -6880,3 +6880,21 @@ body {
     display: none !important;
   }
 }
+
+
+/* v54 — completion hero uses generated 1600×620 artwork */
+@media (min-width: 761px) {
+  .tutorialHeroComplete {
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+  }
+}
+
+@media (max-width: 760px) {
+  .tutorialHeroComplete {
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 68% center;
+  }
+}
