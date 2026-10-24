@@ -4882,3 +4882,681 @@ body {
     white-space: nowrap;
   }
 }
+
+
+/* v40 — illustrated dashboard home, aligned with the approved desktop concept */
+.homeDashboard {
+  width: min(1240px, calc(100% - 24px));
+  min-height: 0;
+  margin: 0 auto;
+  padding: 12px 0 10px;
+  display: block;
+}
+
+.dashboardHeader {
+  min-height: 78px;
+  padding: 11px 16px;
+  border: 1px solid rgba(116, 127, 172, .10);
+  border-radius: 21px;
+  background: rgba(255,255,255,.88);
+  box-shadow: 0 10px 28px rgba(48, 58, 116, .06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.dashboardIdentity {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dashboardIdentity > img {
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  flex: 0 0 auto;
+  filter: drop-shadow(0 7px 10px rgba(48, 52, 112, .14));
+}
+
+.dashboardIdentity h1 {
+  margin: 0;
+  color: #17233a;
+  font-size: clamp(25px, 2.5vw, 34px);
+  line-height: 1;
+  letter-spacing: -.035em;
+}
+
+.dashboardIdentity p {
+  margin: 5px 0 0;
+  color: #718097;
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+.dashboardTopLinks {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.dashboardTopLink {
+  min-height: 39px;
+  padding: 7px 10px;
+  border-radius: 13px;
+  background: #f2f5fb;
+  color: #55637b;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.dashboardTopLink b {
+  font-size: 15px;
+}
+
+.dashboardTopLink small,
+.sideQuickCard small {
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: #e6eaf4;
+  color: #919bae;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.dashboardMetaRow {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(300px, .85fr);
+  gap: 10px;
+}
+
+.masteryCard,
+.dailyCard {
+  min-height: 72px;
+  padding: 11px 14px;
+  border: 1px solid rgba(116, 127, 172, .10);
+  border-radius: 18px;
+  background: rgba(255,255,255,.82);
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  box-shadow: 0 8px 22px rgba(48,58,116,.045);
+}
+
+.masteryIcon,
+.dailyIcon {
+  width: 43px;
+  height: 43px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: linear-gradient(145deg, #eeeaff, #e9f6ff);
+  font-size: 21px;
+}
+
+.masteryCopy {
+  min-width: 0;
+  flex: 1;
+}
+
+.masteryCopy strong,
+.dailyCard strong {
+  display: block;
+  color: #24314d;
+  font-size: 13px;
+}
+
+.masterySteps {
+  width: min(330px, 100%);
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.masterySteps span {
+  height: 7px;
+  border-radius: 999px;
+  background: #dde4ef;
+}
+
+.masterySteps span.done {
+  background: linear-gradient(90deg, #6b5cff, #4aaaff);
+}
+
+.dailyCard span {
+  display: block;
+  margin-top: 4px;
+  color: #78859a;
+  font-size: 10.5px;
+  line-height: 1.25;
+}
+
+.dailyCard.unlocked .dailyIcon {
+  background: linear-gradient(145deg, #fff3db, #ffe2ba);
+}
+
+.dashboardMainGrid {
+  margin-top: 11px;
+  display: grid;
+  grid-template-columns: minmax(0, 2.12fr) minmax(245px, .88fr);
+  gap: 12px;
+  align-items: stretch;
+}
+
+.dashboardGames {
+  min-width: 0;
+}
+
+.featuredLabel {
+  margin: 0 0 6px 3px;
+  color: #8b94a7;
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.dashboardFeatured {
+  position: relative;
+  width: 100%;
+  height: 260px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 25px;
+  background: #dbe8ff;
+  box-shadow: 0 16px 38px rgba(56, 66, 134, .10);
+  color: #17233a;
+  text-align: left;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(280px, .95fr);
+  transition: transform .16s ease, box-shadow .16s ease;
+}
+
+.dashboardFeatured:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 46px rgba(56,66,134,.14);
+}
+
+.dashboardFeaturedCopy {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+  padding: 27px 27px 23px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background:
+    linear-gradient(90deg, rgba(247,249,255,.98) 0%, rgba(247,249,255,.95) 78%, rgba(247,249,255,.40) 100%);
+}
+
+.dashboardFeaturedCopy .gameStatusBadge {
+  position: static;
+  display: inline-flex;
+  margin-bottom: 12px;
+}
+
+.dashboardFeaturedTitle {
+  font-size: clamp(31px, 3vw, 43px);
+  line-height: .98;
+  font-weight: 930;
+  letter-spacing: -.035em;
+  white-space: nowrap;
+}
+
+.dashboardFeaturedDescription {
+  max-width: 460px;
+  margin-top: 10px;
+  color: #5e6e85;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.dashboardFeaturedRecord {
+  margin-top: 14px;
+  color: #7a8799;
+  font-size: 11px;
+  font-weight: 760;
+}
+
+.dashboardFeaturedCta {
+  margin-top: auto;
+  min-width: 126px;
+  padding: 10px 17px;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #6555f1, #554be3);
+  color: white;
+  box-shadow: 0 9px 22px rgba(89,75,229,.22);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.dashboardFeaturedCta b {
+  font-size: 17px;
+}
+
+.dashboardFeaturedImage {
+  position: relative;
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #dceaff;
+}
+
+.dashboardFeaturedImage::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 18%;
+  background: linear-gradient(90deg, rgba(247,249,255,.44), transparent);
+  pointer-events: none;
+}
+
+.dashboardFeaturedImage img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+}
+
+.dashboardMiniGrid {
+  margin-top: 9px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.dashboardMiniGame {
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(117,128,174,.09);
+  border-radius: 20px;
+  background: rgba(255,255,255,.92);
+  box-shadow: 0 10px 26px rgba(52,61,130,.06);
+  color: #17233a;
+  text-align: left;
+  cursor: pointer;
+  transition: transform .16s ease, box-shadow .16s ease;
+}
+
+.dashboardMiniGame:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(52,61,130,.10);
+}
+
+.dashboardMiniImage {
+  position: relative;
+  height: 120px;
+  display: block;
+  overflow: hidden;
+  background: #eaf2ff;
+}
+
+.dashboardMiniImage img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+}
+
+.dashboardMiniImage .gameStatusBadge {
+  top: 9px;
+  right: 9px;
+}
+
+.dashboardMiniCopy {
+  min-height: 111px;
+  padding: 11px 12px 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboardMiniTitle {
+  font-size: 18px;
+  line-height: 1.06;
+  font-weight: 900;
+  letter-spacing: -.025em;
+  white-space: nowrap;
+}
+
+.dashboardMiniDescription {
+  margin-top: 5px;
+  color: #718097;
+  font-size: 10.5px;
+  line-height: 1.3;
+}
+
+.dashboardMiniRecord {
+  margin-top: auto;
+  padding-top: 8px;
+  color: #929cad;
+  font-size: 9.5px;
+  font-weight: 720;
+}
+
+.dashboardSide {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.libraryPreview {
+  flex: 1 1 auto;
+  min-height: 330px;
+  overflow: hidden;
+  border: 1px solid rgba(117,128,174,.10);
+  border-radius: 23px;
+  background: rgba(255,255,255,.92);
+  box-shadow: 0 12px 30px rgba(52,61,130,.07);
+}
+
+.libraryPreviewImage {
+  height: 205px;
+  overflow: hidden;
+  background: #eef1ff;
+}
+
+.libraryPreviewImage img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center 42%;
+}
+
+.libraryPreviewCopy {
+  padding: 14px 15px 16px;
+}
+
+.sideEyebrow {
+  color: #8b94a8;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.libraryPreview h2 {
+  margin: 4px 0 5px;
+  color: #202d48;
+  font-size: 21px;
+  line-height: 1.05;
+  letter-spacing: -.025em;
+}
+
+.libraryPreview p {
+  margin: 0;
+  color: #6f7c90;
+  font-size: 10.5px;
+  line-height: 1.35;
+}
+
+.sideSoon {
+  display: block;
+  margin-top: 10px;
+  color: #6559d9;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.sideQuickCard {
+  min-height: 68px;
+  padding: 10px 11px;
+  border: 1px solid rgba(117,128,174,.09);
+  border-radius: 17px;
+  background: rgba(255,255,255,.88);
+  display: grid;
+  grid-template-columns: 39px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+}
+
+.sideQuickIcon {
+  width: 39px;
+  height: 39px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(145deg, #eeeaff, #eaf7ff);
+  font-size: 19px;
+}
+
+.shopQuickCard .sideQuickIcon {
+  background: linear-gradient(145deg, #fff1dc, #ffe5c7);
+}
+
+.sideQuickCard strong {
+  display: block;
+  color: #293650;
+  font-size: 12px;
+}
+
+.sideQuickCard span {
+  display: block;
+  margin-top: 2px;
+  color: #828da0;
+  font-size: 9.5px;
+  line-height: 1.2;
+}
+
+.dashboardFooterActions {
+  margin-top: 8px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dashboardFooterActions .donateButton {
+  padding: 6px 9px;
+}
+
+.dashboardFooterActions .socialActions {
+  margin: 0;
+}
+
+@media (min-width: 761px) and (max-width: 1040px) {
+  .dashboardFeatured {
+    grid-template-columns: minmax(0, 1.08fr) minmax(230px, .92fr);
+  }
+
+  .dashboardFeaturedTitle {
+    white-space: normal;
+  }
+
+  .dashboardMainGrid {
+    grid-template-columns: minmax(0, 1fr) 245px;
+  }
+
+  .dashboardMiniTitle {
+    white-space: normal;
+  }
+
+  .dashboardTopLink span {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .homeDashboard {
+    width: min(100% - 14px, 580px);
+    padding-top: 7px;
+  }
+
+  .dashboardHeader {
+    min-height: 70px;
+    padding: 9px 11px;
+    border-radius: 18px;
+  }
+
+  .dashboardIdentity > img {
+    width: 48px;
+    height: 48px;
+  }
+
+  .dashboardIdentity h1 {
+    font-size: 25px;
+  }
+
+  .dashboardIdentity p {
+    font-size: 10px;
+  }
+
+  .dashboardTopLinks {
+    gap: 4px;
+  }
+
+  .dashboardTopLink {
+    width: 35px;
+    min-height: 35px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .dashboardTopLink span,
+  .dashboardTopLink small {
+    display: none;
+  }
+
+  .dashboardMetaRow {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .masteryCard,
+  .dailyCard {
+    min-height: 61px;
+    border-radius: 16px;
+  }
+
+  .dashboardMainGrid {
+    grid-template-columns: 1fr;
+    gap: 9px;
+  }
+
+  .dashboardFeatured {
+    height: 230px;
+    grid-template-columns: minmax(0, 1.08fr) minmax(120px, .92fr);
+    border-radius: 22px;
+  }
+
+  .dashboardFeaturedCopy {
+    padding: 18px 16px;
+  }
+
+  .dashboardFeaturedTitle {
+    font-size: clamp(27px, 8vw, 34px);
+    white-space: normal;
+  }
+
+  .dashboardFeaturedDescription {
+    font-size: 11.5px;
+  }
+
+  .dashboardFeaturedRecord {
+    margin-top: 8px;
+    font-size: 9.5px;
+  }
+
+  .dashboardFeaturedCta {
+    min-width: 108px;
+    padding: 9px 13px;
+  }
+
+  .dashboardMiniGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboardMiniGame {
+    min-height: 126px;
+    display: grid;
+    grid-template-columns: 124px minmax(0, 1fr);
+  }
+
+  .dashboardMiniImage {
+    height: 100%;
+    min-height: 126px;
+  }
+
+  .dashboardMiniCopy {
+    min-height: 126px;
+  }
+
+  .dashboardMiniTitle {
+    white-space: normal;
+  }
+
+  .libraryPreview {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 132px minmax(0, 1fr);
+  }
+
+  .libraryPreviewImage {
+    height: 100%;
+    min-height: 170px;
+  }
+
+  .libraryPreviewCopy {
+    padding: 14px;
+  }
+
+  .libraryPreview h2 {
+    font-size: 19px;
+  }
+
+  .dashboardSide {
+    gap: 7px;
+  }
+}
+
+@media (max-width: 410px) {
+  .dashboardIdentity p {
+    display: none;
+  }
+
+  .dashboardFeatured {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .dashboardFeaturedCopy {
+    min-height: 205px;
+  }
+
+  .dashboardFeaturedImage {
+    height: 150px;
+  }
+
+  .libraryPreview {
+    grid-template-columns: 1fr;
+  }
+
+  .libraryPreviewImage {
+    height: 160px;
+    min-height: 0;
+  }
+}
