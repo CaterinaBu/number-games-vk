@@ -126,21 +126,25 @@ function FactCard({
 
 function RoundProgress({
   answered,
-  currentAnswered
+  currentAnswered,
+  total = ROUND_LENGTH,
+  label = 'Вопрос'
 }: {
   answered: number;
   currentAnswered: boolean;
+  total?: number;
+  label?: string;
 }) {
   const current = Math.min(
-    ROUND_LENGTH,
+    total,
     answered + (currentAnswered ? 0 : 1)
   );
-  const filled = Math.min(100, (answered / ROUND_LENGTH) * 100);
+  const filled = Math.min(100, (answered / total) * 100);
 
   return (
     <div className="roundProgress">
       <div className="roundProgressText">
-        Вопрос <b>{current}</b> из {ROUND_LENGTH}
+        {label} <b>{current}</b> из {total}
       </div>
       <div className="roundProgressTrack">
         <div className="roundProgressFill" style={{ width: `${filled}%` }} />
@@ -466,7 +470,20 @@ function CompareGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRoun
   );
 }
 
-function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound }: GameProps) {
+type GuessGameProps = GameProps & {
+  tutorialMode: boolean;
+  onTutorialComplete: () => void;
+};
+
+function GuessGame({
+  onFinish,
+  onHome,
+  onBeforeLeave,
+  onAttempt,
+  onRestartRound,
+  tutorialMode,
+  onTutorialComplete
+}: GuessGameProps) {
   const [fact, setFact] = useState<Fact>(() => createGuessFact());
   const [input, setInput] = useState('');
   const [submittedGuess, setSubmittedGuess] = useState<number | null>(null);
@@ -474,14 +491,25 @@ function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
   const [totalCloseness, setTotalCloseness] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [savedRecord, setSavedRecord] = useState<RecordEntry | null>(null);
+  const [replayTutorial, setReplayTutorial] = useState(false);
+  const [tutorialIntroOpen, setTutorialIntroOpen] = useState(tutorialMode);
+  const [tutorialCompleteOpen, setTutorialCompleteOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [useMobileKeypad] = useState(() =>
     typeof window !== 'undefined' && window.matchMedia('(max-width: 760px)').matches
   );
 
+  const training = tutorialMode || replayTutorial;
+  const roundLength = training ? 3 : ROUND_LENGTH;
   const answered = submittedGuess !== null;
   const closeness = answered ? calculateCloseness(submittedGuess, fact.value) : null;
   const averageScore = rounds > 0 ? Math.round(totalCloseness / rounds) : 0;
+
+  const tutorialHints = [
+    'Оцените значение факта. Точное число знать не обязательно.',
+    'Чем ближе ответ к настоящему значению, тем выше близость.',
+    'В полной партии результат считается по средней близости за 10 заданий.'
+  ];
 
   function addKey(token: string) {
     if (answered) return;
@@ -502,7 +530,7 @@ function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
   }
 
   function submit() {
-    if (answered || rounds >= ROUND_LENGTH) return;
+    if (answered || rounds >= roundLength) return;
 
     const guess = parseGuess(input);
     if (guess === null) return;
@@ -522,9 +550,18 @@ function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
     setShowResult(true);
   }
 
+  function completeTraining() {
+    onTutorialComplete();
+    setTutorialCompleteOpen(true);
+  }
+
   function next() {
-    if (rounds >= ROUND_LENGTH) {
-      finish();
+    if (rounds >= roundLength) {
+      if (training) {
+        completeTraining();
+      } else {
+        finish();
+      }
       return;
     }
 
@@ -541,6 +578,20 @@ function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
     setTotalCloseness(0);
     setShowResult(false);
     setSavedRecord(null);
+  }
+
+  function startTutorialReplay() {
+    resetRound();
+    setReplayTutorial(true);
+    setTutorialIntroOpen(true);
+    trackEvent('tutorial_restarted', { game: 'guess' });
+  }
+
+  function startFullRoundAfterTutorial() {
+    setTutorialCompleteOpen(false);
+    setReplayTutorial(false);
+    resetRound();
+    trackEvent('round_started', { game: 'guess', source: 'tutorial_complete' });
   }
 
   if (showResult && savedRecord) {
@@ -560,15 +611,42 @@ function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
 
   return (
     <>
+      {!training && (
+        <section className="guessQuickRules">
+          <div>
+            <strong>Как играть</strong>
+            <span>Оцените значение факта. Точное число знать не обязательно — чем ближе ответ, тем выше результат.</span>
+          </div>
+          <button type="button" onClick={startTutorialReplay}>Пройти обучение ещё раз</button>
+        </section>
+      )}
+
       <div className="toolbar guessToolbar">
         <div className="stats">
-          {rounds > 0 && <span className="accuracy"><b>{averageScore}%</b> средняя близость</span>}
+          {training
+            ? <span className="tutorialModeLabel">Обучение · 3 задания</span>
+            : rounds > 0 && <span className="accuracy"><b>{averageScore}%</b> средняя близость</span>}
         </div>
       </div>
 
-      <RoundProgress answered={rounds} currentAnswered={answered} />
+      <RoundProgress
+        answered={rounds}
+        currentAnswered={answered}
+        total={roundLength}
+        label={training ? 'Задание' : 'Вопрос'}
+      />
 
-      <section className="guessArea">
+      {training && (
+        <div className="tutorialHintBar">
+          <span>💡</span>
+          <div>
+            <strong>Подсказка</strong>
+            <p>{tutorialHints[Math.min(rounds, tutorialHints.length - 1)]}</p>
+          </div>
+        </div>
+      )}
+
+      <section className={`guessArea ${training ? 'guessAreaTutorial' : ''}`}>
         <div className="guessCard">
           <span className="metric">{formatMetric(fact)}</span>
           <span className="object">{fact.object}</span>
@@ -641,6 +719,15 @@ function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
             <div className="guessResult">
               <div className="actualValue">{formatValue(fact)}</div>
               <div className="closeness">Близость: <b>{closeness}%</b></div>
+              {training && (
+                <div className="tutorialAnswerNote">
+                  {closeness !== null && closeness >= 80
+                    ? 'Очень близко — отличный ориентир.'
+                    : closeness !== null && closeness >= 50
+                      ? 'Неплохо: направление верное, но можно приблизиться ещё.'
+                      : 'Здесь промах заметный — ничего страшного, важна именно оценка масштаба.'}
+                </div>
+              )}
             </div>
           )}
 
@@ -648,13 +735,81 @@ function GuessGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
             {answered
               ? (
                 <button type="button" className="next" onClick={next}>
-                  {rounds >= ROUND_LENGTH ? 'Результаты' : 'Следующий'} <span>→</span>
+                  {rounds >= roundLength
+                    ? training ? 'Завершить обучение' : 'Результаты'
+                    : 'Следующий'} <span>→</span>
                 </button>
               )
               : <button type="button" className="next" onClick={submit} disabled={parseGuess(input) === null}>Проверить</button>}
           </div>
         </div>
       </section>
+
+      {tutorialIntroOpen && (
+        <div className="tutorialOverlay" role="presentation" onMouseDown={() => setTutorialIntroOpen(false)}>
+          <section
+            className="tutorialModal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="guess-tutorial-title"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <button className="tutorialClose" onClick={() => setTutorialIntroOpen(false)} aria-label="Закрыть">×</button>
+            <div className="tutorialMascot" aria-hidden="true">🐧</div>
+            <div className="tutorialEyebrow">Ближе к правде</div>
+            <h2 id="guess-tutorial-title">Давайте попробуем!</h2>
+            <p>Сначала будет 3 тренировочных задания, чтобы спокойно разобраться с механикой.</p>
+            <div className="tutorialRules">
+              <div><b>🎯</b><span>Оцените значение факта</span></div>
+              <div><b>#</b><span>Точное число знать не обязательно</span></div>
+              <div><b>⭐</b><span>Чем ближе ответ, тем выше результат</span></div>
+            </div>
+            <button
+              className="next tutorialPrimary"
+              onClick={() => {
+                setTutorialIntroOpen(false);
+                trackEvent('tutorial_started', { game: 'guess' });
+              }}
+            >
+              Начать обучение
+            </button>
+          </section>
+        </div>
+      )}
+
+      {tutorialCompleteOpen && (
+        <div className="tutorialOverlay tutorialCompleteOverlay" role="presentation">
+          <section
+            className="tutorialModal tutorialCompleteModal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="guess-tutorial-complete-title"
+          >
+            <div className="tutorialMascot celebration" aria-hidden="true">🐧✨</div>
+            <div className="tutorialEyebrow">Обучение завершено</div>
+            <h2 id="guess-tutorial-complete-title">Игра освоена!</h2>
+            <p>Теперь доступны обычные партии из 10 заданий. Результат считается по средней близости ответов.</p>
+            <div className="tutorialCompleteStat">
+              <strong>{averageScore}%</strong>
+              <span>средняя близость в обучении</span>
+            </div>
+            <button className="next tutorialPrimary" onClick={startFullRoundAfterTutorial}>
+              Сыграть полную партию
+            </button>
+            <button
+              className="secondaryButton tutorialSecondary"
+              onClick={() => {
+                setTutorialCompleteOpen(false);
+                setReplayTutorial(false);
+                resetRound();
+                onHome();
+              }}
+            >
+              Вернуться на главную
+            </button>
+          </section>
+        </div>
+      )}
     </>
   );
 }
@@ -1426,6 +1581,23 @@ export default function App() {
     });
   }
 
+  function completeTutorial(game: GameTab) {
+    if (progress.status[game] === 'mastered') return;
+
+    const nextProgress: PlayerProgress = {
+      ...progress,
+      status: {
+        ...progress.status,
+        [game]: 'mastered'
+      }
+    };
+
+    setProgress(nextProgress);
+    saveProgress(nextProgress);
+    setHasAttemptedAnswer(false);
+    trackEvent('tutorial_completed', { game });
+  }
+
   function saveResult(game: GameTab, result: FinishResult): RecordEntry {
     setHasAttemptedAnswer(false);
     trackEvent('round_completed', {
@@ -1521,7 +1693,17 @@ export default function App() {
       </header>
 
       {tab === 'compare' && <CompareGame onFinish={saveResult} onHome={goHome} onBeforeLeave={runPostRoundAction} onAttempt={markAttempted} onRestartRound={restartRound} />}
-      {tab === 'guess' && <GuessGame onFinish={saveResult} onHome={goHome} onBeforeLeave={runPostRoundAction} onAttempt={markAttempted} onRestartRound={restartRound} />}
+      {tab === 'guess' && (
+        <GuessGame
+          onFinish={saveResult}
+          onHome={goHome}
+          onBeforeLeave={runPostRoundAction}
+          onAttempt={markAttempted}
+          onRestartRound={restartRound}
+          tutorialMode={progress.status.guess === 'tutorial'}
+          onTutorialComplete={() => completeTutorial('guess')}
+        />
+      )}
       {tab === 'order' && <OrderGame onFinish={saveResult} onHome={goHome} onBeforeLeave={runPostRoundAction} onAttempt={markAttempted} onRestartRound={restartRound} />}
       {tab === 'near' && <NearGame onFinish={saveResult} onHome={goHome} onBeforeLeave={runPostRoundAction} onAttempt={markAttempted} onRestartRound={restartRound} />}
 
