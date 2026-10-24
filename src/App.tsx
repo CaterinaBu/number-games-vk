@@ -1197,7 +1197,7 @@ const HOME_ASSET_BASE = `${import.meta.env.BASE_URL}assets/home/`;
 
 const TUTORIAL_ASSET_BASE = `${import.meta.env.BASE_URL}assets/tutorial/`;
 const guessTutorialIntroArt = `${HOME_ASSET_BASE}game-guess.avif`;
-const guessTutorialCompleteArt = `${TUTORIAL_ASSET_BASE}guess-tutorial-complete.avif`;
+const guessTutorialCompleteArt = `${TUTORIAL_ASSET_BASE}guess-tutorial-complete-wide.webp`;
 
 const hqHomeGameArt: Record<GameTab, string> = {
   compare: `${HOME_ASSET_BASE}game-compare.avif`,
