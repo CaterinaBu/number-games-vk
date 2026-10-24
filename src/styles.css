@@ -6770,3 +6770,47 @@ body {
     display: block;
   }
 }
+
+
+/* v51 — final hero uses the exact same full-bleed principle as the intro */
+@media (min-width: 761px) {
+  .tutorialHeroComplete {
+    position: relative;
+    overflow: hidden;
+    background: #dfeaff;
+  }
+
+  .tutorialHeroComplete img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 72% 48%;
+    -webkit-mask-image: none;
+    mask-image: none;
+    transform: none;
+  }
+
+  .tutorialHeroComplete .tutorialHeroShade {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(
+        90deg,
+        rgba(248,250,255,.98) 0%,
+        rgba(248,250,255,.95) 23%,
+        rgba(248,250,255,.78) 37%,
+        rgba(248,250,255,.45) 50%,
+        rgba(248,250,255,.16) 62%,
+        rgba(248,250,255,.03) 72%,
+        rgba(248,250,255,0) 82%
+      );
+  }
+
+  .tutorialHeroComplete .tutorialHeroCopy {
+    position: relative;
+    z-index: 2;
+    width: min(50%, 400px);
+  }
+}
