@@ -5705,3 +5705,89 @@ body {
     height: 100%;
   }
 }
+
+
+/* v42 — soften featured blend and rebalance the right rail */
+.dashboardFeatured {
+  min-height: 258px;
+}
+
+.dashboardFeaturedShade {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(248,250,255,.99) 0%,
+      rgba(248,250,255,.985) 20%,
+      rgba(248,250,255,.94) 36%,
+      rgba(248,250,255,.78) 49%,
+      rgba(248,250,255,.48) 61%,
+      rgba(248,250,255,.18) 74%,
+      rgba(248,250,255,.03) 88%,
+      rgba(248,250,255,0) 100%
+    );
+}
+
+.dashboardFeaturedCopy {
+  width: min(58%, 590px);
+  padding-right: 18px;
+}
+
+.dashboardFeaturedImage img {
+  object-position: 64% 50%;
+}
+
+.dashboardSide .ratingQuickCard,
+.dashboardSide .shopQuickCard {
+  flex: 0 0 auto;
+}
+
+.dashboardSide .libraryPreview {
+  min-height: 292px;
+  flex: 1 1 auto;
+}
+
+.libraryPreviewImage {
+  height: 166px;
+}
+
+.libraryPreviewCopy {
+  padding-top: 12px;
+}
+
+.dashboardMiniImage {
+  height: 128px;
+}
+
+.dashboardMiniImage img,
+.libraryPreviewImage img,
+.dashboardFeaturedImage img {
+  image-rendering: auto;
+  backface-visibility: hidden;
+}
+
+@media (max-width: 760px) {
+  .dashboardFeaturedCopy {
+    width: min(76%, 410px);
+  }
+
+  .dashboardFeaturedShade {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(248,250,255,.99) 0%,
+        rgba(248,250,255,.98) 32%,
+        rgba(248,250,255,.84) 50%,
+        rgba(248,250,255,.48) 68%,
+        rgba(248,250,255,.08) 92%,
+        rgba(248,250,255,0) 100%
+      );
+  }
+
+  .dashboardFeaturedImage img {
+    object-position: 68% 50%;
+  }
+
+  .libraryPreviewImage {
+    height: 100%;
+  }
+}
