@@ -6814,3 +6814,27 @@ body {
     width: min(50%, 400px);
   }
 }
+
+
+/* v52 — wide completion artwork, no square-image stretching */
+@media (min-width: 761px) {
+  .tutorialHeroComplete img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 48%;
+  }
+
+  .tutorialHeroComplete .tutorialHeroShade {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(248,250,255,.97) 0%,
+        rgba(248,250,255,.92) 26%,
+        rgba(248,250,255,.72) 40%,
+        rgba(248,250,255,.38) 52%,
+        rgba(248,250,255,.11) 64%,
+        rgba(248,250,255,0) 76%
+      );
+  }
+}
