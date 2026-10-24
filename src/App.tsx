@@ -3,6 +3,11 @@ import homePenguinPart1 from './assets/homePenguinPart1';
 import homePenguinPart2 from './assets/homePenguinPart2';
 import homePenguinPart3 from './assets/homePenguinPart3';
 import resultPenguin from './assets/penguin-result.webp';
+import homeGameGuess from './assets/homeGameGuess';
+import homeGameCompare from './assets/home/game-compare.webp';
+import homeGameOrder from './assets/home/game-order.webp';
+import homeGameNear from './assets/home/game-near.webp';
+import homeLibrary from './assets/home/library.webp';
 
 const penguinMascot = 'data:image/webp;base64,' + homePenguinPart1 + homePenguinPart2 + homePenguinPart3;
 import {
@@ -1006,6 +1011,13 @@ const titles: Record<GameTab, { title: string; subtitle: string }> = {
   }
 };
 
+const homeGameArt: Record<GameTab, string> = {
+  compare: homeGameCompare,
+  guess: homeGameGuess,
+  order: homeGameOrder,
+  near: homeGameNear
+};
+
 const homeGames: Array<{
   id: GameTab;
   title: string;
@@ -1077,97 +1089,144 @@ function HomeScreen({
   }
 
   return (
-    <main className="home">
-      <header className="homeHero">
-        <div className="homeBrand">
-          <div className="homeMascotWrap">
-            <img className="homeMascot" src={penguinMascot} alt="Пингвинчик с табличкой 42" />
-          </div>
-          <div className="homeHeroCopy">
-            <div className="homeEyebrow">4 мини-игры · {new Intl.NumberFormat('ru-RU').format(getFactCount())} фактов</div>
+    <main className="home homeDashboard">
+      <header className="dashboardHeader">
+        <div className="dashboardIdentity">
+          <img src={penguinMascot} alt="" aria-hidden="true" />
+          <div>
             <h1>Игры с числами</h1>
-            <p>Сравнивайте, угадывайте и расставляйте факты. Одна партия — 10 заданий.</p>
+            <p>Открывайте удивительные факты и тренируйте интуицию</p>
           </div>
+        </div>
+
+        <div className="dashboardTopLinks" aria-label="Разделы игры">
+          <span className="dashboardTopLink">
+            <b>🏆</b>
+            <span>Рейтинг</span>
+            <small>скоро</small>
+          </span>
+          <span className="dashboardTopLink">
+            <b>📚</b>
+            <span>Библиотека</span>
+          </span>
+          <span className="dashboardTopLink">
+            <b>🛍</b>
+            <span>Магазин</span>
+            <small>скоро</small>
+          </span>
         </div>
       </header>
 
-      <nav className="homeSectionNav" aria-label="Разделы игры">
-        <span className="homeSectionNavItem active">Главная</span>
-        <span className="homeSectionNavItem">Рейтинг <small>скоро</small></span>
-        <span className="homeSectionNavItem">Библиотека <small>скоро</small></span>
-        <span className="homeSectionNavItem">Магазин <small>скоро</small></span>
-      </nav>
-
-      <section className="homeProgress" aria-label="Прогресс знакомства с играми">
-        <div className="homeProgressCopy">
-          <strong>Освоено {masteredCount} из 4 игр</strong>
-          <span>
-            {masteredCount < 4
-              ? 'Попробуйте все режимы, чтобы открыть задание дня'
-              : 'Все режимы освоены · задание дня скоро появится'}
-          </span>
+      <section className="dashboardMetaRow">
+        <div className="masteryCard">
+          <div className="masteryIcon">🎮</div>
+          <div className="masteryCopy">
+            <strong>Освоено {masteredCount} из 4 игр</strong>
+            <div className="masterySteps" aria-hidden="true">
+              {homeGames.map((game) => (
+                <span key={game.id} className={progress.mastered[game.id] ? 'done' : ''} />
+              ))}
+            </div>
+          </div>
         </div>
-        <div className="homeProgressSteps" aria-hidden="true">
-          {homeGames.map((game) => (
-            <span key={game.id} className={progress.mastered[game.id] ? 'done' : ''} />
-          ))}
+
+        <div className={`dailyCard ${masteredCount === 4 ? 'unlocked' : 'locked'}`}>
+          <div className="dailyIcon">{masteredCount === 4 ? '📅' : '🔒'}</div>
+          <div>
+            <strong>Задание дня</strong>
+            <span>
+              {masteredCount === 4
+                ? 'Скоро здесь появится новое испытание каждый день'
+                : `Освойте ещё ${4 - masteredCount}, чтобы открыть`}
+            </span>
+          </div>
         </div>
       </section>
 
-      <section className="featuredGameSection">
-        <div className="featuredLabel">
-          {progress.mastered[featuredGame.id] ? 'Сегодня рекомендуем' : 'Начните отсюда'}
-        </div>
+      <section className="dashboardMainGrid">
+        <div className="dashboardGames">
+          <div className="featuredLabel">
+            {progress.mastered[featuredGame.id] ? 'Сегодня рекомендуем' : 'Начните отсюда'}
+          </div>
 
-        <button
-          className={`featuredGameCard featuredGameCard-${featuredGame.id}`}
-          onClick={() => onStart(featuredGame.id)}
-        >
-          <span className={`gameStatusBadge ${progress.mastered[featuredGame.id] ? 'mastered' : 'new'}`}>
-            {statusCopy(featuredGame.id)}
-          </span>
-          <span className="featuredGameArt" aria-hidden="true">
-            <img src={penguinMascot} alt="" />
-            <span className="featuredGameToken">{featuredGame.icon}</span>
-          </span>
-          <span className="featuredGameCopy">
-            <span className="featuredGameTitle">{featuredGame.title}</span>
-            <span className="featuredGameDescription">{featuredGame.description}</span>
-            <span className="featuredGameRecord">{recordCopy(featuredGame.id)}</span>
-            <span className="featuredGameCta">Играть <b>→</b></span>
-          </span>
-        </button>
-      </section>
-
-      <section className="otherGamesSection">
-        <div className="otherGamesHeading">Другие игры</div>
-        <div className="otherGamesGrid">
-          {otherGames.map((game) => (
-            <button
-              className={`otherGameCard otherGameCard-${game.id}`}
-              key={game.id}
-              onClick={() => onStart(game.id)}
-            >
-              <span className={`gameStatusBadge ${progress.mastered[game.id] ? 'mastered' : 'new'}`}>
-                {statusCopy(game.id)}
+          <button
+            className={`dashboardFeatured dashboardFeatured-${featuredGame.id}`}
+            onClick={() => onStart(featuredGame.id)}
+          >
+            <span className="dashboardFeaturedCopy">
+              <span className={`gameStatusBadge ${progress.mastered[featuredGame.id] ? 'mastered' : 'new'}`}>
+                {statusCopy(featuredGame.id)}
               </span>
-              <span className="otherGameVisual" aria-hidden="true">
-                <img src={penguinMascot} alt="" />
-                <span className="otherGameToken">{game.icon}</span>
-              </span>
-              <span className="otherGameTitle">{game.title}</span>
-              <span className="otherGameDescription">{game.description}</span>
-              <span className="otherGameRecord">{recordCopy(game.id)}</span>
-              <span className="otherGameArrow">→</span>
-            </button>
-          ))}
+              <span className="dashboardFeaturedTitle">{featuredGame.title}</span>
+              <span className="dashboardFeaturedDescription">{featuredGame.description}</span>
+              <span className="dashboardFeaturedRecord">{recordCopy(featuredGame.id)}</span>
+              <span className="dashboardFeaturedCta">Играть <b>→</b></span>
+            </span>
+            <span className="dashboardFeaturedImage" aria-hidden="true">
+              <img src={homeGameArt[featuredGame.id]} alt="" />
+            </span>
+          </button>
+
+          <div className="dashboardMiniGrid">
+            {otherGames.map((game) => (
+              <button
+                className={`dashboardMiniGame dashboardMiniGame-${game.id}`}
+                key={game.id}
+                onClick={() => onStart(game.id)}
+              >
+                <span className="dashboardMiniImage" aria-hidden="true">
+                  <img src={homeGameArt[game.id]} alt="" />
+                  <span className={`gameStatusBadge ${progress.mastered[game.id] ? 'mastered' : 'new'}`}>
+                    {statusCopy(game.id)}
+                  </span>
+                </span>
+                <span className="dashboardMiniCopy">
+                  <span className="dashboardMiniTitle">{game.title}</span>
+                  <span className="dashboardMiniDescription">{game.description}</span>
+                  <span className="dashboardMiniRecord">{recordCopy(game.id)}</span>
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
+
+        <aside className="dashboardSide">
+          <section className="libraryPreview">
+            <div className="libraryPreviewImage">
+              <img src={homeLibrary} alt="" aria-hidden="true" />
+            </div>
+            <div className="libraryPreviewCopy">
+              <span className="sideEyebrow">Ваш прогресс</span>
+              <h2>Библиотека пингвина</h2>
+              <p>Собирайте факты, открывайте достижения и развивайте историю своего исследователя.</p>
+              <span className="sideSoon">Раздел появится следующим этапом</span>
+            </div>
+          </section>
+
+          <section className="sideQuickCard shopQuickCard">
+            <div className="sideQuickIcon">🛍</div>
+            <div>
+              <strong>Магазин</strong>
+              <span>Фактобаллы, бонусы и украшения</span>
+            </div>
+            <small>Скоро</small>
+          </section>
+
+          <section className="sideQuickCard ratingQuickCard">
+            <div className="sideQuickIcon">🏆</div>
+            <div>
+              <strong>Рейтинг</strong>
+              <span>Сравнивайте результаты с другими игроками</span>
+            </div>
+            <small>Скоро</small>
+          </section>
+        </aside>
       </section>
 
-      <div className="homeSupport">
+      <div className="dashboardFooterActions">
         <DonateButton />
+        <SocialActions compact />
       </div>
-      <SocialActions />
     </main>
   );
 }
