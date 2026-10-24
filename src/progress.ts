@@ -24,7 +24,7 @@ export function loadProgress(): PlayerProgress {
     const raw = localStorage.getItem(PROGRESS_STORAGE_KEY);
     if (!raw) return empty;
 
-    const parsed = JSON.parse(raw) as Partial<PlayerProgress>;
+    const parsed = JSON.parse(raw) as { mastered?: Partial<Record<ProgressGame, boolean>> };
     const mastered = parsed.mastered ?? {};
 
     return {
