@@ -10,7 +10,6 @@ const partNames = [
   'part-01.b64',
   'part-02a.b64',
   'part-02b.b64',
-  'part-02c.b64',
   'part-03.b64',
 ];
 
