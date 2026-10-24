@@ -1,20 +1,28 @@
 export type ProgressGame = 'compare' | 'guess' | 'order' | 'near';
+export type GameProgressStatus = 'new' | 'tutorial' | 'mastered';
 
 export type PlayerProgress = {
-  mastered: Record<ProgressGame, boolean>;
+  status: Record<ProgressGame, GameProgressStatus>;
 };
 
-const PROGRESS_STORAGE_KEY = 'number-games-progress-v1';
+const PROGRESS_STORAGE_KEY = 'number-games-progress-v2';
+const LEGACY_PROGRESS_STORAGE_KEY = 'number-games-progress-v1';
+
+const GAMES: ProgressGame[] = ['compare', 'guess', 'order', 'near'];
 
 export function createEmptyProgress(): PlayerProgress {
   return {
-    mastered: {
-      compare: false,
-      guess: false,
-      order: false,
-      near: false
+    status: {
+      compare: 'new',
+      guess: 'new',
+      order: 'new',
+      near: 'new'
     }
   };
+}
+
+function isStatus(value: unknown): value is GameProgressStatus {
+  return value === 'new' || value === 'tutorial' || value === 'mastered';
 }
 
 export function loadProgress(): PlayerProgress {
@@ -22,19 +30,38 @@ export function loadProgress(): PlayerProgress {
 
   try {
     const raw = localStorage.getItem(PROGRESS_STORAGE_KEY);
-    if (!raw) return empty;
 
-    const parsed = JSON.parse(raw) as { mastered?: Partial<Record<ProgressGame, boolean>> };
-    const mastered = parsed.mastered ?? {};
+    if (raw) {
+      const parsed = JSON.parse(raw) as {
+        status?: Partial<Record<ProgressGame, GameProgressStatus>>;
+      };
 
-    return {
-      mastered: {
-        compare: mastered.compare === true,
-        guess: mastered.guess === true,
-        order: mastered.order === true,
-        near: mastered.near === true
+      const next = createEmptyProgress();
+
+      for (const game of GAMES) {
+        const value = parsed.status?.[game];
+        next.status[game] = isStatus(value) ? value : 'new';
       }
+
+      return next;
+    }
+
+    // Migration from the first boolean progress format.
+    const legacyRaw = localStorage.getItem(LEGACY_PROGRESS_STORAGE_KEY);
+    if (!legacyRaw) return empty;
+
+    const legacy = JSON.parse(legacyRaw) as {
+      mastered?: Partial<Record<ProgressGame, boolean>>;
     };
+
+    const migrated = createEmptyProgress();
+
+    for (const game of GAMES) {
+      migrated.status[game] = legacy.mastered?.[game] === true ? 'mastered' : 'new';
+    }
+
+    saveProgress(migrated);
+    return migrated;
   } catch {
     return empty;
   }
