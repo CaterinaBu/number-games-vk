@@ -792,7 +792,7 @@ function GuessGame({
             </div>
             <div className="tutorialEyebrow">Обучение завершено</div>
             <h2 id="guess-tutorial-complete-title">Игра освоена!</h2>
-            <p>Теперь доступны обычные партии из 10 заданий. Результат считается по средней близости ответов.</p>
+            <p>Теперь доступны обычные партии из 10 заданий.<br />Результат считается по средней близости ответов.</p>
             <div className="tutorialCompleteStat">
               <strong>{averageScore}%</strong>
               <span>средняя близость в обучении</span>
@@ -1180,7 +1180,7 @@ const homeGameArt: Record<GameTab, string> = {
 const HOME_ASSET_BASE = `${import.meta.env.BASE_URL}assets/home/`;
 
 const TUTORIAL_ASSET_BASE = `${import.meta.env.BASE_URL}assets/tutorial/`;
-const guessTutorialIntroArt = `${TUTORIAL_ASSET_BASE}guess-tutorial-intro.avif`;
+const guessTutorialIntroArt = `${HOME_ASSET_BASE}game-guess.avif`;
 const guessTutorialCompleteArt = `${TUTORIAL_ASSET_BASE}guess-tutorial-complete.avif`;
 
 const hqHomeGameArt: Record<GameTab, string> = {
