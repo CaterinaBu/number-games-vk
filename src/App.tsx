@@ -26,6 +26,7 @@ import {
 } from './game';
 import { donateToCommunity, isDonationConfigured, isVKEnvironment, openCommunity, registerCompletedRound, resizeDesktopWindowToContent, shareApp, showAdIfAvailable } from './vk';
 import { trackEvent } from './analytics';
+import { loadProgress, saveProgress, type PlayerProgress } from './progress';
 
 type Side = 'left' | 'right';
 type GameTab = 'compare' | 'guess' | 'order' | 'near';
@@ -1044,20 +1045,35 @@ const homeGames: Array<{
 
 function HomeScreen({
   records,
+  progress,
   onStart
 }: {
   records: Records;
+  progress: PlayerProgress;
   onStart: (game: GameTab) => void;
 }) {
+  const masteredCount = homeGames.filter((game) => progress.mastered[game.id]).length;
+  const unmastered = homeGames.filter((game) => !progress.mastered[game.id]);
+
+  const featuredGame = unmastered.length > 0
+    ? unmastered[0]
+    : homeGames[Math.floor(Date.now() / 86_400_000) % homeGames.length];
+
+  const otherGames = homeGames.filter((game) => game.id !== featuredGame.id);
+
   function recordCopy(game: GameTab) {
     const record = records[game];
-    if (record.plays === 0) return 'Ещё не сыграно';
+    if (record.plays === 0) return 'Первый результат ещё впереди';
 
     if (game === 'guess') {
       return `Рекорд ${record.bestAverage}% · партий ${record.plays}`;
     }
 
     return `Рекорд ${record.bestScore}/${ROUND_LENGTH} · партий ${record.plays}`;
+  }
+
+  function statusCopy(game: GameTab) {
+    return progress.mastered[game] ? 'Освоено' : 'NEW';
   }
 
   return (
@@ -1075,17 +1091,64 @@ function HomeScreen({
         </div>
       </header>
 
-      <section className="homeGrid">
-        {homeGames.map((game) => (
-          <button className={`homeGameCard homeGameCard-${game.id}`} key={game.id} onClick={() => onStart(game.id)}>
-            <span className="homeGameIcon">{game.icon}</span>
-            <span className="homeGameNumber">{game.number}</span>
-            <span className="homeGameTitle">{game.title}</span>
-            <span className="homeGameDescription">{game.description}</span>
-            <span className="homeGameRecord">{recordCopy(game.id)}</span>
-            <span className="homeGameArrow">→</span>
-          </button>
-        ))}
+      <section className="homeProgress" aria-label="Прогресс знакомства с играми">
+        <div className="homeProgressCopy">
+          <strong>Освоено {masteredCount} из 4 игр</strong>
+          <span>
+            {masteredCount < 4
+              ? 'Попробуйте все режимы, чтобы открыть задание дня'
+              : 'Все режимы освоены · задание дня скоро появится'}
+          </span>
+        </div>
+        <div className="homeProgressSteps" aria-hidden="true">
+          {homeGames.map((game) => (
+            <span key={game.id} className={progress.mastered[game.id] ? 'done' : ''} />
+          ))}
+        </div>
+      </section>
+
+      <section className="featuredGameSection">
+        <div className="featuredLabel">
+          {progress.mastered[featuredGame.id] ? 'Сегодня рекомендуем' : 'Начните отсюда'}
+        </div>
+
+        <button
+          className={`featuredGameCard featuredGameCard-${featuredGame.id}`}
+          onClick={() => onStart(featuredGame.id)}
+        >
+          <span className={`gameStatusBadge ${progress.mastered[featuredGame.id] ? 'mastered' : 'new'}`}>
+            {statusCopy(featuredGame.id)}
+          </span>
+          <span className="featuredGameIcon">{featuredGame.icon}</span>
+          <span className="featuredGameCopy">
+            <span className="featuredGameTitle">{featuredGame.title}</span>
+            <span className="featuredGameDescription">{featuredGame.description}</span>
+            <span className="featuredGameRecord">{recordCopy(featuredGame.id)}</span>
+            <span className="featuredGameCta">Играть <b>→</b></span>
+          </span>
+        </button>
+      </section>
+
+      <section className="otherGamesSection">
+        <div className="otherGamesHeading">Другие игры</div>
+        <div className="otherGamesGrid">
+          {otherGames.map((game) => (
+            <button
+              className={`otherGameCard otherGameCard-${game.id}`}
+              key={game.id}
+              onClick={() => onStart(game.id)}
+            >
+              <span className={`gameStatusBadge ${progress.mastered[game.id] ? 'mastered' : 'new'}`}>
+                {statusCopy(game.id)}
+              </span>
+              <span className="otherGameIcon">{game.icon}</span>
+              <span className="otherGameTitle">{game.title}</span>
+              <span className="otherGameDescription">{game.description}</span>
+              <span className="otherGameRecord">{recordCopy(game.id)}</span>
+              <span className="otherGameArrow">→</span>
+            </button>
+          ))}
+        </div>
       </section>
 
       <div className="homeSupport">
@@ -1100,6 +1163,19 @@ export default function App() {
   const [screen, setScreen] = useState<'home' | 'game'>('home');
   const [tab, setTab] = useState<GameTab>('compare');
   const [records, setRecords] = useState<Records>(() => loadRecords());
+  const [progress, setProgress] = useState<PlayerProgress>(() => {
+    const stored = loadProgress();
+    const migrated: PlayerProgress = {
+      mastered: {
+        compare: stored.mastered.compare || loadRecords().compare.plays > 0,
+        guess: stored.mastered.guess || loadRecords().guess.plays > 0,
+        order: stored.mastered.order || loadRecords().order.plays > 0,
+        near: stored.mastered.near || loadRecords().near.plays > 0
+      }
+    };
+    saveProgress(migrated);
+    return migrated;
+  });
   const [adPending, setAdPending] = useState(false);
   const [hasAttemptedAnswer, setHasAttemptedAnswer] = useState(false);
   const [leaveConfirm, setLeaveConfirm] = useState<{
@@ -1232,6 +1308,18 @@ export default function App() {
 
     setRecords(nextRecords);
 
+    if (!progress.mastered[game]) {
+      const nextProgress: PlayerProgress = {
+        ...progress,
+        mastered: {
+          ...progress.mastered,
+          [game]: true
+        }
+      };
+      setProgress(nextProgress);
+      saveProgress(nextProgress);
+    }
+
     if (registerCompletedRound()) {
       setAdPending(true);
     }
@@ -1269,7 +1357,7 @@ export default function App() {
   }
 
   if (screen === 'home') {
-    return <HomeScreen records={records} onStart={startGame} />;
+    return <HomeScreen records={records} progress={progress} onStart={startGame} />;
   }
 
   const copy = titles[tab];
