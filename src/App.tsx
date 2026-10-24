@@ -506,9 +506,9 @@ function GuessGame({
   const averageScore = rounds > 0 ? Math.round(totalCloseness / rounds) : 0;
 
   const tutorialHints = [
-    'Оцените значение факта. Точное число знать не обязательно.',
-    'Чем ближе ответ к настоящему значению, тем выше близость.',
-    'В полной партии результат считается по средней близости за 10 заданий.'
+    'Попробуйте угадать значение факта. Знать точно не обязательно: достаточно приближённого значения.',
+    'После ответа сравним вашу оценку с настоящим значением. Чем ближе числа, тем выше результат.',
+    'В полной партии итог считается по средней близости всех 10 ответов.'
   ];
 
   function addKey(token: string) {
@@ -615,7 +615,7 @@ function GuessGame({
         <section className="guessQuickRules">
           <div>
             <strong>Как играть</strong>
-            <span>Оцените значение факта. Точное число знать не обязательно — чем ближе ответ, тем выше результат.</span>
+            <span>Попробуйте угадать значение факта. Точное число знать не обязательно — важна близость ответа.</span>
           </div>
           <button type="button" onClick={startTutorialReplay}>Пройти обучение ещё раз</button>
         </section>
@@ -755,7 +755,9 @@ function GuessGame({
             onMouseDown={(event) => event.stopPropagation()}
           >
             <button className="tutorialClose" onClick={() => setTutorialIntroOpen(false)} aria-label="Закрыть">×</button>
-            <div className="tutorialMascot" aria-hidden="true">🐧</div>
+            <div className="tutorialHero" aria-hidden="true">
+              <img src={guessTutorialIntroArt} alt="" />
+            </div>
             <div className="tutorialEyebrow">Ближе к правде</div>
             <h2 id="guess-tutorial-title">Давайте попробуем!</h2>
             <p>Сначала будет 3 тренировочных задания, чтобы спокойно разобраться с механикой.</p>
@@ -785,7 +787,9 @@ function GuessGame({
             aria-modal="true"
             aria-labelledby="guess-tutorial-complete-title"
           >
-            <div className="tutorialMascot celebration" aria-hidden="true">🐧✨</div>
+            <div className="tutorialHero tutorialHeroComplete" aria-hidden="true">
+              <img src={guessTutorialCompleteArt} alt="" />
+            </div>
             <div className="tutorialEyebrow">Обучение завершено</div>
             <h2 id="guess-tutorial-complete-title">Игра освоена!</h2>
             <p>Теперь доступны обычные партии из 10 заданий. Результат считается по средней близости ответов.</p>
@@ -1174,6 +1178,10 @@ const homeGameArt: Record<GameTab, string> = {
 };
 
 const HOME_ASSET_BASE = `${import.meta.env.BASE_URL}assets/home/`;
+
+const TUTORIAL_ASSET_BASE = `${import.meta.env.BASE_URL}assets/tutorial/`;
+const guessTutorialIntroArt = `${TUTORIAL_ASSET_BASE}guess-tutorial-intro.avif`;
+const guessTutorialCompleteArt = `${TUTORIAL_ASSET_BASE}guess-tutorial-complete.avif`;
 
 const hqHomeGameArt: Record<GameTab, string> = {
   compare: `${HOME_ASSET_BASE}game-compare.avif`,
@@ -1677,7 +1685,7 @@ export default function App() {
   const copy = titles[tab];
 
   return (
-    <main className="app appWithBack">
+    <main className={`app appWithBack app-${tab}`}>
       <button className="backHome" onClick={goHomeFromTopBar}>← Все игры</button>
 
       <nav className="gameTabs topTabs">
