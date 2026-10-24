@@ -99,8 +99,8 @@ export async function resizeDesktopWindowToContent(): Promise<void> {
   if (!main) return;
 
   const contentHeight = Math.ceil(main.getBoundingClientRect().height);
-  const height = Math.max(520, Math.min(900, contentHeight + 18));
-  const width = Math.max(320, Math.round(window.innerWidth));
+  const height = Math.max(720, window.innerHeight, contentHeight + 18);
+  const width = Math.max(1000, Math.round(window.innerWidth));
 
   try {
     await bridge.send('VKWebAppResizeWindow', { width, height });
