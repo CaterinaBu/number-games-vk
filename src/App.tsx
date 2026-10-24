@@ -1249,11 +1249,11 @@ export default function App() {
   const [progress, setProgress] = useState<PlayerProgress>(() => {
     const stored = loadProgress();
     const migrated: PlayerProgress = {
-      mastered: {
-        compare: stored.mastered.compare || records.compare.plays > 0,
-        guess: stored.mastered.guess || records.guess.plays > 0,
-        order: stored.mastered.order || records.order.plays > 0,
-        near: stored.mastered.near || records.near.plays > 0
+      status: {
+        compare: records.compare.plays > 0 ? 'mastered' : stored.status.compare,
+        guess: records.guess.plays > 0 ? 'mastered' : stored.status.guess,
+        order: records.order.plays > 0 ? 'mastered' : stored.status.order,
+        near: records.near.plays > 0 ? 'mastered' : stored.status.near
       }
     };
     saveProgress(migrated);
