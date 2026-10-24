@@ -4864,3 +4864,21 @@ body {
     max-width: calc(100% - 82px);
   }
 }
+
+
+/* v39 — keep featured copy left and artwork right on desktop */
+@media (min-width: 761px) {
+  .featuredGameCopy {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .featuredGameArt {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .featuredGameTitle {
+    white-space: nowrap;
+  }
+}
