@@ -481,7 +481,7 @@ function guessResultState(average: number): { title: string; art: string; tone: 
   if (average <= 25) {
     return {
       title: 'Есть над чем подумать',
-      art: `${RESULT_ASSET_BASE}guess-result-0-25.webp`,
+      art: `${RESULT_ASSET_BASE}guess-result-0-25-v2.webp`,
       tone: 'thoughtful'
     };
   }
@@ -489,7 +489,7 @@ function guessResultState(average: number): { title: string; art: string; tone: 
   if (average <= 50) {
     return {
       title: 'Неплохое начало',
-      art: `${RESULT_ASSET_BASE}guess-result-26-50.webp`,
+      art: `${RESULT_ASSET_BASE}guess-result-26-50-v2.webp`,
       tone: 'calm'
     };
   }
@@ -497,14 +497,14 @@ function guessResultState(average: number): { title: string; art: string; tone: 
   if (average <= 75) {
     return {
       title: 'Хороший результат!',
-      art: `${RESULT_ASSET_BASE}guess-result-51-75.webp`,
+      art: `${RESULT_ASSET_BASE}guess-result-51-75-v2.webp`,
       tone: 'happy'
     };
   }
 
   return {
     title: 'Вот это попадание!',
-    art: `${RESULT_ASSET_BASE}guess-result-76-100.webp`,
+    art: `${RESULT_ASSET_BASE}guess-result-76-100-v2.webp`,
     tone: 'winner'
   };
 }
@@ -590,36 +590,19 @@ function GuessResultScreen({
             void onBeforeLeave(() => onTryAnother('near'));
           }}
         >
-          <img
-            src={`${RESULT_ASSET_BASE}guess-try-another.webp`}
-            alt=""
-            aria-hidden="true"
-          />
           <span className="guessTryAnotherCopy">
             <small>Попробуйте также</small>
             <strong>Что ближе? →</strong>
+            <span className="guessTryAnotherHint">
+              Угадайте, что находится ближе к заданному значению
+            </span>
           </span>
+          <img
+            src={`${RESULT_ASSET_BASE}guess-try-another-v2.webp`}
+            alt=""
+            aria-hidden="true"
+          />
         </button>
-
-        <div className="guessFinalDetails">
-          <div className="guessFinalDetailsHeading">
-            <span>Как прошла партия</span>
-            <small>результат каждого задания</small>
-          </div>
-
-          <div className="guessFinalAttempts" aria-label="Результаты десяти заданий">
-            {attempts.map((attempt, index) => (
-              <div
-                className={`guessFinalAttempt ${guessAttemptTone(attempt.closeness)}`}
-                key={`${attempt.fact.object}-${index}`}
-                title={`${attempt.fact.object}: ваш ответ — ${attempt.guess}, точное значение — ${formatValue(attempt.fact)}`}
-              >
-                <span>{index + 1}</span>
-                <b>{attempt.closeness}%</b>
-              </div>
-            ))}
-          </div>
-        </div>
 
         <div className="guessFinalExtras">
           <SocialActions compact />
