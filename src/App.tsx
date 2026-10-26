@@ -470,9 +470,138 @@ function CompareGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRoun
   );
 }
 
+type GuessAttempt = {
+  fact: Fact;
+  guess: number;
+  closeness: number;
+};
+
+function guessResultTitle(average: number): string {
+  if (average >= 90) return 'Почти в точку!';
+  if (average >= 75) return 'Очень близко!';
+  if (average >= 55) return 'Хороший ориентир';
+  return 'Есть куда приблизиться';
+}
+
+function guessAttemptTone(closeness: number): string {
+  if (closeness >= 80) return 'high';
+  if (closeness >= 50) return 'medium';
+  return 'low';
+}
+
+function GuessResultScreen({
+  average,
+  attempts,
+  record,
+  onAgain,
+  onHome,
+  onTryAnother,
+  onBeforeLeave
+}: {
+  average: number;
+  attempts: GuessAttempt[];
+  record: RecordEntry;
+  onAgain: () => void;
+  onHome: () => void;
+  onTryAnother: (game: GameTab) => void;
+  onBeforeLeave: (action: () => void) => Promise<void>;
+}) {
+  const bestAttempt = attempts.reduce<GuessAttempt | null>(
+    (best, attempt) => !best || attempt.closeness > best.closeness ? attempt : best,
+    null
+  );
+
+  return (
+    <section className="resultScreen guessFinalScreen">
+      <div className="resultCard guessFinalCard">
+        <div className="guessFinalTop">
+          <img className="resultMascot guessFinalMascot" src={resultPenguin} alt="" aria-hidden="true" />
+          <div className="guessFinalHeading">
+            <div className="resultEyebrow">Партия завершена</div>
+            <h2>{guessResultTitle(average)}</h2>
+            <p>Все 10 оценок учтены в итоговой средней близости.</p>
+          </div>
+        </div>
+
+        <div className="guessFinalScoreBlock">
+          <div className="resultPrimary">{average}%</div>
+          <div className="resultPrimaryLabel">средняя близость</div>
+        </div>
+
+        <div className="guessFinalAttempts" aria-label="Результаты десяти заданий">
+          {attempts.map((attempt, index) => (
+            <div
+              className={`guessFinalAttempt ${guessAttemptTone(attempt.closeness)}`}
+              key={`${attempt.fact.object}-${index}`}
+              title={`${attempt.fact.object}: ваш ответ — ${attempt.guess}, точное значение — ${formatValue(attempt.fact)}`}
+            >
+              <span>{index + 1}</span>
+              <b>{attempt.closeness}%</b>
+            </div>
+          ))}
+        </div>
+
+        <div className="guessFinalSummary">
+          <div>
+            <span>Лучший ответ</span>
+            <strong>{bestAttempt ? `${bestAttempt.closeness}%` : '—'}</strong>
+          </div>
+          <div>
+            <span>Рекорд</span>
+            <strong>{record.bestAverage}%</strong>
+          </div>
+          <div>
+            <span>Заданий</span>
+            <strong>{attempts.length} / {ROUND_LENGTH}</strong>
+          </div>
+        </div>
+
+        <div className="resultActions guessFinalActions">
+          <button
+            className="next"
+            onClick={() => {
+              trackEvent('play_again', { game: 'guess' });
+              void onBeforeLeave(onAgain);
+            }}
+          >
+            Сыграть ещё
+          </button>
+          <button
+            className="secondaryButton"
+            onClick={() => {
+              trackEvent('return_home', { game: 'guess' });
+              void onBeforeLeave(onHome);
+            }}
+          >
+            Все игры
+          </button>
+        </div>
+
+        <button
+          type="button"
+          className="guessTryAnother"
+          onClick={() => {
+            trackEvent('result_try_another', { from: 'guess', to: 'near' });
+            void onBeforeLeave(() => onTryAnother('near'));
+          }}
+        >
+          <span>Попробуйте также</span>
+          <strong>Что ближе? →</strong>
+        </button>
+
+        <div className="guessFinalExtras">
+          <SocialActions compact />
+          <DonateButton className="resultDonate" />
+        </div>
+      </div>
+    </section>
+  );
+}
+
 type GuessGameProps = GameProps & {
   tutorialMode: boolean;
   onTutorialComplete: () => void;
+  onSelectGame: (game: GameTab) => void;
 };
 
 function GuessGame({
@@ -482,13 +611,15 @@ function GuessGame({
   onAttempt,
   onRestartRound,
   tutorialMode,
-  onTutorialComplete
+  onTutorialComplete,
+  onSelectGame
 }: GuessGameProps) {
   const [fact, setFact] = useState<Fact>(() => createGuessFact());
   const [input, setInput] = useState('');
   const [submittedGuess, setSubmittedGuess] = useState<number | null>(null);
   const [rounds, setRounds] = useState(0);
   const [totalCloseness, setTotalCloseness] = useState(0);
+  const [attempts, setAttempts] = useState<GuessAttempt[]>([]);
   const [showResult, setShowResult] = useState(false);
   const [savedRecord, setSavedRecord] = useState<RecordEntry | null>(null);
   const [replayTutorial, setReplayTutorial] = useState(false);
@@ -542,6 +673,7 @@ function GuessGame({
     setSubmittedGuess(guess);
     setRounds((x) => x + 1);
     setTotalCloseness((x) => x + value);
+    setAttempts((current) => [...current, { fact, guess, closeness: value }]);
   }
 
   function finish() {
@@ -565,7 +697,7 @@ function GuessGame({
       return;
     }
 
-    setFact(createGuessFact(fact.object));
+    setFact(createGuessFact(fact.object, attempts.map((attempt) => attempt.fact.object)));
     setInput('');
     setSubmittedGuess(null);
   }
@@ -576,6 +708,7 @@ function GuessGame({
     setSubmittedGuess(null);
     setRounds(0);
     setTotalCloseness(0);
+    setAttempts([]);
     setShowResult(false);
     setSavedRecord(null);
   }
@@ -596,14 +729,13 @@ function GuessGame({
 
   if (showResult && savedRecord) {
     return (
-      <ResultScreen
-        title="Ближе к правде"
-        primary={`${averageScore}%`}
-        primaryLabel="средняя близость"
-        secondary={[`10 оценок за партию`]}
-        record={`Рекорд: ${savedRecord.bestAverage}% средней близости`}
+      <GuessResultScreen
+        average={averageScore}
+        attempts={attempts}
+        record={savedRecord}
         onAgain={() => onRestartRound('guess', resetRound)}
         onHome={onHome}
+        onTryAnother={onSelectGame}
         onBeforeLeave={onBeforeLeave}
       />
     );
@@ -614,8 +746,8 @@ function GuessGame({
       {!training && (
         <section className="guessQuickRules">
           <div>
-            <strong>Как играть</strong>
-            <span>Попробуйте угадать значение факта. Точное число знать не обязательно — важна близость ответа.</span>
+            <strong>Партия · 10 заданий</strong>
+            <span>Оцените значение каждого факта. Итог партии — средняя близость всех десяти ответов.</span>
           </div>
           <button type="button" onClick={startTutorialReplay}>Пройти обучение ещё раз</button>
         </section>
@@ -625,7 +757,12 @@ function GuessGame({
         <div className="stats">
           {training
             ? <span className="tutorialModeLabel">Обучение · 3 задания</span>
-            : rounds > 0 && <span className="accuracy"><b>{averageScore}%</b> средняя близость</span>}
+            : (
+              <>
+                <span className="guessRoundLabel"><b>{ROUND_LENGTH}</b> заданий</span>
+                {rounds > 0 && <span className="accuracy"><b>{averageScore}%</b> средняя близость</span>}
+              </>
+            )}
         </div>
       </div>
 
@@ -719,6 +856,17 @@ function GuessGame({
             <div className="guessResult">
               <div className="actualValue">{formatValue(fact)}</div>
               <div className="closeness">Близость: <b>{closeness}%</b></div>
+              {!training && closeness !== null && (
+                <div className={`guessRoundReaction ${guessAttemptTone(closeness)}`}>
+                  {closeness >= 90
+                    ? 'Почти в точку'
+                    : closeness >= 75
+                      ? 'Очень близко'
+                      : closeness >= 50
+                        ? 'Хороший ориентир'
+                        : 'Далековато'}
+                </div>
+              )}
               {training && (
                 <div className="tutorialAnswerNote">
                   {closeness !== null && closeness >= 80
@@ -1726,6 +1874,7 @@ export default function App() {
           onRestartRound={restartRound}
           tutorialMode={progress.status.guess === 'tutorial'}
           onTutorialComplete={() => completeTutorial('guess')}
+          onSelectGame={switchGame}
         />
       )}
       {tab === 'order' && <OrderGame onFinish={saveResult} onHome={goHome} onBeforeLeave={runPostRoundAction} onAttempt={markAttempted} onRestartRound={restartRound} />}
