@@ -593,9 +593,6 @@ function GuessResultScreen({
           <span className="guessTryAnotherCopy">
             <small>Попробуйте также</small>
             <strong>Что ближе? →</strong>
-            <span className="guessTryAnotherHint">
-              Угадайте, что находится ближе к заданному значению
-            </span>
           </span>
           <img
             src={`${RESULT_ASSET_BASE}guess-try-another-v2.webp`}
