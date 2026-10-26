@@ -230,11 +230,14 @@ export function parseGuess(input: string): number | null {
 export function calculateCloseness(guess: number, actual: number): number {
   if (guess === actual) return 100;
 
-  const base = Math.max(Math.abs(actual), 10);
-  const error = Math.abs(guess - actual);
-  const closeness = 100 - (error / base) * 100;
+  if (guess === 0 || actual === 0) return 0;
+  if (Math.sign(guess) !== Math.sign(actual)) return 0;
 
-  return Math.max(0, Math.round(closeness));
+  const guessMagnitude = Math.abs(guess);
+  const actualMagnitude = Math.abs(actual);
+  const ratio = Math.min(guessMagnitude, actualMagnitude) / Math.max(guessMagnitude, actualMagnitude);
+
+  return Math.max(0, Math.min(100, Math.round(ratio * 100)));
 }
 
 function takeDistinctValues(group: Fact[], count: number): Fact[] {
