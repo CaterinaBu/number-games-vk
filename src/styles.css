@@ -8033,3 +8033,47 @@ body {
 .guessTryAnother > img {
   margin-top: -1px;
 }
+
+
+/* v63 — align recommendation label with the penguin crowd */
+.guessTryAnotherCopy {
+  width: 100%;
+  box-sizing: border-box;
+  padding-left: 17.5%;
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: 6px;
+  text-align: left;
+}
+
+.guessTryAnotherCopy small,
+.guessTryAnotherCopy strong {
+  width: auto;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.15;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.guessTryAnotherCopy small {
+  font-weight: 700;
+}
+
+.guessTryAnotherCopy strong {
+  font-weight: 800;
+}
+
+@media (max-width: 760px) {
+  .guessTryAnotherCopy {
+    padding-left: 15%;
+    gap: 5px;
+  }
+
+  .guessTryAnotherCopy small,
+  .guessTryAnotherCopy strong {
+    font-size: 13px;
+  }
+}
