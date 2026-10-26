@@ -8010,3 +8010,26 @@ body {
     flex-basis: 58px;
   }
 }
+
+
+/* v62 — center recommendation copy directly above artwork */
+.guessTryAnother {
+  align-items: center;
+  gap: 2px;
+}
+
+.guessTryAnotherCopy {
+  width: 100%;
+  align-items: center;
+  text-align: center;
+}
+
+.guessTryAnotherCopy small,
+.guessTryAnotherCopy strong {
+  width: 100%;
+  text-align: center;
+}
+
+.guessTryAnother > img {
+  margin-top: -1px;
+}
