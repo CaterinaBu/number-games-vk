@@ -207,11 +207,15 @@ export function getFactCount(): number {
   return dataset.length;
 }
 
-export function createGuessFact(previousObject?: string): Fact {
-  for (let attempt = 0; attempt < 100; attempt += 1) {
+export function createGuessFact(previousObject?: string, excludedObjects: string[] = []): Fact {
+  const excluded = new Set(excludedObjects);
+  if (previousObject) excluded.add(previousObject);
+
+  for (let attempt = 0; attempt < 200; attempt += 1) {
     const fact = randomItem(guessableDataset);
-    if (fact.object !== previousObject) return fact;
+    if (!excluded.has(fact.object)) return fact;
   }
+
   return randomItem(guessableDataset);
 }
 
