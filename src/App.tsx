@@ -53,6 +53,7 @@ type FinishResult = {
 
 const ROUND_LENGTH = 10;
 const STORAGE_KEY = 'number-games-records-v1';
+const RESULT_ASSET_BASE = `${import.meta.env.BASE_URL}assets/results/`;
 
 const emptyEntry = (): RecordEntry => ({
   plays: 0,
@@ -476,11 +477,36 @@ type GuessAttempt = {
   closeness: number;
 };
 
-function guessResultTitle(average: number): string {
-  if (average >= 90) return 'Почти в точку!';
-  if (average >= 75) return 'Очень близко!';
-  if (average >= 55) return 'Хороший ориентир';
-  return 'Есть куда приблизиться';
+function guessResultState(average: number): { title: string; art: string; tone: string } {
+  if (average <= 25) {
+    return {
+      title: 'Есть над чем подумать',
+      art: `${RESULT_ASSET_BASE}guess-result-0-25.webp`,
+      tone: 'thoughtful'
+    };
+  }
+
+  if (average <= 50) {
+    return {
+      title: 'Неплохое начало',
+      art: `${RESULT_ASSET_BASE}guess-result-26-50.webp`,
+      tone: 'calm'
+    };
+  }
+
+  if (average <= 75) {
+    return {
+      title: 'Хороший результат!',
+      art: `${RESULT_ASSET_BASE}guess-result-51-75.webp`,
+      tone: 'happy'
+    };
+  }
+
+  return {
+    title: 'Вот это попадание!',
+    art: `${RESULT_ASSET_BASE}guess-result-76-100.webp`,
+    tone: 'winner'
+  };
 }
 
 function guessAttemptTone(closeness: number): string {
@@ -510,49 +536,28 @@ function GuessResultScreen({
     (best, attempt) => !best || attempt.closeness > best.closeness ? attempt : best,
     null
   );
+  const resultState = guessResultState(average);
 
   return (
     <section className="resultScreen guessFinalScreen">
       <div className="resultCard guessFinalCard">
-        <div className="guessFinalTop">
-          <img className="resultMascot guessFinalMascot" src={resultPenguin} alt="" aria-hidden="true" />
-          <div className="guessFinalHeading">
+        <div className={`guessResultHero ${resultState.tone}`}>
+          <img className="guessResultHeroArt" src={resultState.art} alt="" aria-hidden="true" />
+          <div className="guessResultHeroShade" aria-hidden="true" />
+          <div className="guessResultHeroCopy">
             <div className="resultEyebrow">Партия завершена</div>
-            <h2>{guessResultTitle(average)}</h2>
-            <p>Все 10 оценок учтены в итоговой средней близости.</p>
-          </div>
-        </div>
+            <h2>{resultState.title}</h2>
 
-        <div className="guessFinalScoreBlock">
-          <div className="resultPrimary">{average}%</div>
-          <div className="resultPrimaryLabel">средняя близость</div>
-        </div>
-
-        <div className="guessFinalAttempts" aria-label="Результаты десяти заданий">
-          {attempts.map((attempt, index) => (
-            <div
-              className={`guessFinalAttempt ${guessAttemptTone(attempt.closeness)}`}
-              key={`${attempt.fact.object}-${index}`}
-              title={`${attempt.fact.object}: ваш ответ — ${attempt.guess}, точное значение — ${formatValue(attempt.fact)}`}
-            >
-              <span>{index + 1}</span>
-              <b>{attempt.closeness}%</b>
+            <div className="guessResultMainScore">
+              <strong>{average}%</strong>
+              <span>средняя близость</span>
             </div>
-          ))}
-        </div>
 
-        <div className="guessFinalSummary">
-          <div>
-            <span>Лучший ответ</span>
-            <strong>{bestAttempt ? `${bestAttempt.closeness}%` : '—'}</strong>
-          </div>
-          <div>
-            <span>Рекорд</span>
-            <strong>{record.bestAverage}%</strong>
-          </div>
-          <div>
-            <span>Заданий</span>
-            <strong>{attempts.length} / {ROUND_LENGTH}</strong>
+            <div className="guessResultMiniStats">
+              <span>Лучший <b>{bestAttempt ? `${bestAttempt.closeness}%` : '—'}</b></span>
+              <span>Рекорд <b>{record.bestAverage}%</b></span>
+              <span><b>{attempts.length}/{ROUND_LENGTH}</b> заданий</span>
+            </div>
           </div>
         </div>
 
@@ -585,9 +590,36 @@ function GuessResultScreen({
             void onBeforeLeave(() => onTryAnother('near'));
           }}
         >
-          <span>Попробуйте также</span>
-          <strong>Что ближе? →</strong>
+          <img
+            src={`${RESULT_ASSET_BASE}guess-try-another.webp`}
+            alt=""
+            aria-hidden="true"
+          />
+          <span className="guessTryAnotherCopy">
+            <small>Попробуйте также</small>
+            <strong>Что ближе? →</strong>
+          </span>
         </button>
+
+        <div className="guessFinalDetails">
+          <div className="guessFinalDetailsHeading">
+            <span>Как прошла партия</span>
+            <small>результат каждого задания</small>
+          </div>
+
+          <div className="guessFinalAttempts" aria-label="Результаты десяти заданий">
+            {attempts.map((attempt, index) => (
+              <div
+                className={`guessFinalAttempt ${guessAttemptTone(attempt.closeness)}`}
+                key={`${attempt.fact.object}-${index}`}
+                title={`${attempt.fact.object}: ваш ответ — ${attempt.guess}, точное значение — ${formatValue(attempt.fact)}`}
+              >
+                <span>{index + 1}</span>
+                <b>{attempt.closeness}%</b>
+              </div>
+            ))}
+          </div>
+        </div>
 
         <div className="guessFinalExtras">
           <SocialActions compact />
