@@ -6964,3 +6964,286 @@ body {
       rgba(248,250,255,0) 63%
     ) !important;
 }
+
+
+/* v57 — full “Ближе к правде” round and dedicated results */
+.guessRoundLabel {
+  color: #53627a !important;
+}
+
+.guessRoundReaction {
+  margin-top: -4px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.guessRoundReaction.high {
+  background: #e9fbef;
+  color: #168448;
+}
+
+.guessRoundReaction.medium {
+  background: #fff6d9;
+  color: #9a6b00;
+}
+
+.guessRoundReaction.low {
+  background: #f3f1ff;
+  color: #7166d9;
+}
+
+.guessFinalScreen {
+  padding-top: 8px;
+}
+
+.guessFinalCard {
+  width: min(720px, 100%);
+  padding: 28px 30px 24px;
+  overflow: hidden;
+}
+
+.guessFinalTop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  text-align: left;
+}
+
+.guessFinalMascot {
+  width: 104px;
+  height: 104px;
+  margin: 0;
+  flex: 0 0 auto;
+}
+
+.guessFinalHeading {
+  min-width: 0;
+}
+
+.guessFinalHeading h2 {
+  margin: 5px 0 5px;
+  font-size: 28px;
+}
+
+.guessFinalHeading p {
+  margin: 0;
+  color: #758196;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.guessFinalScoreBlock {
+  margin-top: 18px;
+  padding: 20px;
+  border: 1px solid rgba(108,99,255,.12);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(108,99,255,.10), transparent 55%),
+    linear-gradient(180deg, #fbfbff, #f6f7ff);
+}
+
+.guessFinalScoreBlock .resultPrimary {
+  font-size: 58px;
+}
+
+.guessFinalAttempts {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.guessFinalAttempt {
+  min-height: 56px;
+  padding: 8px 6px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.guessFinalAttempt span {
+  color: #8793a6;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.guessFinalAttempt b {
+  color: #26344f;
+  font-size: 15px;
+}
+
+.guessFinalAttempt.high {
+  border-color: #ccefd8;
+  background: #effbf3;
+}
+
+.guessFinalAttempt.medium {
+  border-color: #f1df9d;
+  background: #fff9e8;
+}
+
+.guessFinalAttempt.low {
+  border-color: #ded9fb;
+  background: #f6f4ff;
+}
+
+.guessFinalSummary {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid #e9edf4;
+  border-radius: 18px;
+  overflow: hidden;
+  background: rgba(255,255,255,.78);
+}
+
+.guessFinalSummary > div {
+  padding: 13px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.guessFinalSummary > div + div {
+  border-left: 1px solid #e9edf4;
+}
+
+.guessFinalSummary span {
+  color: #8a95a6;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.guessFinalSummary strong {
+  color: #26344f;
+  font-size: 15px;
+}
+
+.guessFinalActions {
+  margin-top: 18px;
+}
+
+.guessFinalActions .next,
+.guessFinalActions .secondaryButton {
+  min-width: 145px;
+  justify-content: center;
+}
+
+.guessTryAnother {
+  width: min(430px, 100%);
+  margin: 11px auto 0;
+  padding: 9px 12px;
+  border: 1px solid #e7e9f6;
+  border-radius: 13px;
+  background: #fafaff;
+  color: #7d86a0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-size: 11px;
+}
+
+.guessTryAnother strong {
+  color: #6259cf;
+  font-size: 11px;
+}
+
+.guessTryAnother:hover {
+  background: #f4f3ff;
+}
+
+.guessFinalExtras {
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 1px solid #f0f2f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 8px;
+  flex-wrap: wrap;
+}
+
+.guessFinalExtras .socialActions,
+.guessFinalExtras .resultDonate {
+  margin: 0;
+}
+
+@media (max-width: 760px) {
+  .guessFinalCard {
+    padding: 20px 14px 16px;
+  }
+
+  .guessFinalTop {
+    gap: 10px;
+  }
+
+  .guessFinalMascot {
+    width: 72px !important;
+    height: 72px !important;
+    margin: 0 !important;
+  }
+
+  .guessFinalHeading h2 {
+    font-size: 21px;
+  }
+
+  .guessFinalHeading p {
+    font-size: 11px;
+  }
+
+  .guessFinalScoreBlock {
+    margin-top: 12px;
+    padding: 15px;
+  }
+
+  .guessFinalScoreBlock .resultPrimary {
+    font-size: 46px;
+  }
+
+  .guessFinalAttempts {
+    gap: 5px;
+  }
+
+  .guessFinalAttempt {
+    min-height: 50px;
+    padding: 6px 3px;
+    border-radius: 11px;
+  }
+
+  .guessFinalAttempt b {
+    font-size: 13px;
+  }
+
+  .guessFinalSummary > div {
+    padding: 10px 4px;
+  }
+
+  .guessFinalSummary strong {
+    font-size: 13px;
+  }
+
+  .guessFinalActions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+  }
+
+  .guessFinalActions .next,
+  .guessFinalActions .secondaryButton {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .guessTryAnother {
+    margin-top: 8px;
+  }
+}
