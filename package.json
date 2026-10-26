@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/rebuild-completion-art.mjs && vite build",
+    "build": "node scripts/rebuild-completion-art.mjs && node scripts/rebuild-result-art.mjs && vite build",
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "vk-miniapps-deploy"
