@@ -33,6 +33,7 @@ import { donateToCommunity, isDonationConfigured, isVKEnvironment, openCommunity
 import { trackEvent } from './analytics';
 import { loadProgress, saveProgress, type PlayerProgress } from './progress';
 import {
+  DAILY_GAME_TITLES,
   createEmptyDailyProgress,
   formatDailyGoal,
   formatDailyValue,
