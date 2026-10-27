@@ -347,7 +347,116 @@ type GameProps = {
   onRestartRound: (game: GameTab, action: () => void) => void;
 };
 
-function CompareGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound }: GameProps) {
+type CompareGameProps = GameProps & {
+  tutorialMode: boolean;
+  onTutorialComplete: () => void;
+  onSelectGame: (game: GameTab) => void;
+};
+
+function compareResultState(score: number): { title: string; tone: string } {
+  if (score <= 3) return { title: 'Есть над чем подумать', tone: 'thoughtful' };
+  if (score <= 6) return { title: 'Неплохое начало', tone: 'calm' };
+  if (score <= 8) return { title: 'Хороший результат!', tone: 'happy' };
+  return { title: 'Отличное чувство масштаба!', tone: 'winner' };
+}
+
+function CompareResultScreen({
+  score,
+  maxStreak,
+  record,
+  onAgain,
+  onHome,
+  onTryAnother,
+  onBeforeLeave
+}: {
+  score: number;
+  maxStreak: number;
+  record: RecordEntry;
+  onAgain: () => void;
+  onHome: () => void;
+  onTryAnother: (game: GameTab) => void;
+  onBeforeLeave: (action: () => void) => Promise<void>;
+}) {
+  const resultState = compareResultState(score);
+
+  return (
+    <section className="resultScreen guessFinalScreen compareFinalScreen">
+      <div className="resultCard guessFinalCard">
+        <div className={'guessResultHero ' + resultState.tone}>
+          <img className="guessResultHeroArt" src={homeGameCompare} alt="" aria-hidden="true" />
+          <div className="guessResultHeroShade" aria-hidden="true" />
+          <div className="guessResultHeroCopy">
+            <div className="resultEyebrow">Партия завершена</div>
+            <h2>{resultState.title}</h2>
+
+            <div className="guessResultMainScore">
+              <strong>{score} из {ROUND_LENGTH}</strong>
+              <span>верных ответов</span>
+            </div>
+
+            <div className="guessResultMiniStats">
+              <span>Точность <b>{Math.round((score / ROUND_LENGTH) * 100)}%</b></span>
+              <span>Лучшая серия <b>{maxStreak}</b></span>
+              <span>Рекорд <b>{record.bestScore}/{ROUND_LENGTH}</b></span>
+            </div>
+          </div>
+        </div>
+
+        <div className="resultActions guessFinalActions">
+          <button
+            className="next"
+            onClick={() => {
+              trackEvent('play_again', { game: 'compare' });
+              void onBeforeLeave(onAgain);
+            }}
+          >
+            Сыграть ещё
+          </button>
+          <button
+            className="secondaryButton"
+            onClick={() => {
+              trackEvent('return_home', { game: 'compare' });
+              void onBeforeLeave(onHome);
+            }}
+          >
+            Все игры
+          </button>
+        </div>
+
+        <button
+          type="button"
+          className="guessTryAnother"
+          onClick={() => {
+            trackEvent('result_try_another', { from: 'compare', to: 'guess' });
+            void onBeforeLeave(() => onTryAnother('guess'));
+          }}
+        >
+          <span className="guessTryAnotherCopy">
+            <small>Попробуйте также</small>
+            <strong>Ближе к правде →</strong>
+          </span>
+          <img src={homeGameGuess} alt="" aria-hidden="true" />
+        </button>
+
+        <div className="guessFinalExtras">
+          <SocialActions compact />
+          <DonateButton className="resultDonate" />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CompareGame({
+  onFinish,
+  onHome,
+  onBeforeLeave,
+  onAttempt,
+  onRestartRound,
+  tutorialMode,
+  onTutorialComplete,
+  onSelectGame
+}: CompareGameProps) {
   const [difficulty, setDifficulty] = useState<Difficulty>('easy');
   const [question, setQuestion] = useState<Question>(() => createQuestion('easy'));
   const [selected, setSelected] = useState<Side | null>(null);
@@ -357,12 +466,25 @@ function CompareGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRoun
   const [answered, setAnswered] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [savedRecord, setSavedRecord] = useState<RecordEntry | null>(null);
+  const [replayTutorial, setReplayTutorial] = useState(false);
+  const [tutorialIntroOpen, setTutorialIntroOpen] = useState(tutorialMode);
+  const [tutorialCompleteOpen, setTutorialCompleteOpen] = useState(false);
 
+  const training = tutorialMode || replayTutorial;
+  const roundLength = training ? 3 : ROUND_LENGTH;
   const correctSide = getCorrectSide(question);
   const isAnswered = selected !== null;
+  const largerFact = correctSide === 'left' ? question.left : question.right;
+  const smallerFact = correctSide === 'left' ? question.right : question.left;
+
+  const tutorialHints = [
+    'Сравните два факта и нажмите на тот, у которого значение больше.',
+    'После выбора покажем оба числа. Смотрите не на знакомость факта, а именно на масштаб значений.',
+    'В полной партии будет 10 сравнений. Итог — число верных ответов и лучшая серия.'
+  ];
 
   function choose(side: Side) {
-    if (isAnswered || answered >= ROUND_LENGTH) return;
+    if (isAnswered || answered >= roundLength) return;
 
     onAttempt();
     setSelected(side);
@@ -384,9 +506,15 @@ function CompareGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRoun
     setShowResult(true);
   }
 
+  function completeTraining() {
+    onTutorialComplete();
+    setTutorialCompleteOpen(true);
+  }
+
   function nextQuestion() {
-    if (answered >= ROUND_LENGTH) {
-      finish();
+    if (answered >= roundLength) {
+      if (training) completeTraining();
+      else finish();
       return;
     }
 
@@ -411,19 +539,29 @@ function CompareGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRoun
     onRestartRound('compare', () => resetRound(next));
   }
 
+  function startTutorialReplay() {
+    resetRound('easy');
+    setReplayTutorial(true);
+    setTutorialIntroOpen(true);
+    trackEvent('tutorial_restarted', { game: 'compare' });
+  }
+
+  function startFullRoundAfterTutorial() {
+    setTutorialCompleteOpen(false);
+    setReplayTutorial(false);
+    resetRound('easy');
+    trackEvent('round_started', { game: 'compare', source: 'tutorial_complete' });
+  }
+
   if (showResult && savedRecord) {
     return (
-      <ResultScreen
-        title="Что больше?"
-        primary={`${score} из ${ROUND_LENGTH}`}
-        primaryLabel="верных ответов"
-        secondary={[
-          `Точность ${Math.round((score / ROUND_LENGTH) * 100)}%`,
-          `Лучшая серия ${maxStreak}`
-        ]}
-        record={`Рекорд: ${savedRecord.bestScore} из ${ROUND_LENGTH} · лучшая серия ${savedRecord.bestStreak}`}
+      <CompareResultScreen
+        score={score}
+        maxStreak={maxStreak}
+        record={savedRecord}
         onAgain={() => onRestartRound('compare', () => resetRound())}
         onHome={onHome}
+        onTryAnother={onSelectGame}
         onBeforeLeave={onBeforeLeave}
       />
     );
@@ -431,21 +569,55 @@ function CompareGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRoun
 
   return (
     <>
-      <div className="toolbar">
-        <div className="modeSwitch">
-          <button className={difficulty === 'easy' ? 'active' : ''} onClick={() => changeDifficulty('easy')}>
-            Простой
-          </button>
-          <button className={difficulty === 'hard' ? 'active' : ''} onClick={() => changeDifficulty('hard')}>
-            Сложный
-          </button>
-        </div>
-        <Score score={score} streak={streak} />
+      {!training && (
+        <section className="guessQuickRules compareQuickRules">
+          <div>
+            <strong>Партия · 10 сравнений</strong>
+            <span>Выберите большее значение в каждой паре. Итог — число верных ответов и лучшая серия.</span>
+          </div>
+          <button type="button" onClick={startTutorialReplay}>Пройти обучение ещё раз</button>
+        </section>
+      )}
+
+      <div className="toolbar compareToolbar">
+        {!training && (
+          <div className="modeSwitch">
+            <button className={difficulty === 'easy' ? 'active' : ''} onClick={() => changeDifficulty('easy')}>
+              Простой
+            </button>
+            <button className={difficulty === 'hard' ? 'active' : ''} onClick={() => changeDifficulty('hard')}>
+              Сложный
+            </button>
+          </div>
+        )}
+
+        {training
+          ? (
+            <div className="stats">
+              <span className="tutorialModeLabel">Обучение · 3 сравнения</span>
+            </div>
+          )
+          : <Score score={score} streak={streak} />}
       </div>
 
-      <RoundProgress answered={answered} currentAnswered={isAnswered} />
+      <RoundProgress
+        answered={answered}
+        currentAnswered={isAnswered}
+        total={roundLength}
+        label={training ? 'Задание' : 'Вопрос'}
+      />
 
-      <section className="gameArea">
+      {training && (
+        <div className="tutorialHintBar">
+          <span>💡</span>
+          <div>
+            <strong>Подсказка</strong>
+            <p>{tutorialHints[Math.min(answered, tutorialHints.length - 1)]}</p>
+          </div>
+        </div>
+      )}
+
+      <section className={'gameArea compareArea ' + (training ? 'compareAreaTutorial' : '')}>
         <div className="choices">
           <FactCard fact={question.left} side="left" selected={selected} correctSide={correctSide} answered={isAnswered} onChoose={choose} />
           <div className="versus">или</div>
@@ -455,18 +627,110 @@ function CompareGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRoun
         <section className="feedback">
           {isAnswered ? (
             <>
-              <div className={`resultText ${selected === correctSide ? 'success' : 'fail'}`}>
+              <div className={'resultText ' + (selected === correctSide ? 'success' : 'fail')}>
                 {selected === correctSide ? 'Верно' : 'Неверно'}
               </div>
               <button className="next" onClick={nextQuestion}>
-                {answered >= ROUND_LENGTH ? 'Результаты' : 'Следующий'} <span>→</span>
+                {answered >= roundLength
+                  ? training ? 'Завершить обучение' : 'Результаты'
+                  : 'Следующий'} <span>→</span>
               </button>
             </>
           ) : (
-            <div className="hint">Нажмите на карточку</div>
+            <div className="hint">Нажмите на карточку с большим значением</div>
           )}
         </section>
+
+        {training && isAnswered && (
+          <div className="compareTutorialAnswer">
+            Большее значение — <b>{formatValue(largerFact)}</b>. Второе — {formatValue(smallerFact)}.
+          </div>
+        )}
       </section>
+
+      {tutorialIntroOpen && (
+        <div className="tutorialOverlay" role="presentation" onMouseDown={() => setTutorialIntroOpen(false)}>
+          <section
+            className="tutorialModal tutorialIntroModal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="compare-tutorial-title"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <button className="tutorialClose" onClick={() => setTutorialIntroOpen(false)} aria-label="Закрыть">×</button>
+
+            <div className="tutorialHero tutorialHeroIntro">
+              <img src={homeGameCompare} alt="" aria-hidden="true" />
+              <div className="tutorialHeroShade" aria-hidden="true" />
+              <div className="tutorialHeroCopy">
+                <div className="tutorialEyebrow">Что больше?</div>
+                <h2 id="compare-tutorial-title">Давайте попробуем!</h2>
+                <p>Сначала — 3 тренировочных сравнения,<br />чтобы разобраться с механикой.</p>
+              </div>
+            </div>
+
+            <div className="tutorialRules tutorialRulesCompact">
+              <div><b>↗</b><span>Сравните два факта</span></div>
+              <div><b>1</b><span>Нажмите на тот,<br />у которого число больше</span></div>
+              <div><b>✓</b><span>После ответа увидите<br />оба настоящих значения</span></div>
+            </div>
+
+            <button
+              className="next tutorialPrimary"
+              onClick={() => {
+                setTutorialIntroOpen(false);
+                trackEvent('tutorial_started', { game: 'compare' });
+              }}
+            >
+              Начать обучение
+            </button>
+          </section>
+        </div>
+      )}
+
+      {tutorialCompleteOpen && (
+        <div className="tutorialOverlay tutorialCompleteOverlay" role="presentation">
+          <section
+            className="tutorialModal tutorialCompleteModal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="compare-tutorial-complete-title"
+          >
+            <div className="tutorialHero tutorialHeroComplete">
+              <img src={resultPenguin} alt="" aria-hidden="true" />
+              <div className="tutorialHeroShade" aria-hidden="true" />
+              <div className="tutorialHeroCopy">
+                <div className="tutorialEyebrow">Обучение завершено</div>
+                <h2 id="compare-tutorial-complete-title">Игра освоена!</h2>
+                <p>Теперь доступны партии из 10 сравнений.<br />Можно выбрать простой или сложный режим.</p>
+              </div>
+            </div>
+
+            <div className="tutorialCompleteBottom">
+              <div className="tutorialCompleteStat">
+                <strong>{score} из 3</strong>
+                <span>верных ответов в обучении</span>
+              </div>
+              <div className="tutorialCompleteActions">
+                <button className="next tutorialPrimary" onClick={startFullRoundAfterTutorial}>
+                  Сыграть полную партию
+                </button>
+                <button
+                  className="secondaryButton tutorialSecondary"
+                  onClick={() => {
+                    setTutorialCompleteOpen(false);
+                    setReplayTutorial(false);
+                    resetRound('easy');
+                    onHome();
+                  }}
+                >
+                  Вернуться на главную
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+      )}
     </>
   );
 }
@@ -1876,7 +2140,18 @@ export default function App() {
         <p className="subtitle">{copy.subtitle}</p>
       </header>
 
-      {tab === 'compare' && <CompareGame onFinish={saveResult} onHome={goHome} onBeforeLeave={runPostRoundAction} onAttempt={markAttempted} onRestartRound={restartRound} />}
+      {tab === 'compare' && (
+        <CompareGame
+          onFinish={saveResult}
+          onHome={goHome}
+          onBeforeLeave={runPostRoundAction}
+          onAttempt={markAttempted}
+          onRestartRound={restartRound}
+          tutorialMode={progress.status.compare === 'tutorial'}
+          onTutorialComplete={() => completeTutorial('compare')}
+          onSelectGame={switchGame}
+        />
+      )}
       {tab === 'guess' && (
         <GuessGame
           onFinish={saveResult}
