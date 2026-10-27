@@ -45,7 +45,7 @@ export const DAILY_LOCATIONS: DailyLocation[] = [
   {
     id: 'laboratory',
     title: 'Лаборатория',
-    image: 'laboratory.webp',
+    image: 'laboratory.avif',
     stories: {
       compare: [
         "Пингвин поспорил с коллегой, у какого образца показатель выше. Он берётся проверить спор по данным.",
@@ -68,7 +68,7 @@ export const DAILY_LOCATIONS: DailyLocation[] = [
   {
     id: 'library',
     title: 'Библиотека',
-    image: 'library.webp',
+    image: 'library.avif',
     stories: {
       compare: [
         "Пингвин спорит с библиотекарем о двух числах из справочников и решает сам проверить, какое больше.",
@@ -91,7 +91,7 @@ export const DAILY_LOCATIONS: DailyLocation[] = [
   {
     id: 'museum',
     title: 'Музей',
-    image: 'museum.webp',
+    image: 'museum.avif',
     stories: {
       compare: [
         "Пингвин помогает куратору и сам сравнивает подписи двух экспонатов, чтобы найти большее значение.",
@@ -114,7 +114,7 @@ export const DAILY_LOCATIONS: DailyLocation[] = [
   {
     id: 'ship',
     title: 'Корабль',
-    image: 'ship.webp',
+    image: 'ship.avif',
     stories: {
       compare: [
         "Пингвин отвечает за груз перед выходом в море и сам сравнивает характеристики двух ящиков.",
@@ -137,7 +137,7 @@ export const DAILY_LOCATIONS: DailyLocation[] = [
   {
     id: 'office',
     title: 'Офис с коллегами',
-    image: 'office.webp',
+    image: 'office.avif',
     stories: {
       compare: [
         "На планёрке пингвин спорит с коллегой о двух цифрах и сам берётся выяснить, какая больше.",
@@ -160,7 +160,7 @@ export const DAILY_LOCATIONS: DailyLocation[] = [
   {
     id: 'cafe',
     title: 'Кафе с друзьями',
-    image: 'cafe.webp',
+    image: 'cafe.avif',
     stories: {
       compare: [
         "За столом пингвин спорит с друзьями о двух необычных фактах и настаивает, что знает, где число больше.",
@@ -183,7 +183,7 @@ export const DAILY_LOCATIONS: DailyLocation[] = [
   {
     id: 'airport',
     title: 'Аэропорт',
-    image: 'airport.webp',
+    image: 'airport.avif',
     stories: {
       compare: [
         "Ожидая посадку, пингвин сравнивает числа на табло и багажных бирках, выбирая большее.",
@@ -206,7 +206,7 @@ export const DAILY_LOCATIONS: DailyLocation[] = [
   {
     id: 'supermarket',
     title: 'Супермаркет',
-    image: 'supermarket.webp',
+    image: 'supermarket.avif',
     stories: {
       compare: [
         "Пингвин выбирает продукты для ужина и сам сравнивает две похожие упаковки: где товара больше?",
@@ -229,7 +229,7 @@ export const DAILY_LOCATIONS: DailyLocation[] = [
   {
     id: 'park',
     title: 'Парк',
-    image: 'park.webp',
+    image: 'park.avif',
     stories: {
       compare: [
         "На прогулке пингвин спорит с друзьями о природных фактах и сам решает проверить, где число больше.",
@@ -252,7 +252,7 @@ export const DAILY_LOCATIONS: DailyLocation[] = [
   {
     id: 'stadium',
     title: 'Стадион',
-    image: 'stadium.webp',
+    image: 'stadium.avif',
     stories: {
       compare: [
         "На трибуне пингвин спорит с болельщиком о результатах спортсменов и проверяет, какой показатель больше.",
@@ -275,7 +275,7 @@ export const DAILY_LOCATIONS: DailyLocation[] = [
   {
     id: 'jungle',
     title: 'Джунгли',
-    image: 'jungle.webp',
+    image: 'jungle.avif',
     stories: {
       compare: [
         "В экспедиции пингвин спорит с товарищем о двух находках и сам проверяет, с какой связано большее число.",
@@ -298,7 +298,7 @@ export const DAILY_LOCATIONS: DailyLocation[] = [
   {
     id: 'fair',
     title: 'Ярмарка и аттракционы',
-    image: 'fair.webp',
+    image: 'fair.avif',
     stories: {
       compare: [
         "Пингвин спорит с друзьями, какой аттракцион выше, быстрее или дольше, и сам берётся сравнить значения.",
@@ -321,7 +321,7 @@ export const DAILY_LOCATIONS: DailyLocation[] = [
   {
     id: 'mountains',
     title: 'Горы',
-    image: 'mountains.webp',
+    image: 'mountains.avif',
     stories: {
       compare: [
         "Пингвин спорит с напарником о двух вершинах и сам проверяет, где показатель больше.",
@@ -344,7 +344,7 @@ export const DAILY_LOCATIONS: DailyLocation[] = [
   {
     id: 'beach',
     title: 'Пляж',
-    image: 'beach.webp',
+    image: 'beach.avif',
     stories: {
       compare: [
         "На пляже пингвин спорит с друзьями о двух числовых фактах и сам проверяет, где значение больше.",
@@ -367,7 +367,7 @@ export const DAILY_LOCATIONS: DailyLocation[] = [
   {
     id: 'kitchen',
     title: 'Кухня',
-    image: 'kitchen.webp',
+    image: 'kitchen.avif',
     stories: {
       compare: [
         "Пингвин готовит ужин и сравнивает два ингредиента, чтобы понять, где веса или объёма больше.",
@@ -390,7 +390,7 @@ export const DAILY_LOCATIONS: DailyLocation[] = [
   {
     id: 'cinema',
     title: 'Кинотеатр',
-    image: 'cinema.webp',
+    image: 'cinema.avif',
     stories: {
       compare: [
         "Перед сеансом пингвин спорит с друзьями о двух кинофактах и сам проверяет, где число больше.",
@@ -413,7 +413,7 @@ export const DAILY_LOCATIONS: DailyLocation[] = [
   {
     id: 'train',
     title: 'Поезд',
-    image: 'train.webp',
+    image: 'train.avif',
     stories: {
       compare: [
         "В дороге пингвин спорит с попутчиком о расстояниях и сам проверяет, какое значение больше.",
@@ -436,7 +436,7 @@ export const DAILY_LOCATIONS: DailyLocation[] = [
   {
     id: 'hotel',
     title: 'Отель',
-    image: 'hotel.webp',
+    image: 'hotel.avif',
     stories: {
       compare: [
         "При заселении пингвин спорит с администратором о двух показателях и сам проверяет, какой больше.",
@@ -459,7 +459,7 @@ export const DAILY_LOCATIONS: DailyLocation[] = [
   {
     id: 'market',
     title: 'Рынок',
-    image: 'market.webp',
+    image: 'market.avif',
     stories: {
       compare: [
         "Пингвин торгуется с продавцом и сам сравнивает цены, веса и объёмы двух предложений.",
@@ -482,7 +482,7 @@ export const DAILY_LOCATIONS: DailyLocation[] = [
   {
     id: 'greenhouse',
     title: 'Сад и оранжерея',
-    image: 'greenhouse.webp',
+    image: 'greenhouse.avif',
     stories: {
       compare: [
         "Пингвин помогает садовнику и сам сравнивает показатели двух растений, выбирая большее.",
