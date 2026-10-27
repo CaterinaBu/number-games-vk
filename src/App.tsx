@@ -448,10 +448,6 @@ function CompareResultScreen({
             </div>
 
             <FactPointsReward reward={calculateFactPointsReward({ score })} />
-
-            <FactPointsReward reward={calculateFactPointsReward({ score })} />
-
-            <FactPointsReward reward={calculateFactPointsReward({ score })} />
           </div>
         </div>
 
@@ -1388,6 +1384,8 @@ function OrderResultScreen({
               <span>Лучшая серия <b>{maxStreak}</b></span>
               <span>Рекорд <b>{record.bestScore}/{ROUND_LENGTH}</b></span>
             </div>
+
+            <FactPointsReward reward={calculateFactPointsReward({ score })} />
           </div>
         </div>
 
@@ -1868,6 +1866,8 @@ function NearResultScreen({
               <span>Лучшая серия <b>{maxStreak}</b></span>
               <span>Рекорд <b>{record.bestScore}/{ROUND_LENGTH}</b></span>
             </div>
+
+            <FactPointsReward reward={calculateFactPointsReward({ score })} />
           </div>
         </div>
 
