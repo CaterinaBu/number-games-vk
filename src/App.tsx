@@ -51,6 +51,19 @@ type FinishResult = {
   average?: number;
 };
 
+const ROUND_BASE_FACT_POINTS = 10;
+const ROUND_MAX_PERFORMANCE_BONUS = 20;
+const TUTORIAL_MASTERY_FACT_POINTS = 20;
+
+function calculateFactPointsReward(result: FinishResult): number {
+  const normalized = result.average !== undefined
+    ? result.average / 100
+    : (result.score ?? 0) / 10;
+
+  const performance = Math.max(0, Math.min(1, normalized));
+  return ROUND_BASE_FACT_POINTS + Math.round(performance * ROUND_MAX_PERFORMANCE_BONUS);
+}
+
 const ROUND_LENGTH = 10;
 const STORAGE_KEY = 'number-games-records-v1';
 const RESULT_ASSET_BASE = `${import.meta.env.BASE_URL}assets/results/`;
@@ -165,6 +178,15 @@ function Score({
     <div className="stats">
       <span><b>{score}</b> верно</span>
       <span><b>{streak}</b> серия</span>
+    </div>
+  );
+}
+
+function FactPointsReward({ reward }: { reward: number }) {
+  return (
+    <div className="factPointsReward" aria-label={`Начислено ${reward} фактобаллов`}>
+      <span className="factPointsRewardIcon">✦</span>
+      <span><b>+{reward}</b> фактобаллов</span>
     </div>
   );
 }
@@ -426,6 +448,8 @@ function CompareResultScreen({
             </div>
           </div>
         </div>
+
+        <FactPointsReward reward={calculateFactPointsReward({ score })} />
 
         <div className="resultActions guessFinalActions">
           <button
@@ -849,6 +873,8 @@ function GuessResultScreen({
             </div>
           </div>
         </div>
+
+        <FactPointsReward reward={calculateFactPointsReward({ average })} />
 
         <div className="resultActions guessFinalActions">
           <button
@@ -1361,6 +1387,8 @@ function OrderResultScreen({
           </div>
         </div>
 
+        <FactPointsReward reward={calculateFactPointsReward({ score })} />
+
         <div className="resultActions guessFinalActions">
           <button
             className="next"
@@ -1840,6 +1868,8 @@ function NearResultScreen({
             </div>
           </div>
         </div>
+
+        <FactPointsReward reward={calculateFactPointsReward({ score })} />
 
         <div className="resultActions guessFinalActions">
           <button
@@ -2338,6 +2368,14 @@ function HomeScreen({
           </div>
         </div>
 
+        <div className="factPointsBalance" aria-label={`Баланс: ${progress.factPoints} фактобаллов`}>
+          <span className="factPointsBalanceIcon">✦</span>
+          <span className="factPointsBalanceCopy">
+            <strong>{progress.factPoints}</strong>
+            <small>фактобаллов</small>
+          </span>
+        </div>
+
         <div className="dashboardTopLinks" aria-label="Разделы игры">
           <span className="dashboardTopLink">
             <b>🏆</b>
@@ -2500,7 +2538,8 @@ export default function App() {
         guess: records.guess.plays > 0 ? 'mastered' : stored.status.guess,
         order: records.order.plays > 0 ? 'mastered' : stored.status.order,
         near: records.near.plays > 0 ? 'mastered' : stored.status.near
-      }
+      },
+      factPoints: stored.factPoints
     };
     saveProgress(migrated);
     return migrated;
@@ -2635,11 +2674,18 @@ export default function App() {
         status: {
           ...progress.status,
           [game]: 'mastered'
-        }
+        },
+        factPoints: progress.factPoints + TUTORIAL_MASTERY_FACT_POINTS
       };
 
       setProgress(nextProgress);
       saveProgress(nextProgress);
+      trackEvent('fact_points_earned', {
+        source: 'tutorial_mastery',
+        game,
+        amount: TUTORIAL_MASTERY_FACT_POINTS,
+        balance: nextProgress.factPoints
+      });
     }
 
     trackEvent('tutorial_completed', { game });
@@ -2651,7 +2697,8 @@ export default function App() {
       game,
       score: result.score,
       best_streak: result.maxStreak,
-      average: result.average
+      average: result.average,
+      fact_points: calculateFactPointsReward(result)
     });
 
     const current = records[game];
@@ -2669,17 +2716,23 @@ export default function App() {
 
     setRecords(nextRecords);
 
-    if (progress.status[game] !== 'mastered') {
-      const nextProgress: PlayerProgress = {
-        ...progress,
-        status: {
-          ...progress.status,
-          [game]: 'mastered'
-        }
-      };
-      setProgress(nextProgress);
-      saveProgress(nextProgress);
-    }
+    const factPointsReward = calculateFactPointsReward(result);
+    const nextProgress: PlayerProgress = {
+      ...progress,
+      status: {
+        ...progress.status,
+        [game]: 'mastered'
+      },
+      factPoints: progress.factPoints + factPointsReward
+    };
+    setProgress(nextProgress);
+    saveProgress(nextProgress);
+    trackEvent('fact_points_earned', {
+      source: 'completed_round',
+      game,
+      amount: factPointsReward,
+      balance: nextProgress.factPoints
+    });
 
     if (registerCompletedRound()) {
       setAdPending(true);
