@@ -9085,3 +9085,23 @@ button.dailyCard.locked {
     gap: 3px;
   }
 }
+
+
+/* v65 — daily reward inside result hero */
+.dailyOutcomeHero .dailySuccessRewardInline {
+  margin: 12px 0 0;
+  background: rgba(255, 249, 229, .94);
+  border-color: rgba(226, 171, 44, .24);
+  box-shadow: 0 6px 18px rgba(123, 89, 18, .08);
+  backdrop-filter: blur(8px);
+}
+
+.dailyOutcomeHero .dailySuccessRewardInline strong {
+  font-size: 13px;
+}
+
+@media (max-width: 760px) {
+  .dailyOutcomeHero .dailySuccessRewardInline {
+    margin-top: 10px;
+  }
+}
