@@ -8710,14 +8710,13 @@ button.dailyCard.locked {
   background: #dfeaff;
 }
 
-.dailyScene > img {
+.dailyScene > .dailyLocationSprite {
   position: absolute;
   inset: 0;
   z-index: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center;
+  display: block;
 }
 
 .dailySceneShade {
@@ -8998,10 +8997,6 @@ button.dailyCard.locked {
         rgba(247,250,255,.28) 68%,
         rgba(247,250,255,0) 86%
       );
-  }
-
-  .dailyScene > img {
-    object-position: center bottom;
   }
 
   .dailySceneCopy {
