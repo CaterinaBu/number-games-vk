@@ -2547,18 +2547,21 @@ function DailyResultScreen({
                 <span>За партию <b>+{partyReward}</b></span>
                 {success && <span>За задание <b>+{dailyReward}</b></span>}
               </div>
+
+              {success && (
+                <div className="dailySuccessReward dailySuccessRewardInline">
+                  <span>✦</span>
+                  <div>
+                    <small>Всего за эту попытку</small>
+                    <strong>+{partyReward + dailyReward} фактобаллов</strong>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
           {success ? (
             <>
-              <div className="dailySuccessReward">
-                <span>✦</span>
-                <div>
-                  <small>Всего за эту попытку</small>
-                  <strong>+{partyReward + dailyReward} фактобаллов</strong>
-                </div>
-              </div>
               <div className="resultActions guessFinalActions">
                 <button className="next" onClick={() => onTryAnother(otherGame.id)}>
                   Сыграть в «{otherGame.title}»
