@@ -89,6 +89,34 @@ const ROUND_LENGTH = 10;
 const STORAGE_KEY = 'number-games-records-v1';
 const RESULT_ASSET_BASE = `${import.meta.env.BASE_URL}assets/results/`;
 const DAILY_ASSET_BASE = `${import.meta.env.BASE_URL}assets/daily/`;
+const DAILY_LOCATION_SPRITE = `${DAILY_ASSET_BASE}daily-locations-sprite.avif`;
+const DAILY_LOCATION_TILE_WIDTH = 896;
+const DAILY_LOCATION_TILE_HEIGHT = 504;
+const DAILY_LOCATION_SPRITE_WIDTH = DAILY_LOCATION_TILE_WIDTH * 5;
+const DAILY_LOCATION_SPRITE_HEIGHT = DAILY_LOCATION_TILE_HEIGHT * 4;
+
+const DAILY_LOCATION_SPRITE_INDEX: Record<string, number> = {
+  laboratory: 0,
+  library: 1,
+  museum: 2,
+  ship: 3,
+  office: 4,
+  cafe: 5,
+  airport: 6,
+  supermarket: 7,
+  park: 8,
+  stadium: 9,
+  jungle: 10,
+  fair: 11,
+  mountains: 12,
+  beach: 13,
+  kitchen: 14,
+  cinema: 15,
+  train: 16,
+  hotel: 17,
+  market: 18,
+  greenhouse: 19
+};
 
 const emptyEntry = (): RecordEntry => ({
   plays: 0,
@@ -2374,23 +2402,28 @@ const homeGames: Array<{
 ];
 
 function DailyLocationImage({ challenge }: { challenge: DailyChallenge }) {
-  const preferred = DAILY_ASSET_BASE + challenge.image;
-  const fallback = hqHomeGameArt[challenge.game];
-  const [src, setSrc] = useState(preferred);
-
-  useEffect(() => {
-    setSrc(preferred);
-  }, [preferred]);
+  const index = DAILY_LOCATION_SPRITE_INDEX[challenge.locationId] ?? 0;
+  const column = index % 5;
+  const row = Math.floor(index / 5);
+  const x = column * DAILY_LOCATION_TILE_WIDTH;
+  const y = row * DAILY_LOCATION_TILE_HEIGHT;
 
   return (
-    <img
-      src={src}
-      alt=""
+    <svg
+      className="dailyLocationSprite"
+      viewBox={`${x} ${y} ${DAILY_LOCATION_TILE_WIDTH} ${DAILY_LOCATION_TILE_HEIGHT}`}
+      preserveAspectRatio="xMidYMid slice"
       aria-hidden="true"
-      onError={() => {
-        if (src !== fallback) setSrc(fallback);
-      }}
-    />
+      focusable="false"
+    >
+      <image
+        href={DAILY_LOCATION_SPRITE}
+        x="0"
+        y="0"
+        width={DAILY_LOCATION_SPRITE_WIDTH}
+        height={DAILY_LOCATION_SPRITE_HEIGHT}
+      />
+    </svg>
   );
 }
 
