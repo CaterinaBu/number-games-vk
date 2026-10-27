@@ -1489,7 +1489,7 @@ function nearResultState(score: number): { title: string; art: string; tone: str
   if (score <= 2) {
     return {
       title: 'Есть над чем подумать',
-      art: \`${RESULT_ASSET_BASE}guess-result-0-25-v2.webp\`,
+      art: `${RESULT_ASSET_BASE}guess-result-0-25-v2.webp`,
       tone: 'thoughtful'
     };
   }
@@ -1497,7 +1497,7 @@ function nearResultState(score: number): { title: string; art: string; tone: str
   if (score <= 5) {
     return {
       title: 'Неплохое начало',
-      art: \`${RESULT_ASSET_BASE}guess-result-26-50-v2.webp\`,
+      art: `${RESULT_ASSET_BASE}guess-result-26-50-v2.webp`,
       tone: 'calm'
     };
   }
@@ -1505,14 +1505,14 @@ function nearResultState(score: number): { title: string; art: string; tone: str
   if (score <= 8) {
     return {
       title: 'Хороший результат!',
-      art: \`${RESULT_ASSET_BASE}guess-result-51-75-v2.webp\`,
+      art: `${RESULT_ASSET_BASE}guess-result-51-75-v2.webp`,
       tone: 'happy'
     };
   }
 
   return {
     title: 'Отличное чувство масштаба!',
-    art: \`${RESULT_ASSET_BASE}guess-result-76-100-v2.webp\`,
+    art: `${RESULT_ASSET_BASE}guess-result-76-100-v2.webp`,
     tone: 'winner'
   };
 }
@@ -1593,7 +1593,7 @@ function NearResultScreen({
             <strong>По порядку →</strong>
           </span>
           <img
-            src={\`${RESULT_ASSET_BASE}guess-try-another-v2.webp\`}
+            src={`${RESULT_ASSET_BASE}guess-try-another-v2.webp`}
             alt=""
             aria-hidden="true"
           />
@@ -1777,14 +1777,14 @@ function NearGame({
         </div>
 
         <div className="nearChoices">
-          <button className={\`nearChoice\${candidateClass('left')}\`} onClick={() => choose('left')} disabled={answered}>
+          <button className={`nearChoice${candidateClass('left')}`} onClick={() => choose('left')} disabled={answered}>
             <span className="nearLetter">A</span>
             <span className="nearMetric">{question.left.metric}</span>
             <span className="nearObject">{question.left.object}</span>
             {answered && <small>{formatValue(question.left)}</small>}
           </button>
 
-          <button className={\`nearChoice\${candidateClass('right')}\`} onClick={() => choose('right')} disabled={answered}>
+          <button className={`nearChoice${candidateClass('right')}`} onClick={() => choose('right')} disabled={answered}>
             <span className="nearLetter">B</span>
             <span className="nearMetric">{question.right.metric}</span>
             <span className="nearObject">{question.right.object}</span>
@@ -1795,7 +1795,7 @@ function NearGame({
         <div className="feedback">
           {answered ? (
             <>
-              <div className={\`resultText \${selected === correctSide ? 'success' : 'fail'}\`}>
+              <div className={`resultText ${selected === correctSide ? 'success' : 'fail'}`}>
                 {selected === correctSide ? 'Верно' : 'Неверно'}
               </div>
               <button className="next" onClick={next}>
