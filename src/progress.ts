@@ -3,6 +3,7 @@ export type GameProgressStatus = 'new' | 'tutorial' | 'mastered';
 
 export type PlayerProgress = {
   status: Record<ProgressGame, GameProgressStatus>;
+  factPoints: number;
 };
 
 const PROGRESS_STORAGE_KEY = 'number-games-progress-v2';
@@ -17,7 +18,8 @@ export function createEmptyProgress(): PlayerProgress {
       guess: 'new',
       order: 'new',
       near: 'new'
-    }
+    },
+    factPoints: 0
   };
 }
 
@@ -34,6 +36,7 @@ export function loadProgress(): PlayerProgress {
     if (raw) {
       const parsed = JSON.parse(raw) as {
         status?: Partial<Record<ProgressGame, GameProgressStatus>>;
+        factPoints?: unknown;
       };
 
       const next = createEmptyProgress();
@@ -41,6 +44,14 @@ export function loadProgress(): PlayerProgress {
       for (const game of GAMES) {
         const value = parsed.status?.[game];
         next.status[game] = isStatus(value) ? value : 'new';
+      }
+
+      if (
+        typeof parsed.factPoints === 'number'
+        && Number.isFinite(parsed.factPoints)
+        && parsed.factPoints >= 0
+      ) {
+        next.factPoints = Math.floor(parsed.factPoints);
       }
 
       return next;
