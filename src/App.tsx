@@ -446,10 +446,14 @@ function CompareResultScreen({
               <span>Лучшая серия <b>{maxStreak}</b></span>
               <span>Рекорд <b>{record.bestScore}/{ROUND_LENGTH}</b></span>
             </div>
+
+            <FactPointsReward reward={calculateFactPointsReward({ score })} />
+
+            <FactPointsReward reward={calculateFactPointsReward({ score })} />
+
+            <FactPointsReward reward={calculateFactPointsReward({ score })} />
           </div>
         </div>
-
-        <FactPointsReward reward={calculateFactPointsReward({ score })} />
 
         <div className="resultActions guessFinalActions">
           <button
@@ -871,10 +875,10 @@ function GuessResultScreen({
               <span>Рекорд <b>{record.bestAverage}%</b></span>
               <span><b>{attempts.length}/{ROUND_LENGTH}</b> заданий</span>
             </div>
+
+            <FactPointsReward reward={calculateFactPointsReward({ average })} />
           </div>
         </div>
-
-        <FactPointsReward reward={calculateFactPointsReward({ average })} />
 
         <div className="resultActions guessFinalActions">
           <button
@@ -1387,8 +1391,6 @@ function OrderResultScreen({
           </div>
         </div>
 
-        <FactPointsReward reward={calculateFactPointsReward({ score })} />
-
         <div className="resultActions guessFinalActions">
           <button
             className="next"
@@ -1868,8 +1870,6 @@ function NearResultScreen({
             </div>
           </div>
         </div>
-
-        <FactPointsReward reward={calculateFactPointsReward({ score })} />
 
         <div className="resultActions guessFinalActions">
           <button
