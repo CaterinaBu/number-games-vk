@@ -32,6 +32,17 @@ import {
 import { donateToCommunity, isDonationConfigured, isVKEnvironment, openCommunity, registerCompletedRound, resizeDesktopWindowToContent, shareApp, showAdIfAvailable } from './vk';
 import { trackEvent } from './analytics';
 import { loadProgress, saveProgress, type PlayerProgress } from './progress';
+import {
+  createEmptyDailyProgress,
+  formatDailyGoal,
+  formatDailyValue,
+  getDailyChallenge,
+  getMoscowDateKey,
+  loadDailyProgress,
+  saveDailyProgress,
+  type DailyChallenge,
+  type DailyProgress
+} from './daily';
 
 type Side = 'left' | 'right';
 type GameTab = 'compare' | 'guess' | 'order' | 'near';
@@ -51,6 +62,15 @@ type FinishResult = {
   average?: number;
 };
 
+type DailyRoundOutcome = {
+  challenge: DailyChallenge;
+  result: FinishResult;
+  value: number;
+  success: boolean;
+  partyReward: number;
+  dailyReward: number;
+};
+
 const ROUND_BASE_FACT_POINTS = 10;
 const ROUND_MAX_PERFORMANCE_BONUS = 20;
 const TUTORIAL_MASTERY_FACT_POINTS = 20;
@@ -67,6 +87,7 @@ function calculateFactPointsReward(result: FinishResult): number {
 const ROUND_LENGTH = 10;
 const STORAGE_KEY = 'number-games-records-v1';
 const RESULT_ASSET_BASE = `${import.meta.env.BASE_URL}assets/results/`;
+const DAILY_ASSET_BASE = `${import.meta.env.BASE_URL}assets/daily/`;
 
 const emptyEntry = (): RecordEntry => ({
   plays: 0,
@@ -367,6 +388,8 @@ type GameProps = {
   onBeforeLeave: (action: () => void) => Promise<void>;
   onAttempt: () => void;
   onRestartRound: (game: GameTab, action: () => void) => void;
+  dailyChallengeMode?: boolean;
+  onDailyRoundFinished?: (game: GameTab, result: FinishResult) => void;
 };
 
 type CompareGameProps = GameProps & {
@@ -504,7 +527,9 @@ function CompareGame({
   onRestartRound,
   tutorialMode,
   onTutorialComplete,
-  onSelectGame
+  onSelectGame,
+  dailyChallengeMode,
+  onDailyRoundFinished
 }: CompareGameProps) {
   const [difficulty, setDifficulty] = useState<Difficulty>('easy');
   const [question, setQuestion] = useState<Question>(() => createQuestion('easy'));
@@ -550,7 +575,12 @@ function CompareGame({
   }
 
   function finish() {
-    const record = onFinish('compare', { score, maxStreak });
+    const result = { score, maxStreak };
+    const record = onFinish('compare', result);
+    if (dailyChallengeMode && onDailyRoundFinished) {
+      onDailyRoundFinished('compare', result);
+      return;
+    }
     setSavedRecord(record);
     setShowResult(true);
   }
@@ -939,7 +969,9 @@ function GuessGame({
   onRestartRound,
   tutorialMode,
   onTutorialComplete,
-  onSelectGame
+  onSelectGame,
+  dailyChallengeMode,
+  onDailyRoundFinished
 }: GuessGameProps) {
   const [fact, setFact] = useState<Fact>(() => createGuessFact());
   const [input, setInput] = useState('');
@@ -1004,7 +1036,12 @@ function GuessGame({
   }
 
   function finish() {
-    const record = onFinish('guess', { average: averageScore });
+    const result = { average: averageScore };
+    const record = onFinish('guess', result);
+    if (dailyChallengeMode && onDailyRoundFinished) {
+      onDailyRoundFinished('guess', result);
+      return;
+    }
     setSavedRecord(record);
     setShowResult(true);
   }
@@ -1446,7 +1483,9 @@ function OrderGame({
   onRestartRound,
   tutorialMode,
   onTutorialComplete,
-  onSelectGame
+  onSelectGame,
+  dailyChallengeMode,
+  onDailyRoundFinished
 }: OrderGameProps) {
   const [question, setQuestion] = useState(() => createOrderQuestion());
   const [items, setItems] = useState<Fact[]>(question.items);
@@ -1504,7 +1543,12 @@ function OrderGame({
   }
 
   function finish() {
-    const record = onFinish('order', { score, maxStreak });
+    const result = { score, maxStreak };
+    const record = onFinish('order', result);
+    if (dailyChallengeMode && onDailyRoundFinished) {
+      onDailyRoundFinished('order', result);
+      return;
+    }
     setSavedRecord(record);
     setShowResult(true);
   }
@@ -1928,7 +1972,9 @@ function NearGame({
   onRestartRound,
   tutorialMode,
   onTutorialComplete,
-  onSelectGame
+  onSelectGame,
+  dailyChallengeMode,
+  onDailyRoundFinished
 }: NearGameProps) {
   const [question, setQuestion] = useState<NearQuestion>(() => createNearQuestion());
   const [selected, setSelected] = useState<Side | null>(null);
@@ -1972,7 +2018,12 @@ function NearGame({
   }
 
   function finish() {
-    const record = onFinish('near', { score, maxStreak });
+    const result = { score, maxStreak };
+    const record = onFinish('near', result);
+    if (dailyChallengeMode && onDailyRoundFinished) {
+      onDailyRoundFinished('near', result);
+      return;
+    }
     setSavedRecord(record);
     setShowResult(true);
   }
@@ -2321,14 +2372,220 @@ const homeGames: Array<{
   }
 ];
 
+function DailyLocationImage({ challenge }: { challenge: DailyChallenge }) {
+  const preferred = DAILY_ASSET_BASE + challenge.image;
+  const fallback = hqHomeGameArt[challenge.game];
+  const [src, setSrc] = useState(preferred);
+
+  useEffect(() => {
+    setSrc(preferred);
+  }, [preferred]);
+
+  return (
+    <img
+      src={src}
+      alt=""
+      aria-hidden="true"
+      onError={() => {
+        if (src !== fallback) setSrc(fallback);
+      }}
+    />
+  );
+}
+
+function DailyChallengeScreen({
+  challenge,
+  progress,
+  onStart,
+  onHome,
+  onRefreshTest
+}: {
+  challenge: DailyChallenge;
+  progress: DailyProgress;
+  onStart: () => void;
+  onHome: () => void;
+  onRefreshTest: () => void;
+}) {
+  return (
+    <main className="dailyPage">
+      <div className="dailyPageTop">
+        <button className="backHome dailyBack" onClick={onHome}>← Все игры</button>
+        <button className="dailyTestRefresh" onClick={onRefreshTest}>↻ Обновить задание (тест)</button>
+      </div>
+
+      <section className="dailyChallengeCard">
+        <div className="dailyScene">
+          <DailyLocationImage challenge={challenge} />
+          <div className="dailySceneShade" aria-hidden="true" />
+          <div className="dailySceneCopy">
+            <span className="dailyEyebrow">Задание дня · {challenge.locationTitle}</span>
+            <h1>{challenge.story}</h1>
+          </div>
+        </div>
+
+        <div className="dailyChallengeBottom">
+          <div className="dailyChallengeMeta">
+            <span className={'dailyDifficulty ' + challenge.difficulty}>{challenge.difficultyLabel}</span>
+            <span>{DAILY_GAME_TITLES[challenge.game]}</span>
+            <span>✦ +{challenge.reward} за выполнение</span>
+          </div>
+
+          <div className="dailyGoal">
+            <span>Цель</span>
+            <strong>{formatDailyGoal(challenge)}</strong>
+            {progress.attempts > 0 && !progress.completed && (
+              <small>Попыток сегодня: {progress.attempts} · лучший результат: {formatDailyValue(challenge.game, progress.bestValue)}</small>
+            )}
+          </div>
+
+          <button className="next dailyStartButton" onClick={onStart}>
+            Выполнить задание <span>→</span>
+          </button>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function DailyCompletedScreen({
+  challenge,
+  progress,
+  onHome,
+  onRefreshTest
+}: {
+  challenge: DailyChallenge;
+  progress: DailyProgress;
+  onHome: () => void;
+  onRefreshTest: () => void;
+}) {
+  return (
+    <main className="dailyPage">
+      <div className="dailyPageTop">
+        <button className="backHome dailyBack" onClick={onHome}>← Все игры</button>
+        <button className="dailyTestRefresh" onClick={onRefreshTest}>↻ Обновить задание (тест)</button>
+      </div>
+
+      <section className="resultScreen guessFinalScreen dailyOutcomeScreen">
+        <div className="resultCard guessFinalCard dailyOutcomeCard">
+          <div className="guessResultHero winner dailyOutcomeHero">
+            <img
+              className="guessResultHeroArt"
+              src={RESULT_ASSET_BASE + 'guess-result-76-100-v2.webp'}
+              alt=""
+              aria-hidden="true"
+            />
+            <div className="guessResultHeroShade" aria-hidden="true" />
+            <div className="guessResultHeroCopy">
+              <div className="resultEyebrow">Задание дня</div>
+              <h2>Уже выполнено!</h2>
+              <div className="dailyOutcomeValue">
+                <strong>{formatDailyValue(challenge.game, progress.completedValue ?? progress.bestValue)}</strong>
+                <span>{DAILY_GAME_TITLES[challenge.game]}</span>
+              </div>
+              <div className="guessResultMiniStats">
+                <span>Цель <b>{formatDailyGoal(challenge)}</b></span>
+                <span>Награда <b>+{progress.reward || challenge.reward}</b></span>
+              </div>
+            </div>
+          </div>
+
+          <p className="dailyTomorrowCopy">Новое задание появится после 00:00 по Москве.</p>
+          <div className="resultActions guessFinalActions">
+            <button className="next" onClick={onHome}>Все игры</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function DailyResultScreen({
+  outcome,
+  onRetry,
+  onHome,
+  onTryAnother
+}: {
+  outcome: DailyRoundOutcome;
+  onRetry: () => void;
+  onHome: () => void;
+  onTryAnother: (game: GameTab) => void;
+}) {
+  const { challenge, value, success, partyReward, dailyReward } = outcome;
+  const otherGame = homeGames[(homeGames.findIndex((game) => game.id === challenge.game) + 1) % homeGames.length];
+
+  return (
+    <main className="dailyPage">
+      <button className="backHome dailyBack" onClick={onHome}>← Все игры</button>
+
+      <section className="resultScreen guessFinalScreen dailyOutcomeScreen">
+        <div className="resultCard guessFinalCard dailyOutcomeCard">
+          <div className={'guessResultHero dailyOutcomeHero ' + (success ? 'winner' : 'thoughtful')}>
+            <img
+              className="guessResultHeroArt"
+              src={RESULT_ASSET_BASE + (success ? 'guess-result-76-100-v2.webp' : 'guess-result-0-25-v2.webp')}
+              alt=""
+              aria-hidden="true"
+            />
+            <div className="guessResultHeroShade" aria-hidden="true" />
+            <div className="guessResultHeroCopy">
+              <div className="resultEyebrow">Задание дня</div>
+              <h2>{success ? 'Задание выполнено!' : 'Почти получилось!'}</h2>
+
+              <div className="dailyOutcomeValue">
+                <strong>{formatDailyValue(challenge.game, value)}</strong>
+                <span>{success ? 'цель достигнута' : 'ваш результат'}</span>
+              </div>
+
+              <div className="guessResultMiniStats">
+                <span>Цель <b>{formatDailyGoal(challenge)}</b></span>
+                <span>За партию <b>+{partyReward}</b></span>
+                {success && <span>За задание <b>+{dailyReward}</b></span>}
+              </div>
+            </div>
+          </div>
+
+          {success ? (
+            <>
+              <div className="dailySuccessReward">
+                <span>✦</span>
+                <div>
+                  <small>Всего за эту попытку</small>
+                  <strong>+{partyReward + dailyReward} фактобаллов</strong>
+                </div>
+              </div>
+              <div className="resultActions guessFinalActions">
+                <button className="next" onClick={() => onTryAnother(otherGame.id)}>
+                  Сыграть в «{otherGame.title}»
+                </button>
+                <button className="secondaryButton" onClick={onHome}>Все игры</button>
+              </div>
+            </>
+          ) : (
+            <div className="resultActions guessFinalActions">
+              <button className="next" onClick={onRetry}>Попробовать ещё раз</button>
+              <button className="secondaryButton" onClick={onHome}>Все игры</button>
+            </div>
+          )}
+        </div>
+      </section>
+    </main>
+  );
+}
+
 function HomeScreen({
   records,
   progress,
-  onStart
+  dailyChallenge,
+  dailyProgress,
+  onStart,
+  onOpenDaily
 }: {
   records: Records;
   progress: PlayerProgress;
+  dailyChallenge: DailyChallenge;
+  dailyProgress: DailyProgress;
   onStart: (game: GameTab) => void;
+  onOpenDaily: () => void;
 }) {
   const masteredCount = homeGames.filter((game) => progress.status[game.id] === 'mastered').length;
   const newGame = homeGames.find((game) => progress.status[game.id] === 'new');
@@ -2407,17 +2664,24 @@ function HomeScreen({
           </div>
         </div>
 
-        <div className={`dailyCard ${masteredCount === 4 ? 'unlocked' : 'locked'}`}>
-          <div className="dailyIcon">{masteredCount === 4 ? '📅' : '🔒'}</div>
+        <button
+          type="button"
+          className={`dailyCard ${masteredCount === 4 ? 'unlocked' : 'locked'} ${dailyProgress.completed ? 'completed' : ''}`}
+          disabled={masteredCount !== 4}
+          onClick={onOpenDaily}
+        >
+          <div className="dailyIcon">{masteredCount !== 4 ? '🔒' : dailyProgress.completed ? '✓' : '📅'}</div>
           <div>
             <strong>Задание дня</strong>
             <span>
-              {masteredCount === 4
-                ? 'Скоро здесь появится новое испытание каждый день'
-                : `Освойте ещё ${4 - masteredCount}, чтобы открыть`}
+              {masteredCount !== 4
+                ? `Освойте ещё ${4 - masteredCount}, чтобы открыть`
+                : dailyProgress.completed
+                  ? `Выполнено · +${dailyProgress.reward || dailyChallenge.reward} фактобаллов`
+                  : `${dailyChallenge.locationTitle} · ${dailyChallenge.difficultyLabel.toLowerCase()} · ${DAILY_GAME_TITLES[dailyChallenge.game]}`}
             </span>
           </div>
-        </div>
+        </button>
       </section>
 
       <section className="dashboardMainGrid">
@@ -2527,7 +2791,7 @@ function HomeScreen({
 }
 
 export default function App() {
-  const [screen, setScreen] = useState<'home' | 'game'>('home');
+  const [screen, setScreen] = useState<'home' | 'game' | 'daily' | 'dailyResult'>('home');
   const [tab, setTab] = useState<GameTab>('compare');
   const [records, setRecords] = useState<Records>(() => loadRecords());
   const [progress, setProgress] = useState<PlayerProgress>(() => {
@@ -2544,12 +2808,37 @@ export default function App() {
     saveProgress(migrated);
     return migrated;
   });
+  const [moscowDateKey, setMoscowDateKey] = useState(() => getMoscowDateKey());
+  const [dailyDebugOffset, setDailyDebugOffset] = useState(0);
+  const dailyChallenge = getDailyChallenge(moscowDateKey, dailyDebugOffset);
+  const [dailyProgress, setDailyProgress] = useState<DailyProgress>(() => loadDailyProgress(getMoscowDateKey()));
+  const [dailyAttempt, setDailyAttempt] = useState<DailyChallenge | null>(null);
+  const [dailyResult, setDailyResult] = useState<DailyRoundOutcome | null>(null);
+
   const [adPending, setAdPending] = useState(false);
   const [hasAttemptedAnswer, setHasAttemptedAnswer] = useState(false);
   const [leaveConfirm, setLeaveConfirm] = useState<{
     action: () => void;
   } | null>(null);
 
+
+  useEffect(() => {
+    const checkMoscowDay = () => {
+      const nextDateKey = getMoscowDateKey();
+      if (nextDateKey === moscowDateKey) return;
+
+      setMoscowDateKey(nextDateKey);
+      setDailyDebugOffset(0);
+      setDailyProgress(loadDailyProgress(nextDateKey));
+      setDailyAttempt(null);
+      setDailyResult(null);
+      if (screen === 'dailyResult') setScreen('daily');
+    };
+
+    const timer = window.setInterval(checkMoscowDay, 30_000);
+    checkMoscowDay();
+    return () => window.clearInterval(timer);
+  }, [moscowDateKey, screen]);
 
   useEffect(() => {
     let frame = 0;
@@ -2583,7 +2872,7 @@ export default function App() {
     };
   }, [screen, tab]);
 
-  function startGame(game: GameTab) {
+  function startGame(game: GameTab, source = 'home') {
     setHasAttemptedAnswer(false);
 
     if (progress.status[game] === 'new') {
@@ -2598,8 +2887,8 @@ export default function App() {
       saveProgress(nextProgress);
     }
 
-    trackEvent('game_selected', { game, source: 'home' });
-    trackEvent('round_started', { game, source: 'home' });
+    trackEvent('game_selected', { game, source });
+    trackEvent('round_started', { game, source });
     setTab(game);
     setScreen('game');
   }
@@ -2634,6 +2923,8 @@ export default function App() {
       }
 
       setHasAttemptedAnswer(false);
+      setDailyAttempt(null);
+      setDailyResult(null);
       setScreen('home');
     });
   }
@@ -2717,21 +3008,23 @@ export default function App() {
     setRecords(nextRecords);
 
     const factPointsReward = calculateFactPointsReward(result);
-    const nextProgress: PlayerProgress = {
-      ...progress,
-      status: {
-        ...progress.status,
-        [game]: 'mastered'
-      },
-      factPoints: progress.factPoints + factPointsReward
-    };
-    setProgress(nextProgress);
-    saveProgress(nextProgress);
-    trackEvent('fact_points_earned', {
-      source: 'completed_round',
-      game,
-      amount: factPointsReward,
-      balance: nextProgress.factPoints
+    setProgress((currentProgress) => {
+      const nextProgress: PlayerProgress = {
+        ...currentProgress,
+        status: {
+          ...currentProgress.status,
+          [game]: 'mastered'
+        },
+        factPoints: currentProgress.factPoints + factPointsReward
+      };
+      saveProgress(nextProgress);
+      trackEvent('fact_points_earned', {
+        source: 'completed_round',
+        game,
+        amount: factPointsReward,
+        balance: nextProgress.factPoints
+      });
+      return nextProgress;
     });
 
     if (registerCompletedRound()) {
@@ -2745,6 +3038,125 @@ export default function App() {
     }
 
     return updated;
+  }
+
+  function openDailyChallenge() {
+    setDailyAttempt(null);
+    setDailyResult(null);
+    setScreen('daily');
+    trackEvent('daily_challenge_opened', {
+      key: dailyChallenge.key,
+      game: dailyChallenge.game,
+      difficulty: dailyChallenge.difficulty,
+      story: dailyChallenge.storyId
+    });
+  }
+
+  function refreshDailyForTesting() {
+    const nextOffset = dailyDebugOffset + 1;
+    const nextChallenge = getDailyChallenge(moscowDateKey, nextOffset);
+    setDailyDebugOffset(nextOffset);
+    setDailyProgress(createEmptyDailyProgress(nextChallenge.key));
+    setDailyAttempt(null);
+    setDailyResult(null);
+    setScreen('daily');
+    trackEvent('daily_challenge_test_refreshed', {
+      key: nextChallenge.key,
+      game: nextChallenge.game,
+      difficulty: nextChallenge.difficulty,
+      story: nextChallenge.storyId
+    });
+  }
+
+  function startDailyChallenge(challenge = dailyChallenge) {
+    setHasAttemptedAnswer(false);
+    setDailyResult(null);
+    setDailyAttempt(challenge);
+    setTab(challenge.game);
+    setScreen('game');
+    trackEvent('daily_challenge_started', {
+      key: challenge.key,
+      game: challenge.game,
+      difficulty: challenge.difficulty,
+      threshold: challenge.threshold
+    });
+    trackEvent('round_started', { game: challenge.game, source: 'daily_challenge' });
+  }
+
+  function finishDailyRound(game: GameTab, result: FinishResult) {
+    const challenge = dailyAttempt;
+    if (!challenge || challenge.game !== game) return;
+
+    const value = game === 'guess' ? (result.average ?? 0) : (result.score ?? 0);
+    const success = value >= challenge.threshold;
+    const partyReward = calculateFactPointsReward(result);
+    const currentDaily = dailyProgress.key === challenge.key
+      ? dailyProgress
+      : createEmptyDailyProgress(challenge.key);
+    const wasCompleted = currentDaily.completed;
+
+    const nextDaily: DailyProgress = {
+      ...currentDaily,
+      key: challenge.key,
+      attempts: currentDaily.attempts + 1,
+      bestValue: Math.max(currentDaily.bestValue, value),
+      completed: currentDaily.completed || success,
+      completedValue: success ? value : currentDaily.completedValue,
+      reward: success ? challenge.reward : currentDaily.reward
+    };
+
+    setDailyProgress(nextDaily);
+    if (challenge.key === challenge.dateKey) {
+      saveDailyProgress(nextDaily);
+    }
+
+    if (success && !wasCompleted) {
+      setProgress((currentProgress) => {
+        const nextProgress: PlayerProgress = {
+          ...currentProgress,
+          factPoints: currentProgress.factPoints + challenge.reward
+        };
+        saveProgress(nextProgress);
+        trackEvent('fact_points_earned', {
+          source: 'daily_challenge',
+          game,
+          amount: challenge.reward,
+          balance: nextProgress.factPoints
+        });
+        return nextProgress;
+      });
+    }
+
+    const outcome: DailyRoundOutcome = {
+      challenge,
+      result,
+      value,
+      success,
+      partyReward,
+      dailyReward: success && !wasCompleted ? challenge.reward : 0
+    };
+
+    setDailyAttempt(null);
+    setDailyResult(outcome);
+    setScreen('dailyResult');
+    trackEvent('daily_challenge_finished', {
+      key: challenge.key,
+      game,
+      difficulty: challenge.difficulty,
+      value,
+      threshold: challenge.threshold,
+      success
+    });
+  }
+
+  function retryDailyChallenge() {
+    if (!dailyResult) return;
+    startDailyChallenge(dailyResult.challenge);
+  }
+
+  function startGameFromDailyResult(game: GameTab) {
+    setDailyResult(null);
+    startGame(game, 'daily_success');
   }
 
   async function runPostRoundAction(action: () => void) {
@@ -2771,7 +3183,53 @@ export default function App() {
   }
 
   if (screen === 'home') {
-    return <HomeScreen records={records} progress={progress} onStart={startGame} />;
+    return (
+      <HomeScreen
+        records={records}
+        progress={progress}
+        dailyChallenge={dailyChallenge}
+        dailyProgress={dailyProgress}
+        onStart={startGame}
+        onOpenDaily={openDailyChallenge}
+      />
+    );
+  }
+
+  if (screen === 'daily') {
+    if (dailyProgress.key === dailyChallenge.key && dailyProgress.completed) {
+      return (
+        <DailyCompletedScreen
+          challenge={dailyChallenge}
+          progress={dailyProgress}
+          onHome={() => setScreen('home')}
+          onRefreshTest={refreshDailyForTesting}
+        />
+      );
+    }
+
+    return (
+      <DailyChallengeScreen
+        challenge={dailyChallenge}
+        progress={dailyProgress.key === dailyChallenge.key ? dailyProgress : createEmptyDailyProgress(dailyChallenge.key)}
+        onStart={() => startDailyChallenge(dailyChallenge)}
+        onHome={() => setScreen('home')}
+        onRefreshTest={refreshDailyForTesting}
+      />
+    );
+  }
+
+  if (screen === 'dailyResult' && dailyResult) {
+    return (
+      <DailyResultScreen
+        outcome={dailyResult}
+        onRetry={retryDailyChallenge}
+        onHome={() => {
+          setDailyResult(null);
+          setScreen('home');
+        }}
+        onTryAnother={startGameFromDailyResult}
+      />
+    );
   }
 
   const copy = titles[tab];
@@ -2780,12 +3238,20 @@ export default function App() {
     <main className={`app appWithBack app-${tab}`}>
       <button className="backHome" onClick={goHomeFromTopBar}>← Все игры</button>
 
-      <nav className="gameTabs topTabs">
-        <button className={tab === 'compare' ? 'active' : ''} onClick={() => switchGameFromTopBar('compare')}>Что больше?</button>
-        <button className={tab === 'guess' ? 'active' : ''} onClick={() => switchGameFromTopBar('guess')}>Ближе к правде</button>
-        <button className={tab === 'order' ? 'active' : ''} onClick={() => switchGameFromTopBar('order')}>По порядку</button>
-        <button className={tab === 'near' ? 'active' : ''} onClick={() => switchGameFromTopBar('near')}>Что ближе?</button>
-      </nav>
+      {dailyAttempt ? (
+        <div className="dailyGameBadge">
+          <span>📅 Задание дня</span>
+          <strong>{formatDailyGoal(dailyAttempt)}</strong>
+          <small>{dailyAttempt.difficultyLabel} · +{dailyAttempt.reward} за выполнение</small>
+        </div>
+      ) : (
+        <nav className="gameTabs topTabs">
+          <button className={tab === 'compare' ? 'active' : ''} onClick={() => switchGameFromTopBar('compare')}>Что больше?</button>
+          <button className={tab === 'guess' ? 'active' : ''} onClick={() => switchGameFromTopBar('guess')}>Ближе к правде</button>
+          <button className={tab === 'order' ? 'active' : ''} onClick={() => switchGameFromTopBar('order')}>По порядку</button>
+          <button className={tab === 'near' ? 'active' : ''} onClick={() => switchGameFromTopBar('near')}>Что ближе?</button>
+        </nav>
+      )}
 
       <header className="hero">
         <h1>{copy.title}</h1>
@@ -2802,6 +3268,8 @@ export default function App() {
           tutorialMode={progress.status.compare === 'tutorial'}
           onTutorialComplete={() => completeTutorial('compare')}
           onSelectGame={switchGame}
+          dailyChallengeMode={dailyAttempt?.game === 'compare'}
+          onDailyRoundFinished={finishDailyRound}
         />
       )}
       {tab === 'guess' && (
@@ -2814,6 +3282,8 @@ export default function App() {
           tutorialMode={progress.status.guess === 'tutorial'}
           onTutorialComplete={() => completeTutorial('guess')}
           onSelectGame={switchGame}
+          dailyChallengeMode={dailyAttempt?.game === 'guess'}
+          onDailyRoundFinished={finishDailyRound}
         />
       )}
       {tab === 'order' && (
@@ -2826,6 +3296,8 @@ export default function App() {
           tutorialMode={progress.status.order === 'tutorial'}
           onTutorialComplete={() => completeTutorial('order')}
           onSelectGame={switchGame}
+          dailyChallengeMode={dailyAttempt?.game === 'order'}
+          onDailyRoundFinished={finishDailyRound}
         />
       )}
       {tab === 'near' && (
@@ -2838,6 +3310,8 @@ export default function App() {
           tutorialMode={progress.status.near === 'tutorial'}
           onTutorialComplete={() => completeTutorial('near')}
           onSelectGame={switchGame}
+          dailyChallengeMode={dailyAttempt?.game === 'near'}
+          onDailyRoundFinished={finishDailyRound}
         />
       )}
 
