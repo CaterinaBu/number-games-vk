@@ -1479,7 +1479,145 @@ function OrderGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
   );
 }
 
-function NearGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound }: GameProps) {
+type NearGameProps = GameProps & {
+  tutorialMode: boolean;
+  onTutorialComplete: () => void;
+  onSelectGame: (game: GameTab) => void;
+};
+
+function nearResultState(score: number): { title: string; art: string; tone: string } {
+  if (score <= 2) {
+    return {
+      title: 'Есть над чем подумать',
+      art: \`${RESULT_ASSET_BASE}guess-result-0-25-v2.webp\`,
+      tone: 'thoughtful'
+    };
+  }
+
+  if (score <= 5) {
+    return {
+      title: 'Неплохое начало',
+      art: \`${RESULT_ASSET_BASE}guess-result-26-50-v2.webp\`,
+      tone: 'calm'
+    };
+  }
+
+  if (score <= 8) {
+    return {
+      title: 'Хороший результат!',
+      art: \`${RESULT_ASSET_BASE}guess-result-51-75-v2.webp\`,
+      tone: 'happy'
+    };
+  }
+
+  return {
+    title: 'Отличное чувство масштаба!',
+    art: \`${RESULT_ASSET_BASE}guess-result-76-100-v2.webp\`,
+    tone: 'winner'
+  };
+}
+
+function NearResultScreen({
+  score,
+  maxStreak,
+  record,
+  onAgain,
+  onHome,
+  onTryAnother,
+  onBeforeLeave
+}: {
+  score: number;
+  maxStreak: number;
+  record: RecordEntry;
+  onAgain: () => void;
+  onHome: () => void;
+  onTryAnother: (game: GameTab) => void;
+  onBeforeLeave: (action: () => void) => Promise<void>;
+}) {
+  const resultState = nearResultState(score);
+
+  return (
+    <section className="resultScreen guessFinalScreen nearFinalScreen">
+      <div className="resultCard guessFinalCard">
+        <div className={'guessResultHero ' + resultState.tone}>
+          <img className="guessResultHeroArt" src={resultState.art} alt="" aria-hidden="true" />
+          <div className="guessResultHeroShade" aria-hidden="true" />
+          <div className="guessResultHeroCopy">
+            <div className="resultEyebrow">Партия завершена</div>
+            <h2>{resultState.title}</h2>
+
+            <div className="guessResultMainScore">
+              <strong>{score} из {ROUND_LENGTH}</strong>
+              <span>верных ответов</span>
+            </div>
+
+            <div className="guessResultMiniStats">
+              <span>Точность <b>{Math.round((score / ROUND_LENGTH) * 100)}%</b></span>
+              <span>Лучшая серия <b>{maxStreak}</b></span>
+              <span>Рекорд <b>{record.bestScore}/{ROUND_LENGTH}</b></span>
+            </div>
+          </div>
+        </div>
+
+        <div className="resultActions guessFinalActions">
+          <button
+            className="next"
+            onClick={() => {
+              trackEvent('play_again', { game: 'near' });
+              void onBeforeLeave(onAgain);
+            }}
+          >
+            Сыграть ещё
+          </button>
+          <button
+            className="secondaryButton"
+            onClick={() => {
+              trackEvent('return_home', { game: 'near' });
+              void onBeforeLeave(onHome);
+            }}
+          >
+            Все игры
+          </button>
+        </div>
+
+        <button
+          type="button"
+          className="guessTryAnother"
+          onClick={() => {
+            trackEvent('result_try_another', { from: 'near', to: 'order' });
+            void onBeforeLeave(() => onTryAnother('order'));
+          }}
+        >
+          <span className="guessTryAnotherCopy">
+            <small>Попробуйте также</small>
+            <strong>По порядку →</strong>
+          </span>
+          <img
+            src={\`${RESULT_ASSET_BASE}guess-try-another-v2.webp\`}
+            alt=""
+            aria-hidden="true"
+          />
+        </button>
+
+        <div className="guessFinalExtras">
+          <SocialActions compact />
+          <DonateButton className="resultDonate" />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function NearGame({
+  onFinish,
+  onHome,
+  onBeforeLeave,
+  onAttempt,
+  onRestartRound,
+  tutorialMode,
+  onTutorialComplete,
+  onSelectGame
+}: NearGameProps) {
   const [question, setQuestion] = useState<NearQuestion>(() => createNearQuestion());
   const [selected, setSelected] = useState<Side | null>(null);
   const [score, setScore] = useState(0);
@@ -1488,12 +1626,24 @@ function NearGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound }
   const [rounds, setRounds] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [savedRecord, setSavedRecord] = useState<RecordEntry | null>(null);
+  const [replayTutorial, setReplayTutorial] = useState(false);
+  const [tutorialIntroOpen, setTutorialIntroOpen] = useState(tutorialMode);
+  const [tutorialCompleteOpen, setTutorialCompleteOpen] = useState(false);
 
+  const training = tutorialMode || replayTutorial;
+  const roundLength = training ? 3 : ROUND_LENGTH;
   const correctSide = getNearCorrectSide(question);
   const answered = selected !== null;
+  const correctFact = correctSide === 'left' ? question.left : question.right;
+
+  const tutorialHints = [
+    'Посмотрите на значение ориентира и выберите из двух вариантов тот, чьё число к нему ближе.',
+    'После ответа покажем значения обоих вариантов. Сравнивайте расстояние между числами, а не то, какое из них больше.',
+    'В полной партии будет 10 заданий. Итог — число верных ответов и лучшая серия.'
+  ];
 
   function choose(side: Side) {
-    if (answered || rounds >= ROUND_LENGTH) return;
+    if (answered || rounds >= roundLength) return;
 
     onAttempt();
     setSelected(side);
@@ -1515,9 +1665,15 @@ function NearGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound }
     setShowResult(true);
   }
 
+  function completeTraining() {
+    onTutorialComplete();
+    setTutorialCompleteOpen(true);
+  }
+
   function next() {
-    if (rounds >= ROUND_LENGTH) {
-      finish();
+    if (rounds >= roundLength) {
+      if (training) completeTraining();
+      else finish();
       return;
     }
 
@@ -1536,6 +1692,20 @@ function NearGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound }
     setSavedRecord(null);
   }
 
+  function startTutorialReplay() {
+    resetRound();
+    setReplayTutorial(true);
+    setTutorialIntroOpen(true);
+    trackEvent('tutorial_restarted', { game: 'near' });
+  }
+
+  function startFullRoundAfterTutorial() {
+    setTutorialCompleteOpen(false);
+    setReplayTutorial(false);
+    resetRound();
+    trackEvent('round_started', { game: 'near', source: 'tutorial_complete' });
+  }
+
   function candidateClass(side: Side) {
     if (!answered) return '';
     if (side === correctSide) return ' correct';
@@ -1545,17 +1715,13 @@ function NearGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound }
 
   if (showResult && savedRecord) {
     return (
-      <ResultScreen
-        title="Что ближе?"
-        primary={`${score} из ${ROUND_LENGTH}`}
-        primaryLabel="верных ответов"
-        secondary={[
-          `Точность ${Math.round((score / ROUND_LENGTH) * 100)}%`,
-          `Лучшая серия ${maxStreak}`
-        ]}
-        record={`Рекорд: ${savedRecord.bestScore} из ${ROUND_LENGTH} · лучшая серия ${savedRecord.bestStreak}`}
+      <NearResultScreen
+        score={score}
+        maxStreak={maxStreak}
+        record={savedRecord}
         onAgain={() => onRestartRound('near', resetRound)}
         onHome={onHome}
+        onTryAnother={onSelectGame}
         onBeforeLeave={onBeforeLeave}
       />
     );
@@ -1563,13 +1729,44 @@ function NearGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound }
 
   return (
     <>
-      <div className="toolbar">
-        <Score score={score} streak={streak} />
+      {!training && (
+        <section className="guessQuickRules nearQuickRules">
+          <div>
+            <strong>Партия · 10 заданий</strong>
+            <span>Выберите значение, которое ближе к ориентиру. Итог — число верных ответов и лучшая серия.</span>
+          </div>
+          <button type="button" onClick={startTutorialReplay}>Пройти обучение ещё раз</button>
+        </section>
+      )}
+
+      <div className="toolbar nearToolbar">
+        {training
+          ? (
+            <div className="stats">
+              <span className="tutorialModeLabel">Обучение · 3 задания</span>
+            </div>
+          )
+          : <Score score={score} streak={streak} />}
       </div>
 
-      <RoundProgress answered={rounds} currentAnswered={answered} />
+      <RoundProgress
+        answered={rounds}
+        currentAnswered={answered}
+        total={roundLength}
+        label={training ? 'Задание' : 'Вопрос'}
+      />
 
-      <section className="nearArea">
+      {training && (
+        <div className="tutorialHintBar">
+          <span>💡</span>
+          <div>
+            <strong>Подсказка</strong>
+            <p>{tutorialHints[Math.min(rounds, tutorialHints.length - 1)]}</p>
+          </div>
+        </div>
+      )}
+
+      <section className={'nearArea ' + (training ? 'nearAreaTutorial' : '')}>
         <div className="nearQuestionTitle">Что ближе к ориентиру?</div>
 
         <div className="referenceCard">
@@ -1580,14 +1777,14 @@ function NearGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound }
         </div>
 
         <div className="nearChoices">
-          <button className={`nearChoice${candidateClass('left')}`} onClick={() => choose('left')} disabled={answered}>
+          <button className={\`nearChoice\${candidateClass('left')}\`} onClick={() => choose('left')} disabled={answered}>
             <span className="nearLetter">A</span>
             <span className="nearMetric">{question.left.metric}</span>
             <span className="nearObject">{question.left.object}</span>
             {answered && <small>{formatValue(question.left)}</small>}
           </button>
 
-          <button className={`nearChoice${candidateClass('right')}`} onClick={() => choose('right')} disabled={answered}>
+          <button className={\`nearChoice\${candidateClass('right')}\`} onClick={() => choose('right')} disabled={answered}>
             <span className="nearLetter">B</span>
             <span className="nearMetric">{question.right.metric}</span>
             <span className="nearObject">{question.right.object}</span>
@@ -1598,18 +1795,110 @@ function NearGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound }
         <div className="feedback">
           {answered ? (
             <>
-              <div className={`resultText ${selected === correctSide ? 'success' : 'fail'}`}>
+              <div className={\`resultText \${selected === correctSide ? 'success' : 'fail'}\`}>
                 {selected === correctSide ? 'Верно' : 'Неверно'}
               </div>
               <button className="next" onClick={next}>
-                {rounds >= ROUND_LENGTH ? 'Результаты' : 'Следующий'} <span>→</span>
+                {rounds >= roundLength
+                  ? training ? 'Завершить обучение' : 'Результаты'
+                  : 'Следующий'} <span>→</span>
               </button>
             </>
           ) : (
-            <div className="hint">Выберите один из двух вариантов</div>
+            <div className="hint">Выберите значение, которое ближе к ориентиру</div>
           )}
         </div>
+
+        {training && answered && (
+          <div className="nearTutorialAnswer">
+            Ближе к ориентиру — <b>{formatValue(correctFact)}</b>.
+          </div>
+        )}
       </section>
+
+      {tutorialIntroOpen && (
+        <div className="tutorialOverlay" role="presentation" onMouseDown={() => setTutorialIntroOpen(false)}>
+          <section
+            className="tutorialModal tutorialIntroModal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="near-tutorial-title"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <button className="tutorialClose" onClick={() => setTutorialIntroOpen(false)} aria-label="Закрыть">×</button>
+
+            <div className="tutorialHero tutorialHeroIntro">
+              <img src={nearTutorialIntroArt} alt="" aria-hidden="true" />
+              <div className="tutorialHeroShade" aria-hidden="true" />
+              <div className="tutorialHeroCopy">
+                <div className="tutorialEyebrow">Что ближе?</div>
+                <h2 id="near-tutorial-title">Давайте попробуем!</h2>
+                <p>Сначала — 3 тренировочных задания,<br />чтобы разобраться с механикой.</p>
+              </div>
+            </div>
+
+            <div className="tutorialRules tutorialRulesCompact">
+              <div><b>◎</b><span>Посмотрите на число-ориентир</span></div>
+              <div><b>A/B</b><span>Сравните с ним<br />два варианта</span></div>
+              <div><b>✓</b><span>Выберите то число,<br />которое ближе к ориентиру</span></div>
+            </div>
+
+            <button
+              className="next tutorialPrimary"
+              onClick={() => {
+                setTutorialIntroOpen(false);
+                trackEvent('tutorial_started', { game: 'near' });
+              }}
+            >
+              Начать обучение
+            </button>
+          </section>
+        </div>
+      )}
+
+      {tutorialCompleteOpen && (
+        <div className="tutorialOverlay tutorialCompleteOverlay" role="presentation">
+          <section
+            className="tutorialModal tutorialCompleteModal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="near-tutorial-complete-title"
+          >
+            <div className="tutorialHero tutorialHeroComplete">
+              <img src={guessTutorialCompleteArt} alt="" aria-hidden="true" />
+              <div className="tutorialHeroShade" aria-hidden="true" />
+              <div className="tutorialHeroCopy">
+                <div className="tutorialEyebrow">Обучение завершено</div>
+                <h2 id="near-tutorial-complete-title">Игра освоена!</h2>
+                <p>Теперь доступны партии из 10 заданий.<br />Ищите значение, которое ближе к ориентиру.</p>
+              </div>
+            </div>
+
+            <div className="tutorialCompleteBottom">
+              <div className="tutorialCompleteStat">
+                <strong>{score} из 3</strong>
+                <span>верных ответов в обучении</span>
+              </div>
+              <div className="tutorialCompleteActions">
+                <button className="next tutorialPrimary" onClick={startFullRoundAfterTutorial}>
+                  Сыграть полную партию
+                </button>
+                <button
+                  className="secondaryButton tutorialSecondary"
+                  onClick={() => {
+                    setTutorialCompleteOpen(false);
+                    setReplayTutorial(false);
+                    resetRound();
+                    onHome();
+                  }}
+                >
+                  Вернуться на главную
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+      )}
     </>
   );
 }
@@ -1645,6 +1934,7 @@ const HOME_ASSET_BASE = `${import.meta.env.BASE_URL}assets/home/`;
 const TUTORIAL_ASSET_BASE = `${import.meta.env.BASE_URL}assets/tutorial/`;
 const compareTutorialIntroArt = `${HOME_ASSET_BASE}game-compare.avif`;
 const guessTutorialIntroArt = `${HOME_ASSET_BASE}game-guess.avif`;
+const nearTutorialIntroArt = `${HOME_ASSET_BASE}game-near.avif`;
 const guessTutorialCompleteArt = `${TUTORIAL_ASSET_BASE}guess-tutorial-complete-v4.webp`;
 
 const hqHomeGameArt: Record<GameTab, string> = {
@@ -2191,7 +2481,18 @@ export default function App() {
         />
       )}
       {tab === 'order' && <OrderGame onFinish={saveResult} onHome={goHome} onBeforeLeave={runPostRoundAction} onAttempt={markAttempted} onRestartRound={restartRound} />}
-      {tab === 'near' && <NearGame onFinish={saveResult} onHome={goHome} onBeforeLeave={runPostRoundAction} onAttempt={markAttempted} onRestartRound={restartRound} />}
+      {tab === 'near' && (
+        <NearGame
+          onFinish={saveResult}
+          onHome={goHome}
+          onBeforeLeave={runPostRoundAction}
+          onAttempt={markAttempted}
+          onRestartRound={restartRound}
+          tutorialMode={progress.status.near === 'tutorial'}
+          onTutorialComplete={() => completeTutorial('near')}
+          onSelectGame={switchGame}
+        />
+      )}
 
       {leaveConfirm && (
         <div className="gameConfirmBackdrop" role="presentation" onMouseDown={closeLeaveConfirm}>
