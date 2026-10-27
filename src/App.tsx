@@ -1838,9 +1838,9 @@ function NearGame({
             </div>
 
             <div className="tutorialRules tutorialRulesCompact">
-              <div><b>◎</b><span>Посмотрите на число-ориентир</span></div>
+              <div><b>◎</b><span>Посмотрите<br />на число-ориентир</span></div>
               <div><b>A/B</b><span>Сравните с ним<br />два варианта</span></div>
-              <div><b>✓</b><span>Выберите то число,<br />которое ближе к ориентиру</span></div>
+              <div><b>✓</b><span>Выберите то число,<br />которое ближе<br />к ориентиру</span></div>
             </div>
 
             <button
