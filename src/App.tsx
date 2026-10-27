@@ -353,11 +353,36 @@ type CompareGameProps = GameProps & {
   onSelectGame: (game: GameTab) => void;
 };
 
-function compareResultState(score: number): { title: string; tone: string } {
-  if (score <= 3) return { title: 'Есть над чем подумать', tone: 'thoughtful' };
-  if (score <= 6) return { title: 'Неплохое начало', tone: 'calm' };
-  if (score <= 8) return { title: 'Хороший результат!', tone: 'happy' };
-  return { title: 'Отличное чувство масштаба!', tone: 'winner' };
+function compareResultState(score: number): { title: string; art: string; tone: string } {
+  if (score <= 2) {
+    return {
+      title: 'Есть над чем подумать',
+      art: `${RESULT_ASSET_BASE}guess-result-0-25-v2.webp`,
+      tone: 'thoughtful'
+    };
+  }
+
+  if (score <= 5) {
+    return {
+      title: 'Неплохое начало',
+      art: `${RESULT_ASSET_BASE}guess-result-26-50-v2.webp`,
+      tone: 'calm'
+    };
+  }
+
+  if (score <= 8) {
+    return {
+      title: 'Хороший результат!',
+      art: `${RESULT_ASSET_BASE}guess-result-51-75-v2.webp`,
+      tone: 'happy'
+    };
+  }
+
+  return {
+    title: 'Отличное чувство масштаба!',
+    art: `${RESULT_ASSET_BASE}guess-result-76-100-v2.webp`,
+    tone: 'winner'
+  };
 }
 
 function CompareResultScreen({
@@ -383,7 +408,7 @@ function CompareResultScreen({
     <section className="resultScreen guessFinalScreen compareFinalScreen">
       <div className="resultCard guessFinalCard">
         <div className={'guessResultHero ' + resultState.tone}>
-          <img className="guessResultHeroArt" src={homeGameCompare} alt="" aria-hidden="true" />
+          <img className="guessResultHeroArt" src={resultState.art} alt="" aria-hidden="true" />
           <div className="guessResultHeroShade" aria-hidden="true" />
           <div className="guessResultHeroCopy">
             <div className="resultEyebrow">Партия завершена</div>
@@ -435,7 +460,7 @@ function CompareResultScreen({
             <small>Попробуйте также</small>
             <strong>Ближе к правде →</strong>
           </span>
-          <img src={homeGameGuess} alt="" aria-hidden="true" />
+          <img src={`${RESULT_ASSET_BASE}guess-try-another-v2.webp`} alt="" aria-hidden="true" />
         </button>
 
         <div className="guessFinalExtras">
@@ -660,7 +685,7 @@ function CompareGame({
             <button className="tutorialClose" onClick={() => setTutorialIntroOpen(false)} aria-label="Закрыть">×</button>
 
             <div className="tutorialHero tutorialHeroIntro">
-              <img src={homeGameCompare} alt="" aria-hidden="true" />
+              <img src={compareTutorialIntroArt} alt="" aria-hidden="true" />
               <div className="tutorialHeroShade" aria-hidden="true" />
               <div className="tutorialHeroCopy">
                 <div className="tutorialEyebrow">Что больше?</div>
@@ -697,7 +722,7 @@ function CompareGame({
             aria-labelledby="compare-tutorial-complete-title"
           >
             <div className="tutorialHero tutorialHeroComplete">
-              <img src={resultPenguin} alt="" aria-hidden="true" />
+              <img src={guessTutorialCompleteArt} alt="" aria-hidden="true" />
               <div className="tutorialHeroShade" aria-hidden="true" />
               <div className="tutorialHeroCopy">
                 <div className="tutorialEyebrow">Обучение завершено</div>
@@ -1618,6 +1643,7 @@ const homeGameArt: Record<GameTab, string> = {
 const HOME_ASSET_BASE = `${import.meta.env.BASE_URL}assets/home/`;
 
 const TUTORIAL_ASSET_BASE = `${import.meta.env.BASE_URL}assets/tutorial/`;
+const compareTutorialIntroArt = `${HOME_ASSET_BASE}game-compare.avif`;
 const guessTutorialIntroArt = `${HOME_ASSET_BASE}game-guess.avif`;
 const guessTutorialCompleteArt = `${TUTORIAL_ASSET_BASE}guess-tutorial-complete-v4.webp`;
 
