@@ -1281,7 +1281,145 @@ function GuessGame({
   );
 }
 
-function OrderGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound }: GameProps) {
+type OrderGameProps = GameProps & {
+  tutorialMode: boolean;
+  onTutorialComplete: () => void;
+  onSelectGame: (game: GameTab) => void;
+};
+
+function orderResultState(score: number): { title: string; art: string; tone: string } {
+  if (score <= 2) {
+    return {
+      title: 'Есть над чем подумать',
+      art: RESULT_ASSET_BASE + 'guess-result-0-25-v2.webp',
+      tone: 'thoughtful'
+    };
+  }
+
+  if (score <= 5) {
+    return {
+      title: 'Неплохое начало',
+      art: RESULT_ASSET_BASE + 'guess-result-26-50-v2.webp',
+      tone: 'calm'
+    };
+  }
+
+  if (score <= 8) {
+    return {
+      title: 'Хороший результат!',
+      art: RESULT_ASSET_BASE + 'guess-result-51-75-v2.webp',
+      tone: 'happy'
+    };
+  }
+
+  return {
+    title: 'Отличное чувство масштаба!',
+    art: RESULT_ASSET_BASE + 'guess-result-76-100-v2.webp',
+    tone: 'winner'
+  };
+}
+
+function OrderResultScreen({
+  score,
+  maxStreak,
+  record,
+  onAgain,
+  onHome,
+  onTryAnother,
+  onBeforeLeave
+}: {
+  score: number;
+  maxStreak: number;
+  record: RecordEntry;
+  onAgain: () => void;
+  onHome: () => void;
+  onTryAnother: (game: GameTab) => void;
+  onBeforeLeave: (action: () => void) => Promise<void>;
+}) {
+  const resultState = orderResultState(score);
+
+  return (
+    <section className="resultScreen guessFinalScreen orderFinalScreen">
+      <div className="resultCard guessFinalCard">
+        <div className={'guessResultHero ' + resultState.tone}>
+          <img className="guessResultHeroArt" src={resultState.art} alt="" aria-hidden="true" />
+          <div className="guessResultHeroShade" aria-hidden="true" />
+          <div className="guessResultHeroCopy">
+            <div className="resultEyebrow">Партия завершена</div>
+            <h2>{resultState.title}</h2>
+
+            <div className="guessResultMainScore">
+              <strong>{score} из {ROUND_LENGTH}</strong>
+              <span>правильных порядков</span>
+            </div>
+
+            <div className="guessResultMiniStats">
+              <span>Точность <b>{Math.round((score / ROUND_LENGTH) * 100)}%</b></span>
+              <span>Лучшая серия <b>{maxStreak}</b></span>
+              <span>Рекорд <b>{record.bestScore}/{ROUND_LENGTH}</b></span>
+            </div>
+          </div>
+        </div>
+
+        <div className="resultActions guessFinalActions">
+          <button
+            className="next"
+            onClick={() => {
+              trackEvent('play_again', { game: 'order' });
+              void onBeforeLeave(onAgain);
+            }}
+          >
+            Сыграть ещё
+          </button>
+          <button
+            className="secondaryButton"
+            onClick={() => {
+              trackEvent('return_home', { game: 'order' });
+              void onBeforeLeave(onHome);
+            }}
+          >
+            Все игры
+          </button>
+        </div>
+
+        <button
+          type="button"
+          className="guessTryAnother"
+          onClick={() => {
+            trackEvent('result_try_another', { from: 'order', to: 'compare' });
+            void onBeforeLeave(() => onTryAnother('compare'));
+          }}
+        >
+          <span className="guessTryAnotherCopy">
+            <small>Попробуйте также</small>
+            <strong>Что больше? →</strong>
+          </span>
+          <img
+            src={RESULT_ASSET_BASE + 'guess-try-another-v2.webp'}
+            alt=""
+            aria-hidden="true"
+          />
+        </button>
+
+        <div className="guessFinalExtras">
+          <SocialActions compact />
+          <DonateButton className="resultDonate" />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function OrderGame({
+  onFinish,
+  onHome,
+  onBeforeLeave,
+  onAttempt,
+  onRestartRound,
+  tutorialMode,
+  onTutorialComplete,
+  onSelectGame
+}: OrderGameProps) {
   const [question, setQuestion] = useState(() => createOrderQuestion());
   const [items, setItems] = useState<Fact[]>(question.items);
   const [answered, setAnswered] = useState(false);
@@ -1293,6 +1431,17 @@ function OrderGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
   const [showResult, setShowResult] = useState(false);
   const [savedRecord, setSavedRecord] = useState<RecordEntry | null>(null);
   const [submittedItems, setSubmittedItems] = useState<Fact[] | null>(null);
+  const [replayTutorial, setReplayTutorial] = useState(false);
+  const [tutorialIntroOpen, setTutorialIntroOpen] = useState(tutorialMode);
+  const [tutorialCompleteOpen, setTutorialCompleteOpen] = useState(false);
+
+  const training = tutorialMode || replayTutorial;
+  const roundLength = training ? 3 : ROUND_LENGTH;
+  const tutorialHints = [
+    'Расставьте четыре объекта от меньшего значения к большему.',
+    'Меняйте строки местами стрелками. После проверки покажем значения и правильный порядок.',
+    'В полной партии будет 10 заданий. Итог — число полностью правильных порядков и лучшая серия.'
+  ];
 
   function move(index: number, direction: -1 | 1) {
     if (answered) return;
@@ -1306,7 +1455,7 @@ function OrderGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
   }
 
   function check() {
-    if (answered || rounds >= ROUND_LENGTH) return;
+    if (answered || rounds >= roundLength) return;
 
     onAttempt();
     const correct = isOrderCorrect(items);
@@ -1332,9 +1481,15 @@ function OrderGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
     setShowResult(true);
   }
 
+  function completeTraining() {
+    onTutorialComplete();
+    setTutorialCompleteOpen(true);
+  }
+
   function next() {
-    if (rounds >= ROUND_LENGTH) {
-      finish();
+    if (rounds >= roundLength) {
+      if (training) completeTraining();
+      else finish();
       return;
     }
 
@@ -1361,19 +1516,29 @@ function OrderGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
     setSavedRecord(null);
   }
 
+  function startTutorialReplay() {
+    resetRound();
+    setReplayTutorial(true);
+    setTutorialIntroOpen(true);
+    trackEvent('tutorial_restarted', { game: 'order' });
+  }
+
+  function startFullRoundAfterTutorial() {
+    setTutorialCompleteOpen(false);
+    setReplayTutorial(false);
+    resetRound();
+    trackEvent('round_started', { game: 'order', source: 'tutorial_complete' });
+  }
+
   if (showResult && savedRecord) {
     return (
-      <ResultScreen
-        title="По порядку"
-        primary={`${score} из ${ROUND_LENGTH}`}
-        primaryLabel="правильных порядков"
-        secondary={[
-          `Точность ${Math.round((score / ROUND_LENGTH) * 100)}%`,
-          `Лучшая серия ${maxStreak}`
-        ]}
-        record={`Рекорд: ${savedRecord.bestScore} из ${ROUND_LENGTH} · лучшая серия ${savedRecord.bestStreak}`}
+      <OrderResultScreen
+        score={score}
+        maxStreak={maxStreak}
+        record={savedRecord}
         onAgain={() => onRestartRound('order', resetRound)}
         onHome={onHome}
+        onTryAnother={onSelectGame}
         onBeforeLeave={onBeforeLeave}
       />
     );
@@ -1381,13 +1546,44 @@ function OrderGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
 
   return (
     <>
-      <div className="toolbar">
-        <Score score={score} streak={streak} />
+      {!training && (
+        <section className="guessQuickRules orderQuickRules">
+          <div>
+            <strong>Партия · 10 заданий</strong>
+            <span>Расставьте четыре объекта от меньшего значения к большему. Итог — число правильных порядков и лучшая серия.</span>
+          </div>
+          <button type="button" onClick={startTutorialReplay}>Пройти обучение ещё раз</button>
+        </section>
+      )}
+
+      <div className="toolbar orderToolbar">
+        {training
+          ? (
+            <div className="stats">
+              <span className="tutorialModeLabel">Обучение · 3 задания</span>
+            </div>
+          )
+          : <Score score={score} streak={streak} />}
       </div>
 
-      <RoundProgress answered={rounds} currentAnswered={answered} />
+      <RoundProgress
+        answered={rounds}
+        currentAnswered={answered}
+        total={roundLength}
+        label={training ? 'Задание' : 'Вопрос'}
+      />
 
-      <section className="orderArea">
+      {training && (
+        <div className="tutorialHintBar">
+          <span>💡</span>
+          <div>
+            <strong>Подсказка</strong>
+            <p>{tutorialHints[Math.min(rounds, tutorialHints.length - 1)]}</p>
+          </div>
+        </div>
+      )}
+
+      <section className={'orderArea ' + (training ? 'orderAreaTutorial' : '')}>
         <div className="orderCard">
           <div className="orderPrompt">
             <div>
@@ -1468,13 +1664,99 @@ function OrderGame({ onFinish, onHome, onBeforeLeave, onAttempt, onRestartRound 
             {answered
               ? (
                 <button className="next" onClick={next}>
-                  {rounds >= ROUND_LENGTH ? 'Результаты' : 'Следующий'} <span>→</span>
+                  {rounds >= roundLength
+                    ? training ? 'Завершить обучение' : 'Результаты'
+                    : 'Следующий'} <span>→</span>
                 </button>
               )
               : <button className="next" onClick={check}>Проверить</button>}
           </div>
         </div>
       </section>
+
+      {tutorialIntroOpen && (
+        <div className="tutorialOverlay" role="presentation" onMouseDown={() => setTutorialIntroOpen(false)}>
+          <section
+            className="tutorialModal tutorialIntroModal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="order-tutorial-title"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <button className="tutorialClose" onClick={() => setTutorialIntroOpen(false)} aria-label="Закрыть">×</button>
+
+            <div className="tutorialHero tutorialHeroIntro">
+              <img src={orderTutorialIntroArt} alt="" aria-hidden="true" />
+              <div className="tutorialHeroShade" aria-hidden="true" />
+              <div className="tutorialHeroCopy">
+                <div className="tutorialEyebrow">По порядку</div>
+                <h2 id="order-tutorial-title">Давайте попробуем!</h2>
+                <p>Сначала — 3 тренировочных задания,<br />чтобы разобраться с механикой.</p>
+              </div>
+            </div>
+
+            <div className="tutorialRules tutorialRulesCompact">
+              <div><b>123</b><span>Перед вами четыре объекта</span></div>
+              <div><b>↕</b><span>Меняйте их местами<br />с помощью стрелок</span></div>
+              <div><b>✓</b><span>Расставьте от меньшего<br />значения к большему</span></div>
+            </div>
+
+            <button
+              className="next tutorialPrimary"
+              onClick={() => {
+                setTutorialIntroOpen(false);
+                trackEvent('tutorial_started', { game: 'order' });
+              }}
+            >
+              Начать обучение
+            </button>
+          </section>
+        </div>
+      )}
+
+      {tutorialCompleteOpen && (
+        <div className="tutorialOverlay tutorialCompleteOverlay" role="presentation">
+          <section
+            className="tutorialModal tutorialCompleteModal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="order-tutorial-complete-title"
+          >
+            <div className="tutorialHero tutorialHeroComplete">
+              <img src={guessTutorialCompleteArt} alt="" aria-hidden="true" />
+              <div className="tutorialHeroShade" aria-hidden="true" />
+              <div className="tutorialHeroCopy">
+                <div className="tutorialEyebrow">Обучение завершено</div>
+                <h2 id="order-tutorial-complete-title">Игра освоена!</h2>
+                <p>Теперь доступны партии из 10 заданий.<br />Расставляйте четыре объекта по возрастанию.</p>
+              </div>
+            </div>
+
+            <div className="tutorialCompleteBottom">
+              <div className="tutorialCompleteStat">
+                <strong>{score} из 3</strong>
+                <span>правильных порядков в обучении</span>
+              </div>
+              <div className="tutorialCompleteActions">
+                <button className="next tutorialPrimary" onClick={startFullRoundAfterTutorial}>
+                  Сыграть полную партию
+                </button>
+                <button
+                  className="secondaryButton tutorialSecondary"
+                  onClick={() => {
+                    setTutorialCompleteOpen(false);
+                    setReplayTutorial(false);
+                    resetRound();
+                    onHome();
+                  }}
+                >
+                  Вернуться на главную
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+      )}
     </>
   );
 }
@@ -1934,6 +2216,7 @@ const HOME_ASSET_BASE = `${import.meta.env.BASE_URL}assets/home/`;
 const TUTORIAL_ASSET_BASE = `${import.meta.env.BASE_URL}assets/tutorial/`;
 const compareTutorialIntroArt = `${HOME_ASSET_BASE}game-compare.avif`;
 const guessTutorialIntroArt = `${HOME_ASSET_BASE}game-guess.avif`;
+const orderTutorialIntroArt = `${HOME_ASSET_BASE}game-order.avif`;
 const nearTutorialIntroArt = `${HOME_ASSET_BASE}game-near.avif`;
 const guessTutorialCompleteArt = `${TUTORIAL_ASSET_BASE}guess-tutorial-complete-v4.webp`;
 
@@ -2480,7 +2763,18 @@ export default function App() {
           onSelectGame={switchGame}
         />
       )}
-      {tab === 'order' && <OrderGame onFinish={saveResult} onHome={goHome} onBeforeLeave={runPostRoundAction} onAttempt={markAttempted} onRestartRound={restartRound} />}
+      {tab === 'order' && (
+        <OrderGame
+          onFinish={saveResult}
+          onHome={goHome}
+          onBeforeLeave={runPostRoundAction}
+          onAttempt={markAttempted}
+          onRestartRound={restartRound}
+          tutorialMode={progress.status.order === 'tutorial'}
+          onTutorialComplete={() => completeTutorial('order')}
+          onSelectGame={switchGame}
+        />
+      )}
       {tab === 'near' && (
         <NearGame
           onFinish={saveResult}
