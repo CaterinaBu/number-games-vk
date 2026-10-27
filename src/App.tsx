@@ -2504,19 +2504,24 @@ function DailyResultScreen({
   outcome,
   onRetry,
   onHome,
-  onTryAnother
+  onTryAnother,
+  onRefreshTest
 }: {
   outcome: DailyRoundOutcome;
   onRetry: () => void;
   onHome: () => void;
   onTryAnother: (game: GameTab) => void;
+  onRefreshTest: () => void;
 }) {
   const { challenge, value, success, partyReward, dailyReward } = outcome;
   const otherGame = homeGames[(homeGames.findIndex((game) => game.id === challenge.game) + 1) % homeGames.length];
 
   return (
     <main className="dailyPage">
-      <button className="backHome dailyBack" onClick={onHome}>← Все игры</button>
+      <div className="dailyPageTop">
+        <button className="backHome dailyBack" onClick={onHome}>← Все игры</button>
+        <button className="dailyTestRefresh" onClick={onRefreshTest}>↻ Обновить задание (тест)</button>
+      </div>
 
       <section className="resultScreen guessFinalScreen dailyOutcomeScreen">
         <div className="resultCard guessFinalCard dailyOutcomeCard">
@@ -3054,8 +3059,17 @@ export default function App() {
   }
 
   function refreshDailyForTesting() {
-    const nextOffset = dailyDebugOffset + 1;
-    const nextChallenge = getDailyChallenge(moscowDateKey, nextOffset);
+    let nextOffset = dailyDebugOffset + 1;
+    let nextChallenge = getDailyChallenge(moscowDateKey, nextOffset);
+
+    while (
+      nextChallenge.storyId === dailyChallenge.storyId
+      && nextOffset < dailyDebugOffset + 12
+    ) {
+      nextOffset += 1;
+      nextChallenge = getDailyChallenge(moscowDateKey, nextOffset);
+    }
+
     setDailyDebugOffset(nextOffset);
     setDailyProgress(createEmptyDailyProgress(nextChallenge.key));
     setDailyAttempt(null);
@@ -3229,6 +3243,7 @@ export default function App() {
           setScreen('home');
         }}
         onTryAnother={startGameFromDailyResult}
+        onRefreshTest={refreshDailyForTesting}
       />
     );
   }
