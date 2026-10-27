@@ -8603,3 +8603,19 @@ body {
     justify-content: flex-end;
   }
 }
+
+
+/* v63 — fact points inside result hero */
+.guessResultHeroCopy .factPointsReward {
+  margin: 12px 0 0;
+  background: rgba(255, 250, 232, .92);
+  border-color: rgba(218, 159, 28, .22);
+  box-shadow: 0 6px 18px rgba(62, 49, 14, .08);
+  backdrop-filter: blur(8px);
+}
+
+@media (max-width: 760px) {
+  .guessResultHeroCopy .factPointsReward {
+    margin-top: 9px;
+  }
+}
