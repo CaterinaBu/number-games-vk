@@ -435,8 +435,7 @@ export default function LibraryScreen({
             <div className={hasPerfectGame ? 'done' : ''}><span>★</span><p>Получен идеальный результат</p><b>{hasPerfectGame ? '✓' : '—'}</b></div>
           </div>
         </article>
-      </section>
-
+        </div>
       </section>
 
       <section className="libraryStatsGrid">
