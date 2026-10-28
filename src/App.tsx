@@ -3185,6 +3185,14 @@ export default function App() {
       });
     }
 
+    if (success && !wasCompleted && challenge.key === challenge.dateKey) {
+      setLibraryProgress((current) => {
+        const next = registerDailyLibraryCompletion(current, challenge.dateKey, challenge.difficulty);
+        if (next !== current) saveLibraryProgress(next);
+        return next;
+      });
+    }
+
     const outcome: DailyRoundOutcome = {
       challenge,
       result,
