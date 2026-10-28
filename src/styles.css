@@ -10180,3 +10180,335 @@ button.dailyCard.locked {
     grid-column: 1 / -1;
   }
 }
+
+
+/* v67 — denser multi-column library */
+.libraryProfileAvatar img {
+  object-position: 72% 50%;
+}
+
+.libraryTopGrid {
+  grid-template-columns: minmax(300px, .72fr) minmax(520px, 1.28fr);
+  align-items: start;
+}
+
+.libraryFactsCard {
+  padding: 18px;
+}
+
+.libraryFactsCard .librarySectionHead {
+  margin-bottom: 10px;
+}
+
+.libraryFactTotal {
+  margin-bottom: 7px;
+}
+
+.libraryFactTotal strong {
+  font-size: 34px;
+}
+
+.libraryFactTotal span {
+  font-size: 17px;
+}
+
+.libraryCategoryList {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px 13px;
+  margin-top: 15px;
+}
+
+.libraryCategoryRow {
+  grid-template-columns: 27px minmax(0, 1fr) 31px;
+  gap: 7px;
+}
+
+.libraryCategoryIcon {
+  width: 27px;
+  height: 27px;
+  border-radius: 9px;
+  font-size: 13px;
+}
+
+.libraryCategoryLabel {
+  margin-bottom: 4px;
+  font-size: 10px;
+}
+
+.libraryCategoryRow > b {
+  font-size: 9px;
+}
+
+.libraryCategoryRow .libraryProgressTrack {
+  height: 6px;
+}
+
+.libraryJourneyColumn {
+  grid-template-columns: .85fr 1.15fr;
+  gap: 10px;
+}
+
+.libraryJourneyCard {
+  grid-column: 1 / -1;
+  min-height: 264px;
+}
+
+.libraryJourneyImage img {
+  object-position: 68% center;
+}
+
+.libraryJourneyCopy {
+  padding: 21px 18px 12px 21px;
+  max-width: 48%;
+}
+
+.libraryJourneyCopy h2 {
+  font-size: clamp(27px, 2.4vw, 36px);
+}
+
+.libraryJourneyCopy p {
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.libraryJourneySteps {
+  padding: 0 14px 13px;
+}
+
+.libraryJourneySteps small {
+  font-size: 8px;
+}
+
+.libraryDreamCard,
+.libraryNextGoals {
+  min-height: 118px;
+}
+
+.libraryDreamCard {
+  grid-template-columns: 40px 1fr;
+  padding: 14px 15px;
+}
+
+.libraryDreamMountain {
+  display: none;
+}
+
+.libraryDreamMain h2 {
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+
+.libraryNextGoals {
+  padding: 13px 14px;
+}
+
+.libraryNextGoals h3 {
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.libraryGoalGrid {
+  gap: 6px;
+}
+
+.libraryGoalGrid > div {
+  padding: 8px 9px;
+  grid-template-columns: 22px 1fr;
+  column-gap: 6px;
+  border-radius: 11px;
+}
+
+.libraryGoalGrid > div > span {
+  font-size: 16px;
+}
+
+.libraryGoalGrid strong {
+  font-size: 9px;
+}
+
+.libraryGoalGrid small {
+  font-size: 8px;
+  margin-top: 3px;
+}
+
+.libraryCompactGrid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(330px, .85fr);
+  gap: 14px;
+  align-items: start;
+}
+
+.libraryCompactSide {
+  display: grid;
+  gap: 12px;
+}
+
+.libraryHistoryCard,
+.libraryAchievementsCard,
+.libraryMilestonesCard {
+  margin-top: 0;
+}
+
+.libraryHistoryCard {
+  padding: 18px;
+}
+
+.libraryHistoryCard .librarySectionHead,
+.libraryAchievementsCard .librarySectionHead,
+.libraryMilestonesCard .librarySectionHead {
+  margin-bottom: 12px;
+}
+
+.libraryHistoryTrack {
+  display: flex;
+  gap: 9px;
+  overflow-x: auto;
+  padding: 2px 2px 7px;
+  scrollbar-width: thin;
+}
+
+.libraryHistoryItem {
+  flex: 0 0 126px;
+}
+
+.libraryHistoryImage {
+  aspect-ratio: 1.55 / 1;
+  border-radius: 11px;
+  margin-bottom: 6px;
+}
+
+.libraryHistoryImage img {
+  object-position: 68% center;
+}
+
+.libraryHistoryItem strong {
+  font-size: 10px;
+}
+
+.libraryHistoryItem small {
+  font-size: 8px;
+}
+
+.libraryAchievementsCard {
+  padding: 16px;
+}
+
+.libraryAchievementGrid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.libraryAchievementGrid > div {
+  padding: 8px 5px;
+  border-radius: 12px;
+}
+
+.libraryAchievementGrid > div > span {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  margin-bottom: 5px;
+  font-size: 16px;
+}
+
+.libraryAchievementGrid strong {
+  font-size: 9px;
+}
+
+.libraryAchievementGrid small {
+  font-size: 7px;
+  margin-top: 3px;
+}
+
+.libraryMilestonesCard {
+  padding: 15px 16px;
+}
+
+.libraryMilestoneList {
+  gap: 5px;
+}
+
+.libraryMilestoneList > div {
+  min-height: 31px;
+  padding: 5px 7px;
+  grid-template-columns: 22px 1fr auto;
+  gap: 7px;
+}
+
+.libraryMilestoneList p {
+  font-size: 9px;
+}
+
+.libraryStatsGrid,
+.librarySocialGrid {
+  grid-template-columns: minmax(0, 1.22fr) minmax(300px, .78fr);
+  align-items: start;
+}
+
+@media (min-width: 821px) and (max-width: 1050px) {
+  .libraryPage {
+    width: min(100% - 14px, 1030px);
+  }
+
+  .libraryProfileHero {
+    grid-template-columns: 92px minmax(300px, .92fr) 1.08fr;
+  }
+
+  .libraryProfileArt {
+    opacity: 1;
+    left: 43%;
+  }
+
+  .libraryTopGrid {
+    grid-template-columns: minmax(280px, .72fr) minmax(470px, 1.28fr);
+  }
+
+  .libraryCompactGrid {
+    grid-template-columns: minmax(0, 1.08fr) minmax(310px, .92fr);
+  }
+
+  .libraryStatsGrid,
+  .librarySocialGrid {
+    grid-template-columns: minmax(0, 1.15fr) minmax(290px, .85fr);
+  }
+
+  .libraryAchievementGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 820px) {
+  .libraryTopGrid,
+  .libraryCompactGrid,
+  .libraryStatsGrid,
+  .librarySocialGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .libraryJourneyColumn {
+    grid-template-columns: 1fr;
+  }
+
+  .libraryJourneyCard {
+    grid-column: auto;
+  }
+
+  .libraryCategoryList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .libraryCategoryList {
+    grid-template-columns: 1fr;
+  }
+
+  .libraryJourneyCopy {
+    max-width: 100%;
+  }
+
+  .libraryAchievementGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
