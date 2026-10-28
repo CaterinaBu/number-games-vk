@@ -9101,3 +9101,1082 @@ button.dailyCard.locked {
     margin-top: 10px;
   }
 }
+
+
+/* v66 — library dashboard */
+.dashboardTopLinkButton {
+  font: inherit;
+  cursor: pointer;
+}
+
+.libraryPreviewButton {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+}
+
+.libraryPage {
+  width: min(1440px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 18px 0 44px;
+  color: #162650;
+}
+
+.libraryNav {
+  min-height: 58px;
+  padding: 8px 14px;
+  border-radius: 19px;
+  background: linear-gradient(135deg, #16294d 0%, #20375f 100%);
+  box-shadow: 0 18px 42px rgba(19, 35, 69, .18);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: sticky;
+  top: 8px;
+  z-index: 20;
+}
+
+.libraryNav button {
+  border: 0;
+  background: transparent;
+  color: rgba(255,255,255,.82);
+  padding: 10px 13px;
+  border-radius: 13px;
+  font: inherit;
+  font-weight: 750;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.libraryNav button:hover:not(:disabled) {
+  background: rgba(255,255,255,.1);
+  color: #fff;
+}
+
+.libraryNav button.active {
+  background: #f7f9ff;
+  color: #1f3260;
+  box-shadow: 0 6px 16px rgba(0,0,0,.14);
+}
+
+.libraryNav button.disabled {
+  opacity: .48;
+  cursor: default;
+}
+
+.libraryNav button small {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.libraryNavBalance {
+  margin-left: auto;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,.08);
+  font-weight: 850;
+}
+
+.libraryNavBalance b {
+  color: #ffc84d;
+}
+
+.libraryProfileHero {
+  margin-top: 14px;
+  min-height: 210px;
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(255,255,255,.94), transparent 42%),
+    linear-gradient(120deg, #e7f4ff 0%, #e8f3ff 48%, #dfeaff 100%);
+  border: 1px solid rgba(110, 143, 198, .22);
+  box-shadow: 0 18px 48px rgba(31, 60, 109, .09);
+  display: grid;
+  grid-template-columns: 118px minmax(380px, .95fr) 1.2fr;
+  align-items: center;
+}
+
+.libraryProfileAvatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-left: 28px;
+  border: 5px solid rgba(255,255,255,.95);
+  box-shadow: 0 10px 24px rgba(39, 74, 129, .2);
+  background: #fff;
+  z-index: 2;
+}
+
+.libraryProfileAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.libraryProfileCopy {
+  z-index: 2;
+  padding: 26px 8px 26px 4px;
+}
+
+.libraryKicker {
+  display: block;
+  color: #6e70ca;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.libraryProfileCopy h1,
+.libraryCard h2 {
+  margin: 0;
+  color: #132655;
+}
+
+.libraryProfileCopy h1 {
+  font-size: clamp(28px, 3vw, 42px);
+  line-height: 1;
+}
+
+.libraryProfileCopy > p {
+  margin: 7px 0 18px;
+  font-weight: 800;
+  color: #496080;
+}
+
+.libraryProfileMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  font-size: 13px;
+  color: #53647e;
+}
+
+.libraryProfileMeta span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.libraryProfileMeta b {
+  color: #213c70;
+}
+
+.libraryProfileArt {
+  position: absolute;
+  inset: 0 0 0 43%;
+  overflow: hidden;
+}
+
+.libraryProfileArt img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.libraryProfileArt > span {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #e8f3ff 0%, rgba(232,243,255,.92) 6%, rgba(232,243,255,.18) 45%, transparent 70%);
+}
+
+.libraryTopGrid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: minmax(330px, .78fr) minmax(560px, 1.42fr);
+  gap: 14px;
+  align-items: stretch;
+}
+
+.libraryJourneyColumn {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.libraryCard {
+  border-radius: 22px;
+  background: rgba(255,255,255,.94);
+  border: 1px solid rgba(112, 130, 173, .16);
+  box-shadow: 0 14px 34px rgba(30, 52, 93, .07);
+  padding: 20px;
+}
+
+.librarySectionHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.librarySectionHead h2 {
+  font-size: 23px;
+  line-height: 1.08;
+}
+
+.librarySectionHead > strong {
+  color: #53647e;
+  font-size: 14px;
+}
+
+.librarySectionIcon {
+  font-size: 30px;
+}
+
+.libraryFactTotal {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.libraryFactTotal strong {
+  font-size: 40px;
+  line-height: 1;
+  color: #152c62;
+}
+
+.libraryFactTotal span {
+  font-size: 21px;
+  color: #3f5273;
+}
+
+.libraryFactTotal b {
+  margin-left: auto;
+  font-size: 13px;
+  color: #63718a;
+}
+
+.libraryProgressTrack {
+  height: 9px;
+  border-radius: 999px;
+  background: #e9edf4;
+  overflow: hidden;
+  display: block;
+}
+
+.libraryProgressFill {
+  height: 100%;
+  border-radius: inherit;
+  display: block;
+  background: linear-gradient(90deg, #5fd3a5, #3aaed8);
+  transition: width .25s ease;
+}
+
+.libraryCategoryList {
+  display: grid;
+  gap: 13px;
+  margin-top: 22px;
+}
+
+.libraryCategoryRow {
+  display: grid;
+  grid-template-columns: 34px 1fr 38px;
+  align-items: center;
+  gap: 9px;
+}
+
+.libraryCategoryIcon {
+  width: 31px;
+  height: 31px;
+  border-radius: 10px;
+  background: #f0f4ff;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+}
+
+.libraryCategoryLabel {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+.libraryCategoryLabel strong {
+  color: #22365e;
+}
+
+.libraryCategoryLabel span,
+.libraryCategoryRow > b {
+  color: #68768e;
+  font-weight: 750;
+  font-size: 11px;
+}
+
+.libraryCategoryRow:nth-child(2) .libraryProgressFill { background: linear-gradient(90deg, #68b9ff, #6676ee); }
+.libraryCategoryRow:nth-child(3) .libraryProgressFill { background: linear-gradient(90deg, #a876f3, #7368e6); }
+.libraryCategoryRow:nth-child(4) .libraryProgressFill { background: linear-gradient(90deg, #ffb65d, #f58559); }
+.libraryCategoryRow:nth-child(5) .libraryProgressFill { background: linear-gradient(90deg, #ffc85a, #e39b38); }
+.libraryCategoryRow:nth-child(6) .libraryProgressFill { background: linear-gradient(90deg, #ff8f8f, #e96d88); }
+.libraryCategoryRow:nth-child(7) .libraryProgressFill { background: linear-gradient(90deg, #63d7d0, #36a8b9); }
+
+.libraryJourneyCard {
+  position: relative;
+  overflow: hidden;
+  min-height: 310px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: .9fr 1.1fr;
+  grid-template-rows: 1fr auto;
+}
+
+.libraryJourneyImage {
+  position: absolute;
+  inset: 0;
+}
+
+.libraryJourneyImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.libraryJourneyImage > span {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(250,252,255,.98) 0%, rgba(250,252,255,.94) 34%, rgba(250,252,255,.54) 58%, rgba(250,252,255,.06) 82%);
+}
+
+.libraryJourneyCopy {
+  position: relative;
+  z-index: 2;
+  padding: 25px 20px 14px 24px;
+  max-width: 530px;
+}
+
+.libraryJourneyCopy h2 {
+  font-size: clamp(29px, 3vw, 40px);
+  margin-bottom: 10px;
+}
+
+.libraryJourneyCopy p {
+  margin: 0;
+  color: #485b7a;
+  line-height: 1.55;
+  font-size: 14px;
+}
+
+.libraryJourneySteps {
+  grid-column: 1 / -1;
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0;
+  padding: 0 18px 18px;
+}
+
+.libraryJourneySteps > div {
+  position: relative;
+  text-align: center;
+  padding-top: 14px;
+  color: #7a8799;
+}
+
+.libraryJourneySteps > div::before {
+  content: "";
+  height: 3px;
+  position: absolute;
+  top: 5px;
+  left: 0;
+  right: 0;
+  background: #d9dee8;
+}
+
+.libraryJourneySteps > div:first-child::before { left: 50%; }
+.libraryJourneySteps > div:last-child::before { right: 50%; }
+
+.libraryJourneySteps > div > span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #cfd6e2;
+  display: block;
+  margin: -14px auto 7px;
+  position: relative;
+  z-index: 2;
+  border: 3px solid #fff;
+  box-sizing: content-box;
+}
+
+.libraryJourneySteps > div.done::before,
+.libraryJourneySteps > div.current::before {
+  background: #57c9a3;
+}
+
+.libraryJourneySteps > div.done > span {
+  background: #57c9a3;
+}
+
+.libraryJourneySteps > div.current > span {
+  background: #3ba9dd;
+  box-shadow: 0 0 0 4px rgba(59,169,221,.14);
+}
+
+.libraryJourneySteps small {
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1.15;
+  display: block;
+}
+
+.libraryDreamCard {
+  display: grid;
+  grid-template-columns: 48px 1fr 72px;
+  gap: 13px;
+  align-items: center;
+  padding: 16px 18px;
+}
+
+.libraryDreamIcon {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  background: #eef5ff;
+  font-size: 22px;
+}
+
+.libraryDreamMain h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.libraryDreamProgress {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.libraryDreamProgress b {
+  font-size: 12px;
+  color: #405679;
+}
+
+.libraryDreamMountain {
+  text-align: center;
+  font-size: 42px;
+}
+
+.libraryNextGoals {
+  padding: 16px 18px;
+}
+
+.libraryNextGoals h3 {
+  margin: 0 0 12px;
+  font-size: 15px;
+}
+
+.libraryGoalGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+}
+
+.libraryGoalGrid > div {
+  border: 1px solid #e4e8ef;
+  border-radius: 14px;
+  padding: 11px 12px;
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  column-gap: 8px;
+  background: #fbfcff;
+}
+
+.libraryGoalGrid > div > span {
+  grid-row: 1 / 3;
+  font-size: 20px;
+}
+
+.libraryGoalGrid strong {
+  font-size: 11px;
+  line-height: 1.25;
+}
+
+.libraryGoalGrid small {
+  margin-top: 5px;
+  color: #768399;
+  font-size: 10px;
+}
+
+.libraryHistoryCard {
+  margin-top: 14px;
+}
+
+.libraryMutedAction {
+  color: #7b8799;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.libraryHistoryTrack {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 10px;
+}
+
+.libraryHistoryItem {
+  min-width: 0;
+}
+
+.libraryHistoryImage {
+  aspect-ratio: 1.2 / 1;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #edf0f4;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.libraryHistoryImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.libraryHistoryImage > span {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  font-size: 28px;
+  color: #aeb6c2;
+}
+
+.libraryHistoryItem strong {
+  display: block;
+  font-size: 11px;
+  line-height: 1.25;
+  color: #273a60;
+}
+
+.libraryHistoryItem small {
+  color: #8b96a7;
+  font-size: 9px;
+}
+
+.libraryHistoryItem.current .libraryHistoryImage {
+  box-shadow: 0 0 0 3px #4cb8e7;
+}
+
+.libraryHistoryItem.locked {
+  opacity: .48;
+  filter: grayscale(.5);
+}
+
+.libraryMiddleGrid,
+.libraryStatsGrid,
+.librarySocialGrid {
+  margin-top: 14px;
+  display: grid;
+  gap: 14px;
+}
+
+.libraryMiddleGrid {
+  grid-template-columns: 1.2fr .8fr;
+}
+
+.libraryStatsGrid,
+.librarySocialGrid {
+  grid-template-columns: 1.25fr .75fr;
+}
+
+.libraryAchievementGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+}
+
+.libraryAchievementGrid > div {
+  padding: 12px 7px;
+  text-align: center;
+  border-radius: 15px;
+  background: #f7f9fd;
+  border: 1px solid #e8ebf2;
+}
+
+.libraryAchievementGrid > div > span {
+  width: 46px;
+  height: 46px;
+  border-radius: 15px;
+  margin: 0 auto 8px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #ffe493, #ffb44c);
+  font-size: 21px;
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.6);
+}
+
+.libraryAchievementGrid > div:nth-child(2) > span { background: linear-gradient(135deg, #ae90ff, #7058d8); }
+.libraryAchievementGrid > div:nth-child(3) > span { background: linear-gradient(135deg, #ffbf63, #f17d42); }
+.libraryAchievementGrid > div:nth-child(4) > span { background: linear-gradient(135deg, #6ed5ff, #4f8ee9); }
+.libraryAchievementGrid > div.locked > span {
+  background: #dfe4eb;
+  box-shadow: none;
+  filter: grayscale(1);
+}
+
+.libraryAchievementGrid > div.locked {
+  opacity: .58;
+}
+
+.libraryAchievementGrid strong {
+  display: block;
+  font-size: 11px;
+  line-height: 1.2;
+  color: #263a60;
+}
+
+.libraryAchievementGrid small {
+  display: block;
+  font-size: 9px;
+  color: #8490a2;
+  margin-top: 5px;
+  line-height: 1.25;
+}
+
+.libraryMilestoneList {
+  display: grid;
+  gap: 8px;
+}
+
+.libraryMilestoneList > div {
+  min-height: 38px;
+  border-radius: 12px;
+  padding: 7px 9px;
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  align-items: center;
+  gap: 9px;
+  background: #f8f9fc;
+  color: #67758c;
+}
+
+.libraryMilestoneList > div.done {
+  background: #f1fbf6;
+  color: #234e41;
+}
+
+.libraryMilestoneList p {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.libraryMilestoneList b {
+  font-size: 10px;
+}
+
+.libraryGameStatGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr) .9fr;
+  gap: 9px;
+}
+
+.libraryGameStatGrid button,
+.libraryFavoriteGame {
+  border: 0;
+  background: #f7f9fd;
+  border-radius: 15px;
+  padding: 12px 9px;
+  color: #25395e;
+  font: inherit;
+  text-align: center;
+}
+
+.libraryGameStatGrid button {
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.libraryGameStatGrid button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(45,70,112,.09);
+}
+
+.libraryGameStatGrid button > span,
+.libraryFavoriteGame > span {
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 8px;
+  background: #e8f4ff;
+  color: #326cb3;
+  font-weight: 900;
+}
+
+.libraryGameStatGrid button strong,
+.libraryFavoriteGame strong {
+  display: block;
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+.libraryGameStatGrid button small,
+.libraryFavoriteGame small {
+  display: block;
+  font-size: 8px;
+  color: #78869b;
+  margin: 4px 0;
+}
+
+.libraryGameStatGrid button b {
+  font-size: 9px;
+  color: #5a6b84;
+}
+
+.libraryFavoriteGame {
+  display: grid;
+  place-content: center;
+}
+
+.libraryDailyStats .librarySectionHead button {
+  border: 0;
+  background: transparent;
+  color: #4f6a99;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.libraryDailyNumbers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 4px 0 14px;
+}
+
+.libraryDailyNumbers > div {
+  text-align: center;
+  border-right: 1px solid #edf0f4;
+}
+
+.libraryDailyNumbers > div:last-child {
+  border-right: 0;
+}
+
+.libraryDailyNumbers strong {
+  display: block;
+  font-size: 27px;
+  color: #152d61;
+}
+
+.libraryDailyNumbers span {
+  color: #758298;
+  font-size: 9px;
+}
+
+.libraryDifficultyStats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+}
+
+.libraryDifficultyStats span {
+  border-radius: 11px;
+  padding: 9px;
+  font-size: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.libraryDifficultyStats .easy { background: #eaf9f0; color: #36835b; }
+.libraryDifficultyStats .medium { background: #fff5d9; color: #ad791b; }
+.libraryDifficultyStats .hard { background: #ffe9e5; color: #bb594a; }
+
+.librarySoonBadge {
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #f0f2f7;
+  color: #748096;
+  font-size: 9px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.libraryFriendPlaceholders {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 9px;
+}
+
+.libraryFriendPlaceholders > div,
+.libraryFriendPlaceholders > button {
+  min-width: 0;
+  min-height: 100px;
+  border-radius: 15px;
+  border: 1px solid #e7ebf2;
+  background: #f9fafd;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 10px 6px;
+  font: inherit;
+  color: #324767;
+}
+
+.libraryFriendPlaceholders > button {
+  border-style: dashed;
+  opacity: .7;
+}
+
+.libraryFriendAvatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #e3efff;
+  display: grid;
+  place-items: center;
+}
+
+.libraryFriendPlaceholders strong {
+  font-size: 10px;
+}
+
+.libraryFriendPlaceholders small {
+  font-size: 8px;
+  color: #8a95a6;
+}
+
+.libraryFriendsCard > p,
+.libraryRatingCard > p {
+  margin: 12px 0 0;
+  font-size: 10px;
+  line-height: 1.4;
+  color: #7a8699;
+}
+
+.libraryRatingTabs {
+  display: flex;
+  gap: 3px;
+  padding: 3px;
+  border-radius: 999px;
+  background: #f0f3f8;
+  font-size: 9px;
+}
+
+.libraryRatingTabs b,
+.libraryRatingTabs span {
+  padding: 5px 8px;
+  border-radius: 999px;
+}
+
+.libraryRatingTabs b {
+  background: #fff;
+  color: #315a9b;
+  box-shadow: 0 2px 6px rgba(32,58,102,.08);
+}
+
+.libraryRatingPlaceholder {
+  display: grid;
+  gap: 6px;
+}
+
+.libraryRatingPlaceholder > div {
+  display: grid;
+  grid-template-columns: 24px 28px 1fr auto;
+  align-items: center;
+  gap: 7px;
+  border-radius: 10px;
+  padding: 7px 9px;
+  background: #f8f9fc;
+  font-size: 9px;
+}
+
+.libraryRatingPlaceholder > div.you {
+  background: #eaf2ff;
+  color: #295a9d;
+}
+
+.libraryRatingPlaceholder p {
+  margin: 0;
+  font-weight: 750;
+}
+
+@media (max-width: 1050px) {
+  .libraryPage {
+    width: min(100% - 20px, 980px);
+  }
+
+  .libraryNav {
+    overflow-x: auto;
+    position: static;
+  }
+
+  .libraryProfileHero {
+    grid-template-columns: 100px minmax(0, 1fr);
+  }
+
+  .libraryProfileArt {
+    opacity: .42;
+    inset-left: 35%;
+  }
+
+  .libraryTopGrid,
+  .libraryMiddleGrid,
+  .libraryStatsGrid,
+  .librarySocialGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .libraryHistoryTrack {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .libraryAchievementGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .libraryPage {
+    width: min(100% - 12px, 660px);
+    padding-top: 8px;
+  }
+
+  .libraryNav {
+    border-radius: 14px;
+    padding: 6px;
+  }
+
+  .libraryNav button {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+
+  .libraryNav button small,
+  .libraryNavBalance {
+    display: none;
+  }
+
+  .libraryProfileHero {
+    min-height: 230px;
+    border-radius: 18px;
+    grid-template-columns: 78px 1fr;
+    align-items: start;
+  }
+
+  .libraryProfileAvatar {
+    width: 62px;
+    height: 62px;
+    margin: 20px 0 0 16px;
+  }
+
+  .libraryProfileCopy {
+    padding: 22px 12px 18px 0;
+  }
+
+  .libraryProfileCopy h1 {
+    font-size: 28px;
+  }
+
+  .libraryProfileArt {
+    inset: 0;
+    opacity: .23;
+  }
+
+  .libraryProfileArt > span {
+    background: linear-gradient(90deg, rgba(235,245,255,.98), rgba(235,245,255,.7) 58%, rgba(235,245,255,.35));
+  }
+
+  .libraryProfileMeta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    font-size: 10px;
+  }
+
+  .libraryTopGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .libraryCard {
+    border-radius: 17px;
+    padding: 15px;
+  }
+
+  .libraryJourneyCard {
+    min-height: 360px;
+    grid-template-columns: 1fr;
+  }
+
+  .libraryJourneyCopy {
+    padding: 22px 18px 12px;
+  }
+
+  .libraryJourneyCopy h2 {
+    font-size: 29px;
+  }
+
+  .libraryJourneyImage > span {
+    background: linear-gradient(180deg, rgba(250,252,255,.96) 0%, rgba(250,252,255,.8) 57%, rgba(250,252,255,.28) 100%);
+  }
+
+  .libraryJourneySteps {
+    overflow-x: auto;
+    grid-template-columns: repeat(8, 82px);
+  }
+
+  .libraryDreamCard {
+    grid-template-columns: 42px 1fr;
+  }
+
+  .libraryDreamMountain {
+    display: none;
+  }
+
+  .libraryGoalGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .libraryHistoryTrack {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 6px;
+  }
+
+  .libraryHistoryItem {
+    min-width: 118px;
+  }
+
+  .libraryAchievementGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .libraryGameStatGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .libraryFavoriteGame {
+    grid-column: 1 / -1;
+  }
+
+  .libraryFriendPlaceholders {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .libraryFriendPlaceholders > button {
+    grid-column: 1 / -1;
+  }
+}
