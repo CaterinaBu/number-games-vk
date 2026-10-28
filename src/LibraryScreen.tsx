@@ -1,4 +1,3 @@
-import { penguin42 } from './penguin';
 import type { PlayerProgress } from './progress';
 import {
   getDailyLibraryStats,
@@ -220,7 +219,15 @@ export default function LibraryScreen({
 
       <section className="libraryProfileHero">
         <div className="libraryProfileAvatar">
-          <img src={penguin42} alt="" aria-hidden="true" />
+          <img
+            src={`${JOURNEY_ASSET_BASE}${stage.image}`}
+            alt=""
+            aria-hidden="true"
+            onError={(event) => {
+              event.currentTarget.onerror = null;
+              event.currentTarget.src = JOURNEY_FALLBACK;
+            }}
+          />
         </div>
         <div className="libraryProfileCopy">
           <span className="libraryKicker">Личная история</span>
@@ -356,44 +363,45 @@ export default function LibraryScreen({
         </div>
       </section>
 
-      <section className="libraryCard libraryHistoryCard">
-        <div className="librarySectionHead">
-          <div>
-            <span className="libraryKicker">Биография</span>
-            <h2>История развития пингвина</h2>
+      <section className="libraryCompactGrid">
+        <section className="libraryCard libraryHistoryCard">
+          <div className="librarySectionHead">
+            <div>
+              <span className="libraryKicker">Биография</span>
+              <h2>История развития пингвина</h2>
+            </div>
+            <span className="libraryMutedAction">Дальние главы пока скрыты</span>
           </div>
-          <span className="libraryMutedAction">Дальние главы пока скрыты</span>
-        </div>
-        <div className="libraryHistoryTrack">
-          {JOURNEY_STAGES.map((item, index) => {
-            const visible = index <= stageIndex + 1;
-            return (
-              <div
-                className={`libraryHistoryItem ${index < stageIndex ? 'done' : index === stageIndex ? 'current' : ''} ${visible ? '' : 'locked'}`}
-                key={item.title}
-              >
-                <div className="libraryHistoryImage">
-                  {visible ? (
-                    <img
-                      src={`${JOURNEY_ASSET_BASE}${item.image}`}
-                      alt=""
-                      aria-hidden="true"
-                      onError={(event) => {
-                        event.currentTarget.onerror = null;
-                        event.currentTarget.src = JOURNEY_FALLBACK;
-                      }}
-                    />
-                  ) : <span>?</span>}
+          <div className="libraryHistoryTrack">
+            {JOURNEY_STAGES.map((item, index) => {
+              const visible = index <= stageIndex + 1;
+              return (
+                <div
+                  className={`libraryHistoryItem ${index < stageIndex ? 'done' : index === stageIndex ? 'current' : ''} ${visible ? '' : 'locked'}`}
+                  key={item.title}
+                >
+                  <div className="libraryHistoryImage">
+                    {visible ? (
+                      <img
+                        src={`${JOURNEY_ASSET_BASE}${item.image}`}
+                        alt=""
+                        aria-hidden="true"
+                        onError={(event) => {
+                          event.currentTarget.onerror = null;
+                          event.currentTarget.src = JOURNEY_FALLBACK;
+                        }}
+                      />
+                    ) : <span>?</span>}
+                  </div>
+                  <strong>{visible ? item.short : '???'}</strong>
+                  <small>{index < stageIndex ? 'Пройдено' : index === stageIndex ? 'Сейчас' : visible ? 'Следующая глава' : 'Скрыто'}</small>
                 </div>
-                <strong>{visible ? item.short : '???'}</strong>
-                <small>{index < stageIndex ? 'Пройдено' : index === stageIndex ? 'Сейчас' : visible ? 'Следующая глава' : 'Скрыто'}</small>
-              </div>
-            );
-          })}
-        </div>
-      </section>
+              );
+            })}
+          </div>
+        </section>
 
-      <section className="libraryMiddleGrid">
+        <div className="libraryCompactSide">
         <article className="libraryCard libraryAchievementsCard">
           <div className="librarySectionHead">
             <div>
@@ -427,6 +435,8 @@ export default function LibraryScreen({
             <div className={hasPerfectGame ? 'done' : ''}><span>★</span><p>Получен идеальный результат</p><b>{hasPerfectGame ? '✓' : '—'}</b></div>
           </div>
         </article>
+      </section>
+
       </section>
 
       <section className="libraryStatsGrid">
