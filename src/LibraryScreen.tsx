@@ -227,7 +227,7 @@ export default function LibraryScreen({
           <h1>Мой пингвин</h1>
           <p>{stage.title}</p>
           <div className="libraryProfileMeta">
-            <span><b>◷</b> В игре с {startedLabel}</span>
+            <span><b>◷</b> Учёт прогресса с {startedLabel}</span>
             <span><b>▤</b> {factOverview.opened} фактов</span>
             <span><b>🏆</b> {unlockedAchievements} достижений</span>
             <span><b>▣</b> {dailyStats.total} заданий дня</span>
@@ -239,9 +239,8 @@ export default function LibraryScreen({
             alt=""
             aria-hidden="true"
             onError={(event) => {
-              if (event.currentTarget.src !== JOURNEY_FALLBACK) {
-                event.currentTarget.src = JOURNEY_FALLBACK;
-              }
+              event.currentTarget.onerror = null;
+              event.currentTarget.src = JOURNEY_FALLBACK;
             }}
           />
           <span aria-hidden="true" />
@@ -296,9 +295,8 @@ export default function LibraryScreen({
                 alt=""
                 aria-hidden="true"
                 onError={(event) => {
-                  if (event.currentTarget.src !== JOURNEY_FALLBACK) {
-                    event.currentTarget.src = JOURNEY_FALLBACK;
-                  }
+                  event.currentTarget.onerror = null;
+                  event.currentTarget.src = JOURNEY_FALLBACK;
                 }}
               />
               <span aria-hidden="true" />
@@ -381,9 +379,8 @@ export default function LibraryScreen({
                       alt=""
                       aria-hidden="true"
                       onError={(event) => {
-                        if (event.currentTarget.src !== JOURNEY_FALLBACK) {
-                          event.currentTarget.src = JOURNEY_FALLBACK;
-                        }
+                        event.currentTarget.onerror = null;
+                        event.currentTarget.src = JOURNEY_FALLBACK;
                       }}
                     />
                   ) : <span>?</span>}
