@@ -10031,7 +10031,7 @@ button.dailyCard.locked {
 
   .libraryProfileArt {
     opacity: .42;
-    inset-left: 35%;
+    left: 35%;
   }
 
   .libraryTopGrid,
