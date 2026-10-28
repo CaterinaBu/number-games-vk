@@ -32,6 +32,14 @@ import {
 import { donateToCommunity, isDonationConfigured, isVKEnvironment, openCommunity, registerCompletedRound, resizeDesktopWindowToContent, shareApp, showAdIfAvailable } from './vk';
 import { trackEvent } from './analytics';
 import { loadProgress, saveProgress, type PlayerProgress } from './progress';
+import LibraryScreen from './LibraryScreen';
+import {
+  addDiscoveredFacts,
+  loadLibraryProgress,
+  registerDailyLibraryCompletion,
+  saveLibraryProgress,
+  type LibraryProgress
+} from './library';
 import {
   DAILY_GAME_TITLES,
   createEmptyDailyProgress,
@@ -389,6 +397,7 @@ type GameProps = {
   onBeforeLeave: (action: () => void) => Promise<void>;
   onAttempt: () => void;
   onRestartRound: (game: GameTab, action: () => void) => void;
+  onFactsSeen: (facts: Fact[]) => void;
   dailyChallengeMode?: boolean;
   onDailyRoundFinished?: (game: GameTab, result: FinishResult) => void;
 };
@@ -526,6 +535,7 @@ function CompareGame({
   onBeforeLeave,
   onAttempt,
   onRestartRound,
+  onFactsSeen,
   tutorialMode,
   onTutorialComplete,
   onSelectGame,
@@ -551,6 +561,10 @@ function CompareGame({
   const isAnswered = selected !== null;
   const largerFact = correctSide === 'left' ? question.left : question.right;
   const smallerFact = correctSide === 'left' ? question.right : question.left;
+
+  useEffect(() => {
+    onFactsSeen([question.left, question.right]);
+  }, [question]);
 
   const tutorialHints = [
     'Сравните два факта и нажмите на тот, у которого значение больше.',
@@ -968,6 +982,7 @@ function GuessGame({
   onBeforeLeave,
   onAttempt,
   onRestartRound,
+  onFactsSeen,
   tutorialMode,
   onTutorialComplete,
   onSelectGame,
@@ -995,6 +1010,10 @@ function GuessGame({
   const answered = submittedGuess !== null;
   const closeness = answered ? calculateCloseness(submittedGuess, fact.value) : null;
   const averageScore = rounds > 0 ? Math.round(totalCloseness / rounds) : 0;
+
+  useEffect(() => {
+    onFactsSeen([fact]);
+  }, [fact]);
 
   const tutorialHints = [
     'Попробуйте угадать значение факта. Знать точно не обязательно: достаточно приближённого значения.',
@@ -1482,6 +1501,7 @@ function OrderGame({
   onBeforeLeave,
   onAttempt,
   onRestartRound,
+  onFactsSeen,
   tutorialMode,
   onTutorialComplete,
   onSelectGame,
@@ -1505,6 +1525,10 @@ function OrderGame({
 
   const training = tutorialMode || replayTutorial;
   const roundLength = training ? 3 : ROUND_LENGTH;
+  useEffect(() => {
+    onFactsSeen(question.items);
+  }, [question]);
+
   const tutorialHints = [
     'Расставьте четыре объекта от меньшего значения к большему.',
     'Меняйте строки местами стрелками. После проверки покажем значения и правильный порядок.',
@@ -1971,6 +1995,7 @@ function NearGame({
   onBeforeLeave,
   onAttempt,
   onRestartRound,
+  onFactsSeen,
   tutorialMode,
   onTutorialComplete,
   onSelectGame,
@@ -1994,6 +2019,10 @@ function NearGame({
   const correctSide = getNearCorrectSide(question);
   const answered = selected !== null;
   const correctFact = correctSide === 'left' ? question.left : question.right;
+
+  useEffect(() => {
+    onFactsSeen([question.reference, question.left, question.right]);
+  }, [question]);
 
   const tutorialHints = [
     'Посмотрите на значение ориентира и выберите из двух вариантов тот, чьё число к нему ближе.',
@@ -2587,7 +2616,8 @@ function HomeScreen({
   dailyChallenge,
   dailyProgress,
   onStart,
-  onOpenDaily
+  onOpenDaily,
+  onOpenLibrary
 }: {
   records: Records;
   progress: PlayerProgress;
@@ -2595,6 +2625,7 @@ function HomeScreen({
   dailyProgress: DailyProgress;
   onStart: (game: GameTab) => void;
   onOpenDaily: () => void;
+  onOpenLibrary: () => void;
 }) {
   const masteredCount = homeGames.filter((game) => progress.status[game.id] === 'mastered').length;
   const newGame = homeGames.find((game) => progress.status[game.id] === 'new');
@@ -2653,10 +2684,10 @@ function HomeScreen({
             <span>Магазин</span>
             <small>скоро</small>
           </span>
-          <span className="dashboardTopLink">
+          <button className="dashboardTopLink dashboardTopLinkButton" onClick={onOpenLibrary}>
             <b>📚</b>
             <span>Библиотека</span>
-          </span>
+          </button>
         </div>
       </header>
 
@@ -2774,7 +2805,7 @@ function HomeScreen({
             <small>Скоро</small>
           </section>
 
-          <section className="libraryPreview">
+          <button type="button" className="libraryPreview libraryPreviewButton" onClick={onOpenLibrary}>
             <div className="libraryPreviewImage">
               <HomeAssetImage
                 preferred={hqHomeLibrary}
@@ -2785,9 +2816,9 @@ function HomeScreen({
               <span className="sideEyebrow">Ваш прогресс</span>
               <h2>Библиотека пингвина</h2>
               <p>Собирайте факты, открывайте достижения и развивайте историю своего исследователя.</p>
-              <span className="sideSoon">Раздел появится следующим этапом</span>
+              <span className="sideSoon">Открыть библиотеку →</span>
             </div>
-          </section>
+          </button>
         </aside>
       </section>
 
@@ -2800,7 +2831,7 @@ function HomeScreen({
 }
 
 export default function App() {
-  const [screen, setScreen] = useState<'home' | 'game' | 'daily' | 'dailyResult'>('home');
+  const [screen, setScreen] = useState<'home' | 'game' | 'daily' | 'dailyResult' | 'library'>('home');
   const [tab, setTab] = useState<GameTab>('compare');
   const [records, setRecords] = useState<Records>(() => loadRecords());
   const [progress, setProgress] = useState<PlayerProgress>(() => {
@@ -2817,6 +2848,7 @@ export default function App() {
     saveProgress(migrated);
     return migrated;
   });
+  const [libraryProgress, setLibraryProgress] = useState<LibraryProgress>(() => loadLibraryProgress());
   const [moscowDateKey, setMoscowDateKey] = useState(() => getMoscowDateKey());
   const [dailyDebugOffset, setDailyDebugOffset] = useState(0);
   const dailyChallenge = getDailyChallenge(moscowDateKey, dailyDebugOffset);
@@ -2900,6 +2932,14 @@ export default function App() {
     trackEvent('round_started', { game, source });
     setTab(game);
     setScreen('game');
+  }
+
+  function rememberFacts(facts: Fact[]) {
+    setLibraryProgress((current) => {
+      const next = addDiscoveredFacts(current, facts);
+      if (next !== current) saveLibraryProgress(next);
+      return next;
+    });
   }
 
   function markAttempted() {
@@ -3209,6 +3249,24 @@ export default function App() {
         dailyProgress={dailyProgress}
         onStart={startGame}
         onOpenDaily={openDailyChallenge}
+        onOpenLibrary={() => {
+          setScreen('library');
+          trackEvent('library_opened');
+        }}
+      />
+    );
+  }
+
+  if (screen === 'library') {
+    return (
+      <LibraryScreen
+        records={records}
+        progress={progress}
+        libraryProgress={libraryProgress}
+        todayKey={moscowDateKey}
+        onHome={() => setScreen('home')}
+        onStartGame={(game) => startGame(game, 'library')}
+        onOpenDaily={openDailyChallenge}
       />
     );
   }
@@ -3284,6 +3342,7 @@ export default function App() {
           onBeforeLeave={runPostRoundAction}
           onAttempt={markAttempted}
           onRestartRound={restartRound}
+          onFactsSeen={rememberFacts}
           tutorialMode={progress.status.compare === 'tutorial'}
           onTutorialComplete={() => completeTutorial('compare')}
           onSelectGame={switchGame}
@@ -3298,6 +3357,7 @@ export default function App() {
           onBeforeLeave={runPostRoundAction}
           onAttempt={markAttempted}
           onRestartRound={restartRound}
+          onFactsSeen={rememberFacts}
           tutorialMode={progress.status.guess === 'tutorial'}
           onTutorialComplete={() => completeTutorial('guess')}
           onSelectGame={switchGame}
@@ -3312,6 +3372,7 @@ export default function App() {
           onBeforeLeave={runPostRoundAction}
           onAttempt={markAttempted}
           onRestartRound={restartRound}
+          onFactsSeen={rememberFacts}
           tutorialMode={progress.status.order === 'tutorial'}
           onTutorialComplete={() => completeTutorial('order')}
           onSelectGame={switchGame}
@@ -3326,6 +3387,7 @@ export default function App() {
           onBeforeLeave={runPostRoundAction}
           onAttempt={markAttempted}
           onRestartRound={restartRound}
+          onFactsSeen={rememberFacts}
           tutorialMode={progress.status.near === 'tutorial'}
           onTutorialComplete={() => completeTutorial('near')}
           onSelectGame={switchGame}
