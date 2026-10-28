@@ -158,26 +158,30 @@ export default function LibraryScreen({
   ));
   const hardDailyCount = dailyStats.difficultyCounts.hard;
 
-  const achievements = [
+  const coreAchievements = [
     { icon: '📖', title: 'Первый шаг', note: 'Сыграть первую партию', unlocked: totalPlays >= 1 },
     { icon: '🧠', title: '100 фактов', note: 'Открыть 100 уникальных фактов', unlocked: factOverview.opened >= 100 },
     { icon: '🎮', title: 'Все игры', note: 'Освоить все четыре игры', unlocked: masteredCount === 4 },
     { icon: '🔥', title: 'Серия 7 дней', note: 'Выполнять задания дня неделю', unlocked: dailyStats.bestStreak >= 7 },
-    { icon: '🧭', title: 'Первая экспедиция', note: 'Дойти до главы экспедиции', unlocked: false },
     { icon: '🏔', title: '500 фактов', note: 'Открыть 500 уникальных фактов', unlocked: factOverview.opened >= 500 }
   ];
 
-  const unlockedAchievements = achievements.filter((item) => item.unlocked).length;
+  const coreUnlockedAchievements = coreAchievements.filter((item) => item.unlocked).length;
   const stageIndex = journeyStageIndex({
     openedFacts: factOverview.opened,
     totalFacts: factOverview.total,
     masteredCount,
     totalPlays,
     dailyTotal: dailyStats.total,
-    achievements: unlockedAchievements
+    achievements: coreUnlockedAchievements
   });
   const stage = JOURNEY_STAGES[stageIndex];
-  achievements[4].unlocked = stageIndex >= 3;
+  const achievements = [
+    ...coreAchievements.slice(0, 4),
+    { icon: '🧭', title: 'Первая экспедиция', note: 'Дойти до главы экспедиции', unlocked: stageIndex >= 3 },
+    coreAchievements[4]
+  ];
+  const unlockedAchievements = achievements.filter((item) => item.unlocked).length;
 
   const journeyPercent = clampPercent(((stageIndex + .35) / JOURNEY_STAGES.length) * 100);
   const factPercent = factOverview.total > 0
