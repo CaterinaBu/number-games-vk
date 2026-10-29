@@ -10810,3 +10810,94 @@ button.dailyCard.locked {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+
+/* v69 — penguin backstory */
+.libraryProfileHeroPlain {
+  min-height: 232px;
+}
+
+.libraryProfileHeroPlain .libraryProfileTitleRow {
+  margin-bottom: 10px;
+}
+
+.libraryProfileStory {
+  max-width: 900px;
+  margin: 0 0 16px;
+  color: #536783;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.55;
+}
+
+.libraryProfileStoryline {
+  max-width: 940px;
+  margin: 0 0 18px;
+  display: grid;
+  grid-template-columns: minmax(150px, .75fr) auto minmax(260px, 1.25fr) auto minmax(170px, .8fr);
+  gap: 9px;
+  align-items: center;
+}
+
+.libraryProfileStoryPoint {
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid #e2e9f4;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, .7);
+}
+
+.libraryProfileStoryPoint small {
+  display: block;
+  margin-bottom: 3px;
+  color: #8390a5;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.libraryProfileStoryPoint strong {
+  display: block;
+  color: #263c61;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.libraryProfileStoryPoint.current {
+  border-color: rgba(93, 85, 217, .25);
+  background: rgba(108, 99, 255, .08);
+}
+
+.libraryProfileStoryPoint.current small {
+  color: #655ed3;
+}
+
+.libraryProfileStoryArrow {
+  color: #9aa7b9;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+@media (max-width: 700px) {
+  .libraryProfileHeroPlain {
+    min-height: 0;
+  }
+
+  .libraryProfileStory {
+    font-size: 13px;
+  }
+
+  .libraryProfileStoryline {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .libraryProfileStoryArrow {
+    display: none;
+  }
+
+  .libraryProfileStoryPoint {
+    padding: 9px 11px;
+  }
+}
