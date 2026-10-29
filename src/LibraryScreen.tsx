@@ -358,7 +358,7 @@ export default function LibraryScreen({
                     ) : <span>?</span>}
                   </div>
                   <strong>{visible ? item.short : '???'}</strong>
-                  <small>{index < stageIndex ? 'Пройдено' : index === stageIndex ? 'Сейчас' : visible ? 'Следующая глава' : 'Скрыто'}</small>
+                  <small>{index < stageIndex ? 'Пройдено' : index === stageIndex ? 'Текущий этап' : visible ? 'Следующая глава' : 'Скрыто'}</small>
                 </div>
               );
             })}
