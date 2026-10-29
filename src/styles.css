@@ -10909,3 +10909,93 @@ button.dailyCard.locked {
     border-radius: 15px;
   }
 }
+
+
+/* v70 — compact profile layout with avatar on the right */
+.libraryProfileHeroPlain {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 104px;
+  align-items: center;
+  column-gap: 24px;
+  padding: 0 28px 0 0;
+  overflow: hidden;
+}
+
+.libraryProfileHeroPlain .libraryProfileCopy {
+  min-width: 0;
+  padding: 24px 0 22px 28px;
+}
+
+.libraryProfileHeroPlain .libraryProfileTitleRow {
+  margin-bottom: 14px;
+}
+
+.libraryProfileStatus {
+  max-width: 820px;
+  margin-bottom: 16px;
+  grid-template-columns: minmax(180px, .72fr) minmax(300px, 1.28fr);
+  gap: 10px;
+}
+
+.libraryProfileStatus > div {
+  padding: 9px 13px;
+}
+
+.libraryProfilePenguinAvatar {
+  position: static;
+  width: 92px;
+  height: 92px;
+  padding: 0;
+  margin: 0;
+  transform: none;
+  align-self: center;
+  justify-self: center;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+.libraryProfilePenguinAvatar img {
+  width: 92px;
+  height: 92px;
+  display: block;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 0;
+  background: transparent;
+  filter: drop-shadow(0 8px 12px rgba(49, 62, 117, .12));
+}
+
+.libraryProfileMeta {
+  gap: 8px 16px;
+}
+
+@media (max-width: 700px) {
+  .libraryProfileHeroPlain {
+    grid-template-columns: minmax(0, 1fr) 64px;
+    column-gap: 10px;
+    padding-right: 12px;
+  }
+
+  .libraryProfileHeroPlain .libraryProfileCopy {
+    padding: 18px 0 18px 16px;
+  }
+
+  .libraryProfileStatus {
+    grid-template-columns: 1fr;
+    margin-bottom: 12px;
+  }
+
+  .libraryProfilePenguinAvatar,
+  .libraryProfilePenguinAvatar img {
+    width: 58px;
+    height: 58px;
+  }
+
+  .libraryProfileMeta {
+    grid-template-columns: 1fr;
+  }
+}
