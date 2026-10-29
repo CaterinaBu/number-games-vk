@@ -1,4 +1,7 @@
 import type { PlayerProgress } from './progress';
+import homePenguinPart1 from './assets/homePenguinPart1';
+import homePenguinPart2 from './assets/homePenguinPart2';
+import homePenguinPart3 from './assets/homePenguinPart3';
 import {
   getDailyLibraryStats,
   getLibraryFactOverview,
@@ -32,6 +35,8 @@ const GAME_INFO: Record<GameTab, { title: string; icon: string }> = {
   order: { title: 'По порядку', icon: '03' },
   near: { title: 'Что ближе?', icon: '04' }
 };
+
+const penguinMascot = 'data:image/webp;base64,' + homePenguinPart1 + homePenguinPart2 + homePenguinPart3;
 
 const JOURNEY_ASSET_BASE = `${import.meta.env.BASE_URL}assets/library/`;
 const JOURNEY_FALLBACK = `${import.meta.env.BASE_URL}assets/home/library.avif`;
@@ -213,12 +218,6 @@ export default function LibraryScreen({
             <h1>Мой пингвин</h1>
           </div>
 
-          <p className="libraryProfileBackstory">
-            Когда-то он был просто любопытным пингвином, который мечтал увидеть мир.
-            Теперь он собирает знания, проходит испытания и постепенно приближается к своей мечте.
-            Здесь будет отображаться его путь — от первых шагов до собственной экспедиции.
-          </p>
-
           <div className="libraryProfileStatus">
             <div>
               <small>Текущий этап</small>
@@ -238,16 +237,8 @@ export default function LibraryScreen({
           </div>
         </div>
 
-        <div className="libraryProfileBackstoryAvatar">
-          <img
-            src={`${JOURNEY_ASSET_BASE}${stage.image}`}
-            alt=""
-            aria-hidden="true"
-            onError={(event) => {
-              event.currentTarget.onerror = null;
-              event.currentTarget.src = JOURNEY_FALLBACK;
-            }}
-          />
+        <div className="libraryProfilePenguinAvatar" aria-hidden="true">
+          <img src={penguinMascot} alt="" />
         </div>
       </section>
 
