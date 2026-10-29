@@ -237,6 +237,18 @@ export default function LibraryScreen({
             <span><b>▣</b> {dailyStats.total} заданий дня</span>
           </div>
         </div>
+
+        <div className="libraryProfileBackstoryAvatar">
+          <img
+            src={`${JOURNEY_ASSET_BASE}${stage.image}`}
+            alt=""
+            aria-hidden="true"
+            onError={(event) => {
+              event.currentTarget.onerror = null;
+              event.currentTarget.src = JOURNEY_FALLBACK;
+            }}
+          />
+        </div>
       </section>
 
       <section className="libraryTopGrid">
