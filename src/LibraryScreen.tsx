@@ -210,32 +210,9 @@ export default function LibraryScreen({
         <div className="libraryProfileCopy">
           <span className="libraryKicker">Личная история</span>
           <div className="libraryProfileTitleRow">
-            <h1>История пингвина</h1>
+            <h1>Мой пингвин</h1>
+            <span>{stage.title}</span>
           </div>
-
-          <p className="libraryProfileStory">
-            Всё началось с первой книги. Пингвин стал собирать удивительные факты,
-            обустраивать свою библиотеку и знакомиться с другими любознательными исследователями.
-            Так появилась большая мечта — однажды возглавить собственную экспедицию.
-          </p>
-
-          <div className="libraryProfileStoryline" aria-label="Краткая история пингвина">
-            <div className="libraryProfileStoryPoint">
-              <small>Начало</small>
-              <strong>Первая книга</strong>
-            </div>
-            <span className="libraryProfileStoryArrow" aria-hidden="true">→</span>
-            <div className="libraryProfileStoryPoint">
-              <small>Мечта</small>
-              <strong>Возглавить собственную экспедицию</strong>
-            </div>
-            <span className="libraryProfileStoryArrow" aria-hidden="true">→</span>
-            <div className="libraryProfileStoryPoint current">
-              <small>Текущий этап</small>
-              <strong>{stage.title}</strong>
-            </div>
-          </div>
-
           <div className="libraryProfileMeta">
             <span><b>◷</b> Учёт прогресса с {startedLabel}</span>
             <span><b>▤</b> {factOverview.opened} фактов</span>
