@@ -27,21 +27,10 @@ type LibraryScreenProps = {
 };
 
 const GAME_INFO: Record<GameTab, { title: string; icon: string }> = {
-  compare: { title: 'Что больше?', icon: '↗' },
-  guess: { title: 'Ближе к правде', icon: '?' },
-  order: { title: 'По порядку', icon: '123' },
-  near: { title: 'Что ближе?', icon: '◎' }
-};
-
-const CATEGORY_ICONS: Record<string, string> = {
-  'Химия': '⚗',
-  'Животные': '🐾',
-  'Космос': '✦',
-  'Архитектура': '⌂',
-  'История': '⌛',
-  'Культура': '◆',
-  'География': '🌍',
-  'Человек': '●'
+  compare: { title: 'Что больше?', icon: '01' },
+  guess: { title: 'Ближе к правде', icon: '02' },
+  order: { title: 'По порядку', icon: '03' },
+  near: { title: 'Что ближе?', icon: '04' }
 };
 
 const JOURNEY_ASSET_BASE = `${import.meta.env.BASE_URL}assets/library/`;
@@ -217,40 +206,19 @@ export default function LibraryScreen({
         <div className="libraryNavBalance"><b>✦</b>{progress.factPoints.toLocaleString('ru-RU')}</div>
       </nav>
 
-      <section className="libraryProfileHero">
-        <div className="libraryProfileAvatar">
-          <img
-            src={`${JOURNEY_ASSET_BASE}${stage.image}`}
-            alt=""
-            aria-hidden="true"
-            onError={(event) => {
-              event.currentTarget.onerror = null;
-              event.currentTarget.src = JOURNEY_FALLBACK;
-            }}
-          />
-        </div>
+      <section className="libraryProfileHero libraryProfileHeroPlain">
         <div className="libraryProfileCopy">
           <span className="libraryKicker">Личная история</span>
-          <h1>Мой пингвин</h1>
-          <p>{stage.title}</p>
+          <div className="libraryProfileTitleRow">
+            <h1>Мой пингвин</h1>
+            <span>{stage.title}</span>
+          </div>
           <div className="libraryProfileMeta">
             <span><b>◷</b> Учёт прогресса с {startedLabel}</span>
             <span><b>▤</b> {factOverview.opened} фактов</span>
             <span><b>🏆</b> {unlockedAchievements} достижений</span>
             <span><b>▣</b> {dailyStats.total} заданий дня</span>
           </div>
-        </div>
-        <div className="libraryProfileArt">
-          <img
-            src={`${JOURNEY_ASSET_BASE}${stage.image}`}
-            alt=""
-            aria-hidden="true"
-            onError={(event) => {
-              event.currentTarget.onerror = null;
-              event.currentTarget.src = JOURNEY_FALLBACK;
-            }}
-          />
-          <span aria-hidden="true" />
         </div>
       </section>
 
@@ -279,15 +247,11 @@ export default function LibraryScreen({
 
               return (
                 <div className="libraryCategoryRow" key={category.category}>
-                  <span className="libraryCategoryIcon">{CATEGORY_ICONS[category.category] ?? '•'}</span>
-                  <div>
-                    <div className="libraryCategoryLabel">
-                      <strong>{category.category}</strong>
-                      <span>{category.opened} / {category.total}</span>
-                    </div>
-                    <LibraryProgressBar value={percent} />
+                  <div className="libraryCategoryLabel">
+                    <strong>{category.category}</strong>
+                    <span>{category.opened} / {category.total} · {clampPercent(percent)}%</span>
                   </div>
-                  <b>{clampPercent(percent)}%</b>
+                  <LibraryProgressBar value={percent} />
                 </div>
               );
             })}
@@ -401,11 +365,9 @@ export default function LibraryScreen({
           </div>
         </section>
 
-        <div className="libraryCompactSide">
         <article className="libraryCard libraryAchievementsCard">
           <div className="librarySectionHead">
             <div>
-              <span className="libraryKicker">Коллекция целей</span>
               <h2>Достижения</h2>
             </div>
             <strong>{unlockedAchievements} / {achievements.length}</strong>
@@ -424,7 +386,6 @@ export default function LibraryScreen({
         <article className="libraryCard libraryMilestonesCard">
           <div className="librarySectionHead">
             <div>
-              <span className="libraryKicker">Большие события</span>
               <h2>Крупные вехи</h2>
             </div>
           </div>
@@ -435,14 +396,12 @@ export default function LibraryScreen({
             <div className={hasPerfectGame ? 'done' : ''}><span>★</span><p>Получен идеальный результат</p><b>{hasPerfectGame ? '✓' : '—'}</b></div>
           </div>
         </article>
-        </div>
       </section>
 
       <section className="libraryStatsGrid">
         <article className="libraryCard libraryGameStats">
           <div className="librarySectionHead">
             <div>
-              <span className="libraryKicker">Игровой профиль</span>
               <h2>Статистика игр</h2>
             </div>
             <strong>{totalPlays} партий</strong>
@@ -461,7 +420,7 @@ export default function LibraryScreen({
               </button>
             ))}
             <div className="libraryFavoriteGame">
-              <span>♥</span>
+              <span>★</span>
               <small>Любимая игра</small>
               <strong>{favoriteGameHasData ? GAME_INFO[favoriteGame].title : 'Ещё определяется'}</strong>
             </div>
