@@ -211,8 +211,25 @@ export default function LibraryScreen({
           <span className="libraryKicker">Личная история</span>
           <div className="libraryProfileTitleRow">
             <h1>Мой пингвин</h1>
-            <span>{stage.title}</span>
           </div>
+
+          <p className="libraryProfileBackstory">
+            Когда-то он был просто любопытным пингвином, который мечтал увидеть мир.
+            Теперь он собирает знания, проходит испытания и постепенно приближается к своей мечте.
+            Здесь будет отображаться его путь — от первых шагов до собственной экспедиции.
+          </p>
+
+          <div className="libraryProfileStatus">
+            <div>
+              <small>Текущий этап</small>
+              <strong>{stage.title}</strong>
+            </div>
+            <div>
+              <small>Мечта</small>
+              <strong>Возглавить собственную экспедицию</strong>
+            </div>
+          </div>
+
           <div className="libraryProfileMeta">
             <span><b>◷</b> Учёт прогресса с {startedLabel}</span>
             <span><b>▤</b> {factOverview.opened} фактов</span>
